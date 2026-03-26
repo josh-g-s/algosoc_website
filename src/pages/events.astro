@@ -1,0 +1,123 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
+import { eventCategoryColours, eventCategoryLabels } from "@/lib/categories";
+import { isPublished } from "@/lib/content";
+import { formatDateLong } from "@/lib/format";
+import { toHTML } from "@portabletext/to-html";
+
+const allEvents = await client.fetch<Array<{
+  title: string;
+  date?: string;
+  time?: string;
+  location?: string;
+  category?: string;
+  body?: any[];
+  rsvpUrl?: string;
+  publishDate?: string;
+  expiryDate?: string;
+}>>(`*[_type == "event"]{ title, date, time, location, category, body, rsvpUrl, publishDate, expiryDate }`);
+
+const events = allEvents
+  .filter((e) => isPublished(e.publishDate, e.expiryDate, e.date))
+  .sort((a, b) => new Date(a.date || "").getTime() - new Date(b.date || "").getTime());
+
+const eventsJsonLd = events.map((e) => ({
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: e.title,
+  ...(e.body && { description: toHTML(e.body).replace(/<[^>]+>/g, " ").trim() }),
+  startDate: e.date,
+  ...(e.location && {
+    location: {
+      "@type": "Place",
+      name: e.location,
+      address: { "@type": "PostalAddress", addressLocality: "London", addressCountry: "GB" },
+    },
+  }),
+  organizer: {
+    "@type": "Organization",
+    name: "ICATS - Imperial College Algorithmic Trading Society",
+    url: "https://algosoc.com",
+  },
+}));
+---
+
+<BaseLayout
+  title="Events"
+  description="Upcoming ICATS events at Imperial College: competitions, workshops, quant sessions, company presentations, and socials throughout the academic year."
+  canonical="/events"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    {eventsJsonLd.length > 0 && (
+      <script type="application/ld+json" set:html={JSON.stringify(eventsJsonLd)} />
+    )}
+
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">Events</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl">
+      Competitions, workshops, lectures, and socials throughout the academic year.
+    </p>
+
+    {events.length === 0 ? (
+      <p class="mt-10 text-gray-500 dark:text-gray-400">No upcoming events. Check back soon.</p>
+    ) : (
+      <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {events.map((e) => {
+          const formatted = formatDateLong(e.date || "");
+          const category = e.category || "";
+
+          return (
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:shadow-md transition-shadow">
+              <div class="flex-1">
+                <span
+                  class={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full ${
+                    eventCategoryColours[category] || "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {eventCategoryLabels[category] || category}
+                </span>
+                <h3 class="mt-2 text-lg font-semibold text-brand-navy dark:text-white">{e.title}</h3>
+                {e.body && (
+                  <div class="mt-1 text-sm text-gray-600 dark:text-gray-400 prose prose-sm dark:prose-invert max-w-none" set:html={toHTML(e.body)} />
+                )}
+              </div>
+              <div class="mt-4 flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {formatted}
+                </span>
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {e.time}
+                </span>
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {e.location}
+                </span>
+              </div>
+              <div class="mt-4">
+                {e.rsvpUrl && (
+                  <a
+                    href={e.rsvpUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-block px-4 py-2 text-sm font-medium bg-brand-navy text-white rounded-lg hover:bg-brand-dark transition-colors"
+                  >
+                    RSVP
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</BaseLayout>

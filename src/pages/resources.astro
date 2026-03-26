@@ -1,0 +1,80 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
+import { resourceTypeStyles, resourceTypeLabels, resourceCategoryLabels } from "@/lib/categories";
+
+const allResources = await client.fetch<Array<{
+  title: string;
+  category?: string;
+  fileType?: string;
+  description?: string;
+  fileUrl?: string;
+  sortOrder?: number;
+}>>(`*[_type == "resource"] | order(sortOrder asc)`);
+
+const resources = allResources.map((r) => ({
+  title: r.title,
+  category: r.category || "",
+  fileType: r.fileType || "pdf",
+  description: r.description || "",
+  fileUrl: r.fileUrl || "",
+  sortOrder: r.sortOrder ?? 99,
+}));
+---
+
+<BaseLayout
+  title="Resources"
+  description="ICATS learning resources: career guides, bootcamp materials, AlgoCourse content, reading lists, and quant session recordings for aspiring traders."
+  canonical="/resources"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+      Resources
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl">
+      Lecture slides, problem sets, code notebooks, and career guides for
+      ICATS members.
+    </p>
+
+    {resources.length === 0 ? (
+      <p class="mt-10 text-gray-500 dark:text-gray-400">No resources yet. Check back soon.</p>
+    ) : (
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {resources.map((r) => (
+          <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-2 mb-3">
+              <span
+                class={`px-2 py-0.5 text-xs font-medium rounded ${
+                  resourceTypeStyles[r.fileType] || "text-gray-600 bg-gray-50"
+                }`}
+              >
+                {resourceTypeLabels[r.fileType] || r.fileType}
+              </span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                {resourceCategoryLabels[r.category] || r.category}
+              </span>
+            </div>
+            <h3 class="font-semibold text-brand-navy dark:text-white text-sm">{r.title}</h3>
+            <p class="mt-1 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+              {r.description}
+            </p>
+            {r.fileUrl ? (
+              <a
+                href={r.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-block mt-3 px-3 py-1.5 text-xs font-medium bg-brand-navy text-white rounded-md hover:bg-brand-dark transition-colors"
+              >
+                Download
+              </a>
+            ) : (
+              <span class="inline-block mt-3 px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-md">
+                Coming soon
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

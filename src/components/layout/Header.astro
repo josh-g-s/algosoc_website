@@ -1,0 +1,88 @@
+---
+import { navItems } from "@/lib/data";
+---
+
+<header class="sticky top-0 z-50 bg-brand-navy border-b border-white/10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <span class="text-xl font-bold text-white tracking-tight">ICATS</span>
+        <span class="hidden sm:inline text-sm text-brand-gray">
+          Imperial College Algorithmic Trading Society
+        </span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-1">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class="px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors"
+          >
+            {item.label}
+          </a>
+        ))}
+        <a
+          href="/join"
+          class="ml-3 px-4 py-2 text-sm font-medium text-brand-navy bg-brand-gold hover:bg-amber-400 rounded-md transition-colors"
+        >
+          Join ICATS
+        </a>
+      </nav>
+
+      <button
+        id="mobile-toggle"
+        class="md:hidden text-gray-300 hover:text-white p-2"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+      >
+        <svg class="h-6 w-6" id="icon-menu" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg class="h-6 w-6 hidden" id="icon-close" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="md:hidden bg-brand-navy border-t border-white/10 hidden">
+    <div class="px-4 py-3 space-y-1">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="block px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-md"
+        >
+          {item.label}
+        </a>
+      ))}
+      <a
+        href="/join"
+        class="block mt-2 px-3 py-2 text-sm font-medium text-brand-navy bg-brand-gold hover:bg-amber-400 rounded-md text-center"
+      >
+        Join ICATS
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const toggle = document.getElementById("mobile-toggle")!;
+    const menu = document.getElementById("mobile-menu")!;
+    const iconMenu = document.getElementById("icon-menu")!;
+    const iconClose = document.getElementById("icon-close")!;
+
+    // Reset menu state after navigation
+    menu.classList.add("hidden");
+    iconMenu.classList.remove("hidden");
+    iconClose.classList.add("hidden");
+    toggle.setAttribute("aria-expanded", "false");
+
+    toggle.onclick = () => {
+      const closed = menu.classList.toggle("hidden");
+      iconMenu.classList.toggle("hidden", !closed);
+      iconClose.classList.toggle("hidden", closed);
+      toggle.setAttribute("aria-expanded", String(!closed));
+    };
+  });
+</script>

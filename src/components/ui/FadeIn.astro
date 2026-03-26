@@ -1,0 +1,42 @@
+---
+interface Props {
+  delay?: number;
+  class?: string;
+}
+
+const { delay = 0, class: className = "" } = Astro.props;
+---
+
+<div class={`fade-in-ready ${className}`} data-fade-delay={delay}>
+  <slot />
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-fade-delay]").forEach((el) => {
+    // Already processed
+    if (el.dataset.fadeObserved) return;
+    el.dataset.fadeObserved = "true";
+
+    const delay = parseInt(el.dataset.fadeDelay || "0", 10);
+
+    // Only animate elements that start below the viewport
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) return;
+
+    el.classList.add("fade-in-hidden");
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            el.classList.remove("fade-in-hidden");
+          }, delay);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(el);
+  });
+</script>

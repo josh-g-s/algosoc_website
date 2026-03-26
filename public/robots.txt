@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://algosoc.com/sitemap-index.xml

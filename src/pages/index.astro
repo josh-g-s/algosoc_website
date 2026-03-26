@@ -1,0 +1,266 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import FadeIn from "@/components/ui/FadeIn.astro";
+import LiveChart from "@/components/ui/LiveChart.astro";
+import SponsorLogo from "@/components/content/SponsorLogo.astro";
+import { client } from "@/lib/sanity";
+import { getStats, isPublished } from "@/lib/content";
+
+async function fetchChartData() {
+  try {
+    const res = await fetch(
+      "https://query1.finance.yahoo.com/v8/finance/chart/SPY?range=1d&interval=1m",
+      { headers: { "User-Agent": "Mozilla/5.0" } },
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    const result = json?.chart?.result?.[0];
+    if (!result?.timestamp || !result?.indicators?.quote?.[0]) return [];
+    const timestamps = result.timestamp as number[];
+    const quotes = result.indicators.quote[0];
+    const startIndex = Math.max(0, timestamps.length - 60);
+    const data: { open: number; high: number; low: number; close: number }[] = [];
+    for (let i = startIndex; i < timestamps.length; i++) {
+      const o = quotes.open?.[i], h = quotes.high?.[i], l = quotes.low?.[i], c = quotes.close?.[i];
+      if (o != null && h != null && l != null && c != null) data.push({ open: o, high: h, low: l, close: c });
+    }
+    return data;
+  } catch {
+    return [];
+  }
+}
+
+const [stats, allEvents, allSponsors, allProgrammes, chartData] = await Promise.all([
+  getStats(),
+  client.fetch<Array<{
+    title: string;
+    date?: string;
+    category?: string;
+    publishDate?: string;
+    expiryDate?: string;
+  }>>(`*[_type == "event"]{ title, date, category, publishDate, expiryDate }`).catch(() => []),
+  client.fetch<Array<{
+    name: string;
+    logo?: { asset?: { url?: string } };
+    description?: string;
+  }>>(`*[_type == "sponsor"]{ name, logo{ asset->{ url } }, description }`).catch(() => []),
+  client.fetch<Array<{
+    title: string;
+    slug: { current: string };
+    description?: string;
+  }>>(`*[_type == "programme"] | order(sortOrder asc){ title, slug, description }`).catch(() => []),
+  fetchChartData(),
+]);
+
+const upcomingEvents = allEvents
+  .filter((e) => isPublished(e.publishDate, e.expiryDate, e.date))
+  .map((e) => ({ title: e.title, date: e.date || "", category: e.category || "" }))
+  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  .slice(0, 4);
+
+const sponsors = allSponsors.map((s) => ({
+  name: s.name,
+  logo: s.logo?.asset?.url || "",
+  description: s.description,
+}));
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "ICATS - Imperial College Algorithmic Trading Society",
+  alternateName: "ICATS",
+  url: "https://algosoc.com",
+  description: "Imperial College London's premier society for algorithmic trading, quantitative finance, and market technology.",
+  parentOrganization: {
+    "@type": "CollegeOrUniversity",
+    name: "Imperial College London",
+    url: "https://www.imperial.ac.uk",
+  },
+  memberOf: {
+    "@type": "Organization",
+    name: "Imperial College Union",
+    url: "https://www.imperialcollegeunion.org",
+  },
+};
+---
+
+<BaseLayout canonical="https://algosoc.com/">
+  <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
+
+  <!-- Hero -->
+  <section
+    class="text-white noise-overlay relative"
+    style="background: linear-gradient(135deg, var(--color-brand-navy) 0%, var(--color-brand-dark-slate) 50%, var(--color-brand-navy) 100%)"
+  >
+    <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+      <div class="max-w-3xl">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+          Imperial College&apos;s Premier Society for{" "}
+          <span class="text-brand-gold">Aspiring Traders</span>
+        </h1>
+        <p class="mt-6 text-lg text-gray-300 leading-relaxed max-w-2xl">
+          Building the next generation of quantitative traders, researchers,
+          and technologists through education, competitions, and real-world
+          experience.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a
+            href="/join"
+            class="px-6 py-3 text-sm font-semibold bg-brand-gold text-brand-navy rounded-lg hover:bg-amber-400 transition-colors btn-glow"
+          >
+            Join ICATS
+          </a>
+          <a
+            href="/programmes"
+            class="px-6 py-3 text-sm font-semibold border border-white/30 text-white rounded-lg hover:bg-white/10 transition-colors"
+          >
+            Explore Programmes
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-8">
+        {[
+          { value: stats.members, label: "Members" },
+          { value: stats.offers, label: "Offers Secured" },
+          { value: stats.eventsHosted, label: "Events Hosted" },
+          { value: stats.partners, label: "Industry Partners" },
+        ].map((s) => (
+          <div class="text-center">
+            <div class="text-3xl sm:text-4xl font-bold text-brand-gold">{s.value}</div>
+            <div class="text-sm text-gray-400 mt-1">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <LiveChart initialData={chartData} />
+  </section>
+
+  <!-- Programmes -->
+  <FadeIn>
+    <section class="py-16 sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-brand-navy dark:text-white">
+          Our Programmes
+        </h2>
+        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl">
+          From introductory courses to competitive trading, we offer something
+          for every level of experience.
+        </p>
+        {allProgrammes.length > 0 && (
+          <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {allProgrammes.map((p) => (
+              <a
+                href={`/programmes/${p.slug.current}`}
+                class="group block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:shadow-lg hover:border-brand-gold/30 transition-all"
+              >
+                <h3 class="text-lg font-semibold text-brand-navy dark:text-white group-hover:text-brand-gold transition-colors">
+                  {p.title}
+                </h3>
+                {p.description && (
+                  <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{p.description}</p>
+                )}
+                <span class="inline-block mt-4 text-sm font-medium text-brand-gold">
+                  Learn more &rarr;
+                </span>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  </FadeIn>
+
+  <!-- Events Preview -->
+  <FadeIn>
+    <section class="py-16 sm:py-20 bg-brand-light dark:bg-gray-900/50">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex items-end justify-between mb-8">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-brand-navy dark:text-white">
+              Upcoming Events
+            </h2>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">
+              What&apos;s coming up this term.
+            </p>
+          </div>
+          <a href="/events" class="text-sm font-medium text-brand-gold hover:underline">
+            View all &rarr;
+          </a>
+        </div>
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+          {upcomingEvents.map((e) => {
+            const d = new Date(e.date);
+            const month = d.toLocaleString("en-GB", { month: "short" }).toUpperCase();
+            const day = d.getDate();
+            return (
+              <div class="flex items-center gap-4 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                <div class="flex-shrink-0 w-14 text-center">
+                  <div class="text-xs font-medium text-brand-gold">{month}</div>
+                  <div class="text-xl font-bold text-brand-navy dark:text-white">{day}</div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{e.title}</div>
+                  <span class="inline-block mt-0.5 px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                    {e.category}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  </FadeIn>
+
+  <!-- Sponsors -->
+  <FadeIn>
+    <section class="py-16 sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-2xl sm:text-3xl font-bold text-brand-navy dark:text-white">
+          Our Partners
+        </h2>
+        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+          Supported by leading firms in quantitative finance and trading.
+        </p>
+        <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 max-w-5xl mx-auto">
+          {sponsors.map((s) => (
+            <SponsorLogo {...s} variant="dark" />
+          ))}
+        </div>
+        <div class="mt-8">
+          <a href="/sponsors" class="text-sm font-medium text-brand-gold hover:underline">
+            View all sponsors &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+  </FadeIn>
+
+  <!-- Newsletter CTA -->
+  <section
+    class="py-16 sm:py-20 text-white noise-overlay relative"
+    style="background: linear-gradient(135deg, var(--color-brand-navy) 0%, var(--color-brand-dark-slate) 50%, var(--color-brand-navy) 100%)"
+  >
+    <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold">Stay in the Loop</h2>
+      <p class="mt-2 text-gray-400 max-w-md mx-auto">
+        Get weekly market recaps, event updates, and quant insights straight
+        to your inbox.
+      </p>
+      <form class="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input
+          type="email"
+          placeholder="your.name@imperial.ac.uk"
+          class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+        />
+        <button
+          type="submit"
+          class="px-6 py-3 bg-brand-gold text-brand-navy font-semibold rounded-lg hover:bg-amber-400 transition-colors"
+        >
+          Subscribe
+        </button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>

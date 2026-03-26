@@ -1,0 +1,111 @@
+---
+interface Props {
+  initialData: Array<{ open: number; high: number; low: number; close: number }>;
+}
+
+const { initialData } = Astro.props;
+---
+
+<canvas
+  id="live-chart"
+  data-candles={JSON.stringify(initialData)}
+  style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.30;pointer-events:none;z-index:2"
+></canvas>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const canvas = document.getElementById("live-chart") as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const data: Array<{ open: number; high: number; low: number; close: number }> =
+      JSON.parse(canvas.dataset.candles || "[]");
+
+    if (data.length === 0) return;
+
+    const ctx = canvas.getContext("2d")!;
+    let animFrame = 0;
+
+    // Walk up to the containing section for dimensions
+    let section: HTMLElement | null = canvas;
+    while (section && section.tagName !== "SECTION") {
+      section = section.parentElement;
+    }
+
+    function resize() {
+      if (!section) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = section.clientWidth;
+      const h = section.clientHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+
+    document.addEventListener("astro:before-swap", () => {
+      cancelAnimationFrame(animFrame);
+      window.removeEventListener("resize", resize);
+    }, { once: true });
+
+    const green = "#00E676";
+    const red = "#FF5252";
+    const candleGap = 22;
+    const candleWidth = 10;
+    const patternWidth = data.length * candleGap;
+
+    const allPrices = data.flatMap((c) => [c.high, c.low]);
+    const minPrice = Math.min(...allPrices);
+    const maxPrice = Math.max(...allPrices);
+    const range = maxPrice - minPrice || 1;
+    const padding = 10;
+
+    const speed = 0.3;
+    let offset = 0;
+
+    function draw() {
+      const width = canvas.width / (window.devicePixelRatio || 1);
+      const height = canvas.height / (window.devicePixelRatio || 1);
+
+      const toY = (price: number) =>
+        height - ((price - minPrice) / range) * (height - padding * 2) - padding;
+
+      ctx.clearRect(0, 0, width, height);
+
+      for (let rep = 0; rep < 3; rep++) {
+        const baseX = rep * patternWidth - offset;
+
+        for (let i = 0; i < data.length; i++) {
+          const candle = data[i];
+          const x = baseX + i * candleGap;
+
+          if (x + candleWidth < 0 || x > width) continue;
+
+          const isUp = candle.close >= candle.open;
+          ctx.strokeStyle = isUp ? green : red;
+          ctx.fillStyle = isUp ? green : red;
+          ctx.lineWidth = 1.5;
+
+          const wickX = x + candleWidth / 2;
+          ctx.beginPath();
+          ctx.moveTo(wickX, toY(candle.high));
+          ctx.lineTo(wickX, toY(candle.low));
+          ctx.stroke();
+
+          const bodyTop = toY(Math.max(candle.open, candle.close));
+          const bodyBottom = toY(Math.min(candle.open, candle.close));
+          const bodyHeight = Math.max(bodyBottom - bodyTop, 1.5);
+          ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+        }
+      }
+
+      offset += speed;
+      if (offset >= patternWidth) offset -= patternWidth;
+
+      animFrame = requestAnimationFrame(draw);
+    }
+
+    animFrame = requestAnimationFrame(draw);
+  });
+</script>

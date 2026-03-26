@@ -1,0 +1,78 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import MemberCard from "@/components/content/MemberCard.astro";
+import { client } from "@/lib/sanity";
+
+type Member = {
+  name: string;
+  role: string;
+  photo: string;
+  division?: string;
+  bio?: string;
+  linkedIn?: string;
+};
+
+const cmsMembers = await client.fetch<Array<{
+  name: string;
+  role: string;
+  division: string;
+  bio?: string;
+  photoUrl?: string;
+  linkedIn?: string;
+  sortOrder?: number;
+}>>(`*[_type == "teamMember"] | order(sortOrder asc)`) || [];
+
+const members: Member[] = cmsMembers.map((m) => ({
+  name: m.name,
+  role: m.role,
+  division: m.division,
+  photo: m.photoUrl || "",
+  bio: m.bio || undefined,
+  linkedIn: m.linkedIn || undefined,
+}));
+
+const committee = members.filter((m) => m.division !== "icwit");
+const witCommittee = members.filter((m) => m.division === "icwit");
+---
+
+<BaseLayout
+  title="Committee"
+  description="Meet the ICATS committee: the team running Imperial College's algorithmic trading society across trading, technology, events, marketing, and operations."
+  canonical="/about/committee"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+      Our Committees
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      The ICATS &amp; ICWiT committees driving our programmes, events, and
+      partnerships.
+    </p>
+
+    <h2 class="text-xl font-bold text-brand-navy dark:text-white mt-12 mb-6">
+      ICATS Leadership
+    </h2>
+    {committee.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {committee.map((m) => (
+          <MemberCard {...m} />
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-500 dark:text-gray-400">Committee members will be announced soon.</p>
+    )}
+
+    <h2 class="text-xl font-bold text-brand-navy dark:text-white mt-16 mb-6">
+      ICWiT Leadership
+    </h2>
+    {witCommittee.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {witCommittee.map((m) => (
+          <MemberCard {...m} />
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-500 dark:text-gray-400">ICWiT committee members will be announced soon.</p>
+    )}
+  </div>
+</BaseLayout>

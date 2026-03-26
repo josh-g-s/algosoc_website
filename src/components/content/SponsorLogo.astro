@@ -1,0 +1,49 @@
+---
+interface Props {
+  name: string;
+  logo: string;
+  description?: string;
+  websiteUrl?: string;
+  /** Use "light" on dark backgrounds (white card), "dark" on light backgrounds */
+  variant?: "light" | "dark";
+}
+
+const { name, logo, description, websiteUrl, variant = "light" } = Astro.props;
+const Tag = websiteUrl ? "a" : "div";
+const linkProps = websiteUrl ? { href: websiteUrl, target: "_blank", rel: "noopener noreferrer" } : {};
+
+const cardClass = variant === "light"
+  ? "bg-white border border-gray-200"
+  : "bg-gray-50 dark:bg-white rounded-lg";
+---
+
+<Tag {...linkProps} class="sponsor-card relative group">
+  <div class={`flex items-center justify-center h-20 rounded-lg px-4 transition-shadow hover:shadow-md ${cardClass}`}>
+    {logo ? (
+      <img
+        src={logo}
+        alt={name}
+        loading="lazy"
+        class="max-h-12 max-w-[140px] w-auto h-auto object-contain"
+      />
+    ) : (
+      <span class="text-sm font-semibold text-gray-500">{name}</span>
+    )}
+  </div>
+  <div class="sponsor-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-brand-navy text-white text-xs rounded-lg px-4 py-2.5 shadow-lg pointer-events-none z-10 w-48 text-center">
+    <span class="font-semibold">{name}</span>
+    {description && (
+      <p class="mt-1 text-gray-300 leading-relaxed">{description}</p>
+    )}
+    <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-brand-navy" />
+  </div>
+</Tag>
+
+<style>
+  .sponsor-tooltip {
+    display: none;
+  }
+  .sponsor-card:hover .sponsor-tooltip {
+    display: block;
+  }
+</style>

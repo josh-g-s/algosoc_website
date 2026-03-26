@@ -1,0 +1,124 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import SponsorLogo from "@/components/content/SponsorLogo.astro";
+import { client } from "@/lib/sanity";
+
+type Sponsor = {
+  name: string;
+  logo: string;
+  description?: string;
+  websiteUrl?: string;
+};
+
+const allSponsors = await client.fetch<Array<{
+  name: string;
+  tier: string;
+  logo?: { asset?: { url?: string } };
+  description?: string;
+  websiteUrl?: string;
+}>>(`*[_type == "sponsor"]{ name, tier, logo{ asset->{ url } }, description, websiteUrl }`);
+
+const byTier = (tier: string): Sponsor[] =>
+  allSponsors
+    .filter((s) => s.tier === tier)
+    .map((s) => ({ name: s.name, logo: s.logo?.asset?.url || "", description: s.description, websiteUrl: s.websiteUrl }));
+
+const platinum = byTier("platinum");
+const gold = byTier("gold");
+const silver = byTier("silver");
+const bronze = byTier("bronze");
+const icwitAlpha = byTier("icwit-alpha");
+const icwitBeta = byTier("icwit-beta");
+const icwitGamma = byTier("icwit-gamma");
+
+type TierConfig = {
+  tier: string;
+  label: string;
+  amount: string;
+  sponsors: Sponsor[];
+};
+
+const allTiers: { heading: string; tiers: TierConfig[] }[] = [
+  {
+    heading: "ICATS Sponsors",
+    tiers: [
+      { tier: "Platinum", label: "Exclusive naming rights on a flagship event, priority CV book access, dedicated newsletter feature, and branded presence across all channels.", amount: "Top tier", sponsors: platinum },
+      { tier: "Gold", label: "Logo on all key materials, two sponsored events, CV book access, and featured newsletter post.", amount: "Mid tier", sponsors: gold },
+      { tier: "Silver", label: "Logo on website and social media, one sponsored event, and newsletter mention.", amount: "Supporting tier", sponsors: silver },
+      { tier: "Bronze", label: "Logo on website and event programmes.", amount: "Entry tier", sponsors: bronze },
+    ],
+  },
+  {
+    heading: "ICWiT Sponsors (2025-26)",
+    tiers: [
+      { tier: "Alpha", label: "Exclusive naming rights, priority CV book access, dedicated newsletter features, and branded presence across all channels.", amount: "2025-26", sponsors: icwitAlpha },
+      { tier: "Beta", label: "Logo on all key materials, sponsored events, CV book access, and featured newsletter posts.", amount: "2025-26", sponsors: icwitBeta },
+      { tier: "Gamma", label: "Logo on website and social media, sponsored event, and newsletter mention.", amount: "2025-26", sponsors: icwitGamma },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Sponsors"
+  description="ICATS industry partners and sponsors from leading quantitative finance and trading firms. Learn about sponsorship opportunities."
+  canonical="/sponsors"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+      Our Sponsors
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl">
+      ICATS is proudly supported by leading firms in quantitative finance,
+      algorithmic trading, and technology.
+    </p>
+
+    {allTiers.map((group) => (
+      <Fragment>
+        <h2 class="text-xl font-bold text-brand-navy dark:text-white mt-12 mb-6">
+          {group.heading}
+        </h2>
+        <div class="space-y-6">
+          {group.tiers.map((t) =>
+            t.sponsors.length > 0 && (
+              <div class="rounded-xl p-6 sm:p-8 bg-brand-navy text-white">
+                <div class="flex items-center gap-3 mb-6">
+                  <span class="inline-block px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider bg-brand-gold text-brand-navy">
+                    {t.tier}
+                  </span>
+                  <span class="text-sm text-gray-300">
+                    {t.amount}
+                  </span>
+                </div>
+                <p class="text-sm mb-6 text-gray-300">
+                  {t.label}
+                </p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {t.sponsors.map((s) => (
+                    <SponsorLogo {...s} variant="light" />
+                  ))}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </Fragment>
+    ))}
+
+    <div class="mt-16 bg-brand-light dark:bg-gray-900/50 rounded-xl p-8 text-center">
+      <h2 class="text-xl font-bold text-brand-navy dark:text-white">
+        Interested in Sponsoring ICATS?
+      </h2>
+      <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+        Partner with London&apos;s largest university algorithmic trading
+        society. Reach 1,000+ ambitious students in STEM.
+      </p>
+      <a
+        href="mailto:algo.trade@imperial.ac.uk"
+        class="inline-block mt-4 px-6 py-3 text-sm font-semibold bg-brand-navy text-white rounded-lg hover:bg-brand-dark transition-colors"
+      >
+        Get in Touch
+      </a>
+    </div>
+  </div>
+</BaseLayout>

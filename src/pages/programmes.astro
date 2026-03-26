@@ -1,0 +1,73 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
+import { toHTML } from "@portabletext/to-html";
+
+const programmes = await client.fetch<Array<{
+  title: string;
+  slug: { current: string };
+  description?: string;
+  body?: any[];
+  stats?: Array<{ value: string; label: string }>;
+}>>(`*[_type == "programme"] | order(sortOrder asc){ title, slug, description, body, stats }`) || [];
+---
+
+<BaseLayout
+  title="Programmes"
+  description="ICATS programmes: Algothon, AlgoCourse, Queen's Tower Capital, and more. Education and hands-on experience in algorithmic trading and quantitative finance."
+  canonical="/programmes"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+      Programmes
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl">
+      Educational initiatives, competitions, and hands-on trading experience
+      for every level.
+    </p>
+
+    {programmes.length === 0 ? (
+      <p class="mt-10 text-gray-500 dark:text-gray-400">Programmes will be announced soon.</p>
+    ) : (
+      <div class="mt-10 space-y-8">
+        {programmes.map((p) => (
+          <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 sm:p-8">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div class="flex-1">
+                <h2 class="text-xl font-bold text-brand-navy dark:text-white">
+                  {p.title}
+                </h2>
+                {p.description && (
+                  <p class="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {p.description}
+                  </p>
+                )}
+              </div>
+              {p.stats && p.stats.length > 0 && (
+                <div class="flex gap-6">
+                  {p.stats.map((s) => (
+                    <div class="text-center">
+                      <div class="text-2xl font-bold text-brand-gold">
+                        {s.value}
+                      </div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            {p.body && (
+              <div class="mt-4 text-sm text-gray-600 dark:text-gray-400 prose prose-sm dark:prose-invert max-w-none" set:html={toHTML(p.body)} />
+            )}
+            <a
+              href={`/programmes/${p.slug.current}`}
+              class="inline-block mt-4 text-sm font-medium text-brand-gold hover:underline"
+            >
+              Learn more &rarr;
+            </a>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>
