@@ -45,7 +45,7 @@ jobs:
             --overwrite
 
       - name: Purge CDN (if configured)
-        if: secrets.AZURE_CDN_ENDPOINT != ''
+        if: ${{ secrets.AZURE_CDN_ENDPOINT != '' }}
         run: |
           az cdn endpoint purge \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
