@@ -1,0 +1,55 @@
+name: Build & Deploy
+
+on:
+  workflow_dispatch: # Manual trigger
+  repository_dispatch: # Webhook trigger from Sanity
+    types: [sanity-publish]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - run: npm ci
+      - run: npm run build
+        env:
+          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
+          SANITY_DATASET: ${{ secrets.SANITY_DATASET }}
+
+      # --- Deploy to Azure Blob Storage ---
+      # Will migrate to AWS S3 in future.
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_SPN_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_SPN_SECRET }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Upload to Azure Blob Storage
+        run: |
+          az storage blob upload-batch \
+            --source dist/ \
+            --destination '$web' \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \
+            --overwrite
+
+      - name: Purge CDN (if configured)
+        if: secrets.AZURE_CDN_ENDPOINT != ''
+        run: |
+          az cdn endpoint purge \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --profile-name ${{ secrets.AZURE_CDN_PROFILE }} \
+            --name ${{ secrets.AZURE_CDN_ENDPOINT }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \
+            --content-paths "/*"
