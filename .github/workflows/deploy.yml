@@ -27,9 +27,7 @@ jobs:
 
       - uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_SPN_CLIENT_ID }}
-          client-secret: ${{ secrets.AZURE_SPN_SECRET }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Upload to Azure Blob Storage
         run: |
