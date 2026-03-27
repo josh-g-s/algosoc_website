@@ -1,6 +1,8 @@
 name: Build & Deploy
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch: # Manual trigger
   repository_dispatch: # Webhook trigger from Sanity
     types: [sanity-publish]
