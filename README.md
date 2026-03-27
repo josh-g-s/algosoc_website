@@ -2,6 +2,8 @@
 
 Astro + Sanity CMS rebuild of the ICATS website. Static output hosted on S3 + CloudFront, with automatic rebuilds triggered by Sanity content changes.
 
+[![Build & Deploy](https://github.com/joshthecoder-hub/icats_website/actions/workflows/deploy.yml/badge.svg)](https://github.com/joshthecoder-hub/icats_website/actions/workflows/deploy.yml)
+
 ## Tech Stack
 
 | Layer | Technology |
