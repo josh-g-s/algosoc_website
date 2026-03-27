@@ -40,8 +40,8 @@ Source of truth for colours and typography. CSS custom properties are defined in
 
 | Role | Font | CSS Variable | Applies to |
 |------|------|-------------|------------|
-| Display | Outfit (600, 700, 800) | `--font-display` | `h1`, `h2` |
-| Body | Geist Sans | `--font-sans` | Everything else |
-| Code | Geist Mono | `--font-mono` | Code snippets, data |
+| Display | Archivo (600, 700, 800) | `--font-display` | `h1`, `h2` |
+| Body | Albert Sans (300-700) | `--font-sans` | Everything else |
+| Code | System monospace | `--font-mono` | Code snippets, data |
 
-Outfit is loaded via Google Fonts in `BaseLayout.astro`. Geist Sans and Geist Mono are system-installed fallbacks.
+Both are loaded via Google Fonts in `BaseLayout.astro`.

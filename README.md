@@ -9,7 +9,7 @@ Astro + Sanity CMS rebuild of the ICATS website. Static output hosted on S3 + Cl
 | Framework | Astro 6 (static output), TypeScript strict |
 | Styling | Tailwind CSS 4 |
 | CMS | Sanity (hosted Studio at icats.sanity.studio) |
-| Fonts | Outfit (headings), Geist Sans (body), Geist Mono (code) |
+| Fonts | Archivo (headings), Albert Sans (body) |
 | Hosting | AWS S3 + CloudFront (static files) |
 | DNS | Route 53 |
 | CI/CD | GitHub Actions (build + deploy on content change) |

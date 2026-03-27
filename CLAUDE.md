@@ -9,7 +9,7 @@ Astro 6 static site for the Imperial College Algorithmic Trading Society. Must b
 | Framework | Astro 6 (static output), TypeScript |
 | Styling | Tailwind CSS 4 (PostCSS transformer) |
 | CMS | Sanity (hosted, project `bd3zp068`, dataset `production`) |
-| Fonts | Outfit (headings), Geist Sans (body), Geist Mono (code) |
+| Fonts | Archivo (headings), Albert Sans (body) |
 | Hosting | AWS Amplify (from `main` branch) |
 | Live chart | Canvas-based candlestick pulling from Yahoo Finance API |
 
