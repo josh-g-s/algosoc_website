@@ -14,6 +14,7 @@ node_modules/
 
 # sanity generated files
 .sanity/
+scripts/sanity/sanity-export.tar.gz
 
 # logs
 npm-debug.log*
