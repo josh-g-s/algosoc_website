@@ -85,20 +85,21 @@ const organizationJsonLd = {
 ---
 
 <BaseLayout canonical="https://algosoc.com/">
+  <div class="bg-brand-primary">
   <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
 
   <!-- Hero -->
   <section
-    class="text-white noise-overlay relative"
-    style="background: linear-gradient(135deg, var(--color-brand-navy) 0%, var(--color-brand-dark-slate) 50%, var(--color-brand-navy) 100%)"
+    class="text-brand-foreground noise-overlay relative"
+    style="background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-slate) 50%, var(--color-brand-primary) 100%)"
   >
     <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
       <div class="max-w-3xl">
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
           Imperial College&apos;s Premier Society for{" "}
-          <span class="text-brand-gold">Aspiring Traders</span>
+          <span class="text-brand-accent">Aspiring Traders</span>
         </h1>
-        <p class="mt-6 text-lg text-gray-300 leading-relaxed max-w-2xl">
+        <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-2xl">
           Building the next generation of quantitative traders, researchers,
           and technologists through education, competitions, and real-world
           experience.
@@ -106,13 +107,13 @@ const organizationJsonLd = {
         <div class="mt-8 flex flex-wrap gap-4">
           <a
             href="/join"
-            class="px-6 py-3 text-sm font-semibold bg-brand-gold text-brand-navy rounded-lg hover:bg-amber-400 transition-colors btn-glow"
+            class="px-6 py-3 text-sm font-semibold bg-brand-accent text-brand-primary rounded-lg hover:bg-amber-400 transition-colors btn-glow"
           >
             Join ICATS
           </a>
           <a
             href="/programmes"
-            class="px-6 py-3 text-sm font-semibold border border-white/30 text-white rounded-lg hover:bg-white/10 transition-colors"
+            class="px-6 py-3 text-sm font-semibold border border-white/30 text-brand-foreground rounded-lg hover:bg-white/10 transition-colors"
           >
             Explore Programmes
           </a>
@@ -127,8 +128,8 @@ const organizationJsonLd = {
           { value: stats.partners, label: "Industry Partners" },
         ].map((s) => (
           <div class="text-center">
-            <div class="text-3xl sm:text-4xl font-bold text-brand-gold">{s.value}</div>
-            <div class="text-sm text-gray-400 mt-1">{s.label}</div>
+            <div class="text-3xl sm:text-4xl font-bold text-brand-accent">{s.value}</div>
+            <div class="text-sm text-brand-foreground-muted mt-1">{s.label}</div>
           </div>
         ))}
       </div>
@@ -140,10 +141,10 @@ const organizationJsonLd = {
   <FadeIn>
     <section class="py-16 sm:py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl sm:text-3xl font-bold text-brand-navy dark:text-white">
+        <h2 class="text-2xl sm:text-3xl font-bold text-brand-foreground">
           Our Programmes
         </h2>
-        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl">
+        <p class="mt-2 text-brand-foreground-muted max-w-xl">
           From introductory courses to competitive trading, we offer something
           for every level of experience.
         </p>
@@ -152,15 +153,15 @@ const organizationJsonLd = {
             {allProgrammes.map((p) => (
               <a
                 href={`/programmes/${p.slug.current}`}
-                class="group block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:shadow-lg hover:border-brand-gold/30 transition-all"
+                class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:shadow-lg hover:border-brand-accent/30 transition-all"
               >
-                <h3 class="text-lg font-semibold text-brand-navy dark:text-white group-hover:text-brand-gold transition-colors">
+                <h3 class="text-lg font-semibold text-brand-foreground group-hover:text-brand-accent transition-colors">
                   {p.title}
                 </h3>
                 {p.description && (
-                  <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{p.description}</p>
+                  <p class="mt-2 text-sm text-brand-foreground-muted leading-relaxed">{p.description}</p>
                 )}
-                <span class="inline-block mt-4 text-sm font-medium text-brand-gold">
+                <span class="inline-block mt-4 text-sm font-medium text-brand-accent">
                   Learn more &rarr;
                 </span>
               </a>
@@ -173,35 +174,35 @@ const organizationJsonLd = {
 
   <!-- Events Preview -->
   <FadeIn>
-    <section class="py-16 sm:py-20 bg-brand-light dark:bg-gray-900/50">
+    <section class="py-16 sm:py-20 bg-white/5">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex items-end justify-between mb-8">
           <div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-brand-navy dark:text-white">
+            <h2 class="text-2xl sm:text-3xl font-bold text-brand-foreground">
               Upcoming Events
             </h2>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">
+            <p class="mt-2 text-brand-foreground-muted">
               What&apos;s coming up this term.
             </p>
           </div>
-          <a href="/events" class="text-sm font-medium text-brand-gold hover:underline">
+          <a href="/events" class="text-sm font-medium text-brand-accent hover:underline">
             View all &rarr;
           </a>
         </div>
-        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+        <div class="bg-white/5 rounded-xl border border-white/10 p-6">
           {upcomingEvents.map((e) => {
             const d = new Date(e.date);
             const month = d.toLocaleString("en-GB", { month: "short" }).toUpperCase();
             const day = d.getDate();
             return (
-              <div class="flex items-center gap-4 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
+              <div class="flex items-center gap-4 py-3 border-b border-white/10 last:border-0">
                 <div class="flex-shrink-0 w-14 text-center">
-                  <div class="text-xs font-medium text-brand-gold">{month}</div>
-                  <div class="text-xl font-bold text-brand-navy dark:text-white">{day}</div>
+                  <div class="text-xs font-medium text-brand-accent">{month}</div>
+                  <div class="text-xl font-bold text-brand-foreground">{day}</div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{e.title}</div>
-                  <span class="inline-block mt-0.5 px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                  <div class="text-sm font-medium text-brand-foreground truncate">{e.title}</div>
+                  <span class="inline-block mt-0.5 px-2 py-0.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
                     {e.category}
                   </span>
                 </div>
@@ -217,10 +218,10 @@ const organizationJsonLd = {
   <FadeIn>
     <section class="py-16 sm:py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-2xl sm:text-3xl font-bold text-brand-navy dark:text-white">
+        <h2 class="text-2xl sm:text-3xl font-bold text-brand-foreground">
           Our Partners
         </h2>
-        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+        <p class="mt-2 text-brand-foreground-muted max-w-xl mx-auto">
           Supported by leading firms in quantitative finance and trading.
         </p>
         <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 max-w-5xl mx-auto">
@@ -229,7 +230,7 @@ const organizationJsonLd = {
           ))}
         </div>
         <div class="mt-8">
-          <a href="/sponsors" class="text-sm font-medium text-brand-gold hover:underline">
+          <a href="/sponsors" class="text-sm font-medium text-brand-accent hover:underline">
             View all sponsors &rarr;
           </a>
         </div>
@@ -239,12 +240,12 @@ const organizationJsonLd = {
 
   <!-- Newsletter CTA -->
   <section
-    class="py-16 sm:py-20 text-white noise-overlay relative"
-    style="background: linear-gradient(135deg, var(--color-brand-navy) 0%, var(--color-brand-dark-slate) 50%, var(--color-brand-navy) 100%)"
+    class="py-16 sm:py-20 text-brand-foreground noise-overlay relative"
+    style="background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-slate) 50%, var(--color-brand-primary) 100%)"
   >
     <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-2xl sm:text-3xl font-bold">Stay in the Loop</h2>
-      <p class="mt-2 text-gray-400 max-w-md mx-auto">
+      <p class="mt-2 text-brand-foreground-muted max-w-md mx-auto">
         Get weekly market recaps, event updates, and quant insights straight
         to your inbox.
       </p>
@@ -252,15 +253,16 @@ const organizationJsonLd = {
         <input
           type="email"
           placeholder="your.name@imperial.ac.uk"
-          class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+          class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-brand-foreground placeholder-brand-foreground-muted focus:outline-none focus:ring-2 focus:ring-brand-accent"
         />
         <button
           type="submit"
-          class="px-6 py-3 bg-brand-gold text-brand-navy font-semibold rounded-lg hover:bg-amber-400 transition-colors"
+          class="px-6 py-3 bg-brand-accent text-brand-primary font-semibold rounded-lg hover:bg-amber-400 transition-colors"
         >
           Subscribe
         </button>
       </form>
     </div>
   </section>
+  </div>
 </BaseLayout>

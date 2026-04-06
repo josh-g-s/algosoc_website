@@ -24,66 +24,68 @@ const events = await client.fetch<Array<{
   description="ICWiT (Imperial College Women in Trading): promoting gender diversity in quantitative finance through events, mentoring, and industry partnerships."
   canonical="/wit"
 >
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
-      Imperial College Women in Trading
-    </h1>
-    <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-3xl leading-relaxed">
-      ICWiT is a sub-society within ICATS dedicated to empowering women in
-      quantitative finance, trading, and technology. With {stats.witMembers}{" "}
-      members and {stats.witEvents} events, we provide a supportive
-      community, mentorship, and career opportunities.
-    </p>
-    <a
-      href="https://www.instagram.com/ic.wit/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="inline-flex items-center gap-2 mt-4 text-sm font-medium text-brand-navy dark:text-white hover:text-brand-gold transition-colors"
-    >
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-      @ic.wit
-    </a>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
+        Imperial College Women in Trading
+      </h1>
+      <p class="mt-4 text-lg text-brand-foreground-muted max-w-3xl leading-relaxed">
+        ICWiT is a sub-society within ICATS dedicated to empowering women in
+        quantitative finance, trading, and technology. With {stats.witMembers}{" "}
+        members and {stats.witEvents} events, we provide a supportive
+        community, mentorship, and career opportunities.
+      </p>
+      <a
+        href="https://www.instagram.com/ic.wit/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 mt-4 text-sm font-medium text-brand-foreground hover:text-brand-accent transition-colors"
+      >
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        @ic.wit
+      </a>
 
-    <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
-      <div class="bg-brand-green/10 border border-brand-green/20 rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-brand-navy dark:text-white">{stats.witMembers}</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Members</div>
-      </div>
-      <div class="bg-brand-green/10 border border-brand-green/20 rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-brand-navy dark:text-white">{stats.witEvents}</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Campus Events</div>
-      </div>
-    </div>
-
-    <h2 class="text-xl font-bold text-brand-navy dark:text-white mt-16 mb-6">
-      Our Events
-    </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {events.map((e) => (
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 hover:shadow-md transition-shadow">
-          <h3 class="font-semibold text-brand-navy dark:text-white">{e.title}</h3>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{e.description}</p>
+      <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="bg-brand-highlight/10 border border-brand-highlight/20 rounded-xl p-6 text-center">
+          <div class="text-3xl font-bold text-brand-foreground">{stats.witMembers}</div>
+          <div class="text-sm text-brand-foreground-muted mt-1">Members</div>
         </div>
-      ))}
-    </div>
+        <div class="bg-brand-highlight/10 border border-brand-highlight/20 rounded-xl p-6 text-center">
+          <div class="text-3xl font-bold text-brand-foreground">{stats.witEvents}</div>
+          <div class="text-sm text-brand-foreground-muted mt-1">Campus Events</div>
+        </div>
+      </div>
 
-    <h2 class="text-xl font-bold text-brand-navy dark:text-white mt-16 mb-6">
-      ICWiT Leadership
-    </h2>
-    {witMembers.length > 0 ? (
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {witMembers.map((m) => (
-          <MemberCard
-            name={m.name}
-            role={m.role}
-            photo={m.photoUrl || ""}
-            bio={m.bio || undefined}
-            linkedIn={m.linkedIn || undefined}
-          />
+      <h2 class="text-xl font-bold text-brand-foreground mt-16 mb-6">
+        Our Events
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {events.map((e) => (
+          <div class="bg-white/5 border border-white/10 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <h3 class="font-semibold text-brand-foreground">{e.title}</h3>
+            <p class="mt-1 text-sm text-brand-foreground-muted">{e.description}</p>
+          </div>
         ))}
       </div>
-    ) : (
-      <p class="text-gray-500 dark:text-gray-400">ICWiT committee members will be announced soon.</p>
-    )}
+
+      <h2 class="text-xl font-bold text-brand-foreground mt-16 mb-6">
+        ICWiT Leadership
+      </h2>
+      {witMembers.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {witMembers.map((m) => (
+            <MemberCard
+              name={m.name}
+              role={m.role}
+              photo={m.photoUrl || ""}
+              bio={m.bio || undefined}
+              linkedIn={m.linkedIn || undefined}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-brand-foreground-muted">ICWiT committee members will be announced soon.</p>
+      )}
+    </div>
   </div>
 </BaseLayout>

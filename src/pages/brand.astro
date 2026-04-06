@@ -16,10 +16,10 @@ const colourGroups: { title: string; swatches: Swatch[] }[] = [
   {
     title: "Core",
     swatches: [
-      { name: "Navy", hex: "#0F172A", cssVar: "--color-brand-navy", description: "Nav, hero, footer backgrounds, headings" },
-      { name: "Dark Slate", hex: "#1E293B", cssVar: "--color-brand-dark-slate", description: "Gradient endpoints, secondary dark" },
-      { name: "Gold", hex: "#F59E0B", cssVar: "--color-brand-gold", description: "CTAs, awards, premium accents" },
-      { name: "Green", hex: "#10B981", cssVar: "--color-brand-green", description: "Success states, data highlights" },
+      { name: "Primary", hex: "#2B2B2B", cssVar: "--color-brand-primary", description: "Dark backgrounds, heading text on light surfaces" },
+      { name: "Slate", hex: "#1E293B", cssVar: "--color-brand-slate", description: "Gradient endpoints, secondary dark" },
+      { name: "Accent", hex: "#F59E0B", cssVar: "--color-brand-accent", description: "CTAs, awards, premium accents" },
+      { name: "Highlight", hex: "#10B981", cssVar: "--color-brand-highlight", description: "Success states, data highlights" },
     ],
   },
   {
@@ -40,8 +40,10 @@ const colourGroups: { title: string; swatches: Swatch[] }[] = [
   {
     title: "Neutrals",
     swatches: [
-      { name: "Light", hex: "#F8FAFC", cssVar: "--color-brand-light", description: "Section backgrounds" },
-      { name: "Gray", hex: "#64748B", cssVar: "--color-brand-gray", description: "Body text on light backgrounds" },
+      { name: "Surface", hex: "#F8FAFC", cssVar: "--color-brand-surface", description: "Section backgrounds" },
+      { name: "Muted", hex: "#64748B", cssVar: "--color-brand-muted", description: "Body text on light backgrounds" },
+      { name: "Foreground", hex: "#E1E8EF", cssVar: "--color-brand-foreground", description: "Primary text on dark surfaces" },
+      { name: "Foreground Muted", hex: "#9CA3AF", cssVar: "--color-brand-foreground-muted", description: "Muted text on dark surfaces" },
     ],
   },
 ];
@@ -53,39 +55,39 @@ const colourGroups: { title: string; swatches: Swatch[] }[] = [
   canonical="/brand"
 >
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
       ICATS Brand Guidelines
     </h1>
-    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-2xl">
+    <p class="mt-2 text-brand-foreground-muted max-w-2xl">
       Single source of truth for colours, typography, and visual identity
       across all ICATS and ICWiT materials. Defined in
-      <code class="text-sm bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">src/styles/globals.css</code>.
+      <code class="text-sm bg-white/10 px-1.5 py-0.5 rounded">src/styles/globals.css</code>.
     </p>
 
     {/* Colours */}
     <section class="mt-16">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Colours</h2>
+      <h2 class="text-2xl font-bold text-brand-foreground">Colours</h2>
 
       {colourGroups.map((group) => (
         <div class="mt-8">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{group.title}</h3>
+          <h3 class="text-lg font-semibold text-brand-foreground mb-4">{group.title}</h3>
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {group.swatches.map((s) => (
-              <div class="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+              <div class="border border-white/10 rounded-xl overflow-hidden">
                 <div
                   class="h-24 flex items-end p-3"
                   style={`background-color: ${s.hex}`}
                 >
                   <span
-                    class={`text-xs font-mono font-medium ${isLight(s.hex) ? "text-gray-900" : "text-white"}`}
+                    class={`text-xs font-mono font-medium ${isLight(s.hex) ? "text-brand-foreground" : "text-brand-foreground"}`}
                   >
                     {s.hex}
                   </span>
                 </div>
                 <div class="p-3">
-                  <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{s.name}</h4>
-                  <code class="text-xs text-gray-400">{s.cssVar}</code>
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.description}</p>
+                  <h4 class="text-sm font-semibold text-brand-foreground">{s.name}</h4>
+                  <code class="text-xs text-brand-foreground-muted">{s.cssVar}</code>
+                  <p class="text-xs text-brand-foreground-muted mt-0.5">{s.description}</p>
                 </div>
               </div>
             ))}
@@ -96,50 +98,50 @@ const colourGroups: { title: string; swatches: Swatch[] }[] = [
 
     {/* Typography */}
     <section class="mt-16">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Typography</h2>
+      <h2 class="text-2xl font-bold text-brand-foreground">Typography</h2>
 
       <div class="mt-6 space-y-6">
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
           <div class="flex items-baseline justify-between gap-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Display</h3>
-            <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg font-semibold text-brand-foreground">Display</h3>
+            <code class="text-xs bg-white/10 px-2 py-1 rounded text-brand-foreground-muted">
               Archivo
             </code>
           </div>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Headings (h1, h2). Loaded via Google Fonts.</p>
+          <p class="text-sm text-brand-foreground-muted mt-1">Headings (h1, h2). Loaded via Google Fonts.</p>
           <div class="mt-4 text-2xl" style="font-family: var(--font-display)">
             The quick brown fox jumps over the lazy dog
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
           <div class="flex items-baseline justify-between gap-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Sans</h3>
-            <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg font-semibold text-brand-foreground">Sans</h3>
+            <code class="text-xs bg-white/10 px-2 py-1 rounded text-brand-foreground-muted">
               Albert Sans
             </code>
           </div>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Body text and UI elements. Loaded via Google Fonts.</p>
+          <p class="text-sm text-brand-foreground-muted mt-1">Body text and UI elements. Loaded via Google Fonts.</p>
           <div class="mt-4 text-2xl">
             The quick brown fox jumps over the lazy dog
           </div>
-          <div class="mt-2 text-lg text-gray-600 dark:text-gray-400">
+          <div class="mt-2 text-lg text-brand-foreground-muted">
             ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
           <div class="flex items-baseline justify-between gap-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Mono</h3>
-            <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg font-semibold text-brand-foreground">Mono</h3>
+            <code class="text-xs bg-white/10 px-2 py-1 rounded text-brand-foreground-muted">
               System Monospace
             </code>
           </div>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Code snippets, data, and technical content. Uses system monospace fonts.</p>
+          <p class="text-sm text-brand-foreground-muted mt-1">Code snippets, data, and technical content. Uses system monospace fonts.</p>
           <div class="mt-4 text-2xl" style="font-family: var(--font-mono)">
             The quick brown fox jumps over the lazy dog
           </div>
-          <div class="mt-2 text-lg text-gray-600 dark:text-gray-400" style="font-family: var(--font-mono)">
+          <div class="mt-2 text-lg text-brand-foreground-muted" style="font-family: var(--font-mono)">
             ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
           </div>
         </div>
@@ -148,58 +150,58 @@ const colourGroups: { title: string; swatches: Swatch[] }[] = [
 
     {/* Component Examples */}
     <section class="mt-16">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Component Examples</h2>
+      <h2 class="text-2xl font-bold text-brand-foreground">Component Examples</h2>
 
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-8 mb-4">Buttons</h3>
+      <h3 class="text-lg font-semibold text-brand-foreground mt-8 mb-4">Buttons</h3>
       <div class="flex flex-wrap gap-3">
-        <button class="px-6 py-3 text-sm font-semibold bg-brand-navy text-white rounded-lg">Primary</button>
-        <button class="px-6 py-3 text-sm font-semibold bg-brand-gold text-brand-navy rounded-lg">CTA / Gold</button>
-        <button class="px-6 py-3 text-sm font-semibold border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg">Secondary</button>
-        <button class="px-6 py-3 text-sm font-semibold bg-brand-green text-white rounded-lg">Success</button>
+        <button class="px-6 py-3 text-sm font-semibold bg-brand-primary text-brand-foreground rounded-lg">Primary</button>
+        <button class="px-6 py-3 text-sm font-semibold bg-brand-accent text-brand-primary rounded-lg">CTA / Gold</button>
+        <button class="px-6 py-3 text-sm font-semibold border border-white/10 text-brand-foreground rounded-lg">Secondary</button>
+        <button class="px-6 py-3 text-sm font-semibold bg-brand-highlight text-white rounded-lg">Success</button>
       </div>
 
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-8 mb-4">Cards</h3>
+      <h3 class="text-lg font-semibold text-brand-foreground mt-8 mb-4">Cards</h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-          <h4 class="font-semibold text-brand-navy dark:text-white">Light Card</h4>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Standard card on white background with subtle border.</p>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+          <h4 class="font-semibold text-brand-foreground">Light Card</h4>
+          <p class="mt-1 text-sm text-brand-foreground-muted">Standard card on white background with subtle border.</p>
         </div>
-        <div class="bg-brand-navy text-white rounded-xl p-6">
+        <div class="bg-brand-primary text-brand-foreground rounded-xl p-6">
           <h4 class="font-semibold">Dark Card</h4>
-          <p class="mt-1 text-sm text-gray-300">Inverted card for hero sections and dark backgrounds.</p>
+          <p class="mt-1 text-sm text-brand-foreground">Inverted card for hero sections and dark backgrounds.</p>
         </div>
       </div>
 
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-8 mb-4">Hero Section (Dark)</h3>
-      <div class="bg-brand-navy rounded-xl p-8 text-white">
+      <h3 class="text-lg font-semibold text-brand-foreground mt-8 mb-4">Hero Section (Dark)</h3>
+      <div class="bg-brand-primary rounded-xl p-8 text-brand-foreground">
         <h4 class="text-2xl font-bold">
-          Heading on <span class="text-brand-gold">dark background</span>
+          Heading on <span class="text-brand-accent">dark background</span>
         </h4>
-        <p class="mt-2 text-gray-300 max-w-md">
+        <p class="mt-2 text-brand-foreground max-w-md">
           Body text on dark background uses gray-300 for comfortable reading contrast.
         </p>
         <div class="mt-4 flex gap-3">
-          <button class="px-5 py-2.5 text-sm font-semibold bg-brand-gold text-brand-navy rounded-lg">Primary CTA</button>
-          <button class="px-5 py-2.5 text-sm font-semibold border border-white/30 text-white rounded-lg">Secondary CTA</button>
+          <button class="px-5 py-2.5 text-sm font-semibold bg-brand-accent text-brand-primary rounded-lg">Primary CTA</button>
+          <button class="px-5 py-2.5 text-sm font-semibold border border-white/30 text-brand-foreground rounded-lg">Secondary CTA</button>
         </div>
       </div>
     </section>
 
     {/* How it works */}
-    <section class="mt-16 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-      <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">How This Works</h2>
-      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+    <section class="mt-16 bg-white/5 border border-white/10 rounded-xl p-6">
+      <h2 class="text-lg font-bold text-brand-foreground">How This Works</h2>
+      <p class="text-sm text-brand-foreground-muted mt-1">
         Brand values are defined in CSS custom properties. To change a colour,
-        edit <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">src/styles/globals.css</code>
+        edit <code class="bg-white/10 px-1.5 py-0.5 rounded text-xs">src/styles/globals.css</code>
         and rebuild.
       </p>
-      <ul class="mt-3 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+      <ul class="mt-3 space-y-2 text-sm text-brand-foreground">
         <li>
           <strong>Source of truth:</strong>{" "}
-          <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">src/styles/globals.css</code>
+          <code class="bg-white/10 px-1.5 py-0.5 rounded text-xs">src/styles/globals.css</code>
         </li>
         <li>
-          <strong>Consumed via:</strong> Tailwind classes (e.g. <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">bg-brand-navy</code>, <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">text-brand-gold</code>)
+          <strong>Consumed via:</strong> Tailwind classes (e.g. <code class="bg-white/10 px-1.5 py-0.5 rounded text-xs">bg-brand-primary</code>, <code class="bg-white/10 px-1.5 py-0.5 rounded text-xs">text-brand-accent</code>)
         </li>
         <li>
           <strong>Never:</strong> hardcode hex values in components

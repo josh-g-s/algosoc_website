@@ -31,6 +31,13 @@ export default defineType({
         },
       ],
     }),
+    defineField({
+      name: "highlights",
+      title: "Highlights",
+      description: "Short tags displayed as pills on the programme page (e.g. 'Real Trading')",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
     defineField({ name: "sortOrder", title: "Sort Order", type: "number", initialValue: 99 }),
   ],
   orderings: [{ title: "Sort Order", name: "sortOrder", by: [{ field: "sortOrder", direction: "asc" }] }],

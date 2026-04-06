@@ -36,13 +36,13 @@ const features = [
 >
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     <div class="max-w-3xl">
-      <span class="inline-block px-3 py-1 text-xs font-bold bg-brand-gold/20 text-brand-gold rounded-full uppercase tracking-wider mb-4">
+      <span class="inline-block px-3 py-1 text-xs font-bold bg-brand-accent/20 text-brand-accent rounded-full uppercase tracking-wider mb-4">
         Coming October 2026
       </span>
-      <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
         Portfolio Fantasy League
       </h1>
-      <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+      <p class="mt-4 text-lg text-brand-foreground-muted leading-relaxed">
         Build a virtual portfolio, compete against 2,000+ Imperial students,
         and climb the leaderboard. No real money, real learning.
       </p>
@@ -50,16 +50,16 @@ const features = [
 
     <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {features.map((f) => (
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-          <h3 class="font-semibold text-brand-navy dark:text-white">{f.title}</h3>
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{f.desc}</p>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+          <h3 class="font-semibold text-brand-foreground">{f.title}</h3>
+          <p class="mt-2 text-sm text-brand-foreground-muted">{f.desc}</p>
         </div>
       ))}
     </div>
 
-    <div class="mt-12 bg-brand-navy rounded-xl p-8 text-center text-white">
+    <div class="mt-12 bg-brand-primary rounded-xl p-8 text-center text-brand-foreground">
       <h2 class="text-xl font-bold">Launching First Week of October</h2>
-      <p class="mt-2 text-gray-400 max-w-md mx-auto">
+      <p class="mt-2 text-brand-foreground-muted max-w-md mx-auto">
         The Fantasy League will open for registration during Freshers Week.
         Sign up to the newsletter to get notified.
       </p>
@@ -67,16 +67,16 @@ const features = [
         <input
           type="email"
           placeholder="your.name@imperial.ac.uk"
-          class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+          class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-brand-foreground placeholder-brand-foreground-muted focus:outline-none focus:ring-2 focus:ring-brand-accent"
         />
-        <button class="px-6 py-3 bg-brand-gold text-brand-navy font-semibold rounded-lg hover:bg-amber-400 transition-colors">
+        <button class="px-6 py-3 bg-brand-accent text-brand-primary font-semibold rounded-lg hover:bg-amber-400 transition-colors">
           Notify Me
         </button>
       </div>
     </div>
 
     <div class="mt-8">
-      <a href="/" class="text-sm text-brand-gold hover:underline">
+      <a href="/" class="text-sm text-brand-accent hover:underline">
         &larr; Back to home
       </a>
     </div>
