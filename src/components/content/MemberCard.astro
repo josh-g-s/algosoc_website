@@ -15,8 +15,8 @@ const linkProps = linkedIn ? { href: linkedIn, target: "_blank", rel: "noopener 
 ---
 
 <Tag {...linkProps}>
-  <div class="member-card relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 hover:shadow-md transition-shadow">
-    <div class="w-24 h-24 rounded-full overflow-hidden mb-4 bg-brand-light dark:bg-gray-800">
+  <div class="member-card relative bg-white/5 border border-white/10 rounded-xl p-5 hover:shadow-md transition-shadow">
+    <div class="w-24 h-24 rounded-full overflow-hidden mb-4 bg-white/5">
       {hasPhoto ? (
         <img
           src={photo}
@@ -27,20 +27,20 @@ const linkProps = linkedIn ? { href: linkedIn, target: "_blank", rel: "noopener 
           class="member-photo w-full h-full object-cover"
         />
         <div class="member-initials w-full h-full items-center justify-center" style="display:none">
-          <span class="text-xl font-bold text-brand-navy dark:text-white">{initials}</span>
+          <span class="text-xl font-bold text-brand-foreground">{initials}</span>
         </div>
       ) : (
         <div class="w-full h-full flex items-center justify-center">
-          <span class="text-xl font-bold text-brand-navy dark:text-white">{initials}</span>
+          <span class="text-xl font-bold text-brand-foreground">{initials}</span>
         </div>
       )}
     </div>
-    <h3 class="font-semibold text-brand-navy dark:text-white">{name}</h3>
-    <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{role}</p>
+    <h3 class="font-semibold text-brand-foreground">{name}</h3>
+    <p class="text-sm text-brand-foreground-muted mt-0.5">{role}</p>
     {bio && (
-      <div class="member-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-brand-navy text-gray-200 text-xs leading-relaxed rounded-lg px-4 py-3 shadow-lg pointer-events-none z-10">
+      <div class="member-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-brand-primary text-brand-foreground text-xs leading-relaxed rounded-lg px-4 py-3 shadow-lg pointer-events-none z-10">
         {bio}
-        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-brand-navy" />
+        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-brand-primary" />
       </div>
     )}
   </div>

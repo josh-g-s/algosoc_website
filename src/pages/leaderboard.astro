@@ -22,76 +22,78 @@ const categories = ["Overall", "Events", "Competitions", "Fantasy League"];
   description="ICATS member leaderboard: track rankings across competitions, courses, and society engagement."
   canonical="/leaderboard"
 >
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
-      Leaderboard
-    </h1>
-    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-xl">
-      ICATS engagement leaderboard. Earn points by attending events, competing,
-      and contributing.
-    </p>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
+        Leaderboard
+      </h1>
+      <p class="mt-2 text-brand-foreground-muted max-w-xl">
+        ICATS engagement leaderboard. Earn points by attending events, competing,
+        and contributing.
+      </p>
 
-    <div class="mt-4 flex gap-2">
-      {categories.map((cat) => (
-        <button
-          class={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-            cat === "Overall"
-              ? "bg-brand-navy text-white"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-          }`}
-        >
-          {cat}
-        </button>
-      ))}
-    </div>
+      <div class="mt-4 flex gap-2">
+        {categories.map((cat) => (
+          <button
+            class={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+              cat === "Overall"
+                ? "bg-brand-accent text-brand-primary"
+                : "bg-white/10 text-brand-foreground-muted hover:bg-white/20"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
 
-    <div class="mt-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-            <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-6 py-3 w-16">
-              Rank
-            </th>
-            <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-6 py-3">
-              Member
-            </th>
-            <th class="text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-6 py-3">
-              Points
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {mockLeaderboard.map((entry) => (
-            <tr class="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <td class="px-6 py-4">
-                <span
-                  class={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                    entry.rank === 1
-                      ? "bg-amber-100 text-amber-700"
-                      : entry.rank === 2
-                        ? "bg-gray-100 text-gray-600"
-                        : entry.rank === 3
-                          ? "bg-orange-100 text-orange-700"
-                          : "text-gray-500"
-                  }`}
-                >
-                  {entry.rank}
-                </span>
-              </td>
-              <td class="px-6 py-4 font-medium text-brand-navy dark:text-white">
-                {entry.name}
-              </td>
-              <td class="px-6 py-4 text-right font-semibold text-brand-gold">
-                {entry.points.toLocaleString()}
-              </td>
+      <div class="mt-8 bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-white/10 bg-white/5">
+              <th class="text-left text-xs font-medium text-brand-foreground-muted uppercase tracking-wider px-6 py-3 w-16">
+                Rank
+              </th>
+              <th class="text-left text-xs font-medium text-brand-foreground-muted uppercase tracking-wider px-6 py-3">
+                Member
+              </th>
+              <th class="text-right text-xs font-medium text-brand-foreground-muted uppercase tracking-wider px-6 py-3">
+                Points
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {mockLeaderboard.map((entry) => (
+              <tr class="border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4">
+                  <span
+                    class={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                      entry.rank === 1
+                        ? "bg-amber-500/20 text-amber-400"
+                        : entry.rank === 2
+                          ? "bg-white/10 text-brand-foreground-muted"
+                          : entry.rank === 3
+                            ? "bg-orange-500/20 text-orange-400"
+                            : "text-brand-foreground-muted"
+                    }`}
+                  >
+                    {entry.rank}
+                  </span>
+                </td>
+                <td class="px-6 py-4 font-medium text-brand-foreground">
+                  {entry.name}
+                </td>
+                <td class="px-6 py-4 text-right font-semibold text-brand-accent">
+                  {entry.points.toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    <p class="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
-      Demo data. Live leaderboard will be available when the points system launches.
-    </p>
+      <p class="mt-4 text-xs text-brand-foreground-muted text-center">
+        Demo data. Live leaderboard will be available when the points system launches.
+      </p>
+    </div>
   </div>
 </BaseLayout>

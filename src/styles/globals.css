@@ -3,18 +3,21 @@
 
 /*
  * Brand colour tokens -- single source of truth.
- * Use Tailwind classes (e.g. bg-brand-navy, text-brand-gold).
+ * Use Tailwind classes (e.g. bg-brand-primary, text-brand-accent).
  * Do not hardcode hex values in components.
  */
 @theme inline {
-  /* Core palette */
-  --color-brand-navy: #0F172A;
-  --color-brand-dark: #0F172A;
-  --color-brand-dark-slate: #1E293B;
-  --color-brand-gold: #F59E0B;
-  --color-brand-green: #10B981;
-  --color-brand-light: #F8FAFC;
-  --color-brand-gray: #64748B;
+  /* Core */
+  --color-brand-primary: #2B2B2B;
+  --color-brand-slate: #1E293B;
+  --color-brand-accent: #F59E0B;
+  --color-brand-highlight: #10B981;
+  --color-brand-surface: #F8FAFC;
+  --color-brand-muted: #64748B;
+
+  /* Foreground (text on dark surfaces) */
+  --color-brand-foreground: #E1E8EF;
+  --color-brand-foreground-muted: #9CA3AF;
 
   /* Purple accent */
   --color-brand-purple: #6B46C1;
@@ -41,7 +44,7 @@ h1, h2 {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-brand-light: #111827;
+    --color-brand-surface: #111827;
   }
 }
 

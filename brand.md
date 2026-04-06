@@ -4,7 +4,7 @@ Source of truth for colours and typography. CSS custom properties are defined in
 
 ## Rules
 
-- Never hardcode hex colour values in components. Use Tailwind tokens (e.g. `bg-brand-navy`, `text-brand-gold`).
+- Never hardcode hex colour values in components. Use Tailwind tokens (e.g. `bg-brand-primary`, `text-brand-accent`).
 - To change a colour, edit `src/styles/globals.css` and rebuild.
 
 ## Colours
@@ -13,13 +13,19 @@ Source of truth for colours and typography. CSS custom properties are defined in
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `brand-navy` | `#0F172A` | Nav, hero, footer backgrounds, headings |
-| `brand-dark` | `#0F172A` | Hover state for navy buttons |
-| `brand-dark-slate` | `#1E293B` | Gradient endpoints, secondary dark |
-| `brand-gold` | `#F59E0B` | CTAs, awards, premium accents |
-| `brand-green` | `#10B981` | Success states, data highlights |
-| `brand-light` | `#F8FAFC` | Section backgrounds (flips to `#111827` in dark mode) |
-| `brand-gray` | `#64748B` | Body text on light backgrounds |
+| `brand-primary` | `#2B2B2B` | Dark backgrounds, heading text on light surfaces |
+| `brand-slate` | `#1E293B` | Gradient endpoints, secondary dark |
+| `brand-accent` | `#F59E0B` | CTAs, awards, premium accents |
+| `brand-highlight` | `#10B981` | Success states, data highlights |
+| `brand-surface` | `#F8FAFC` | Section backgrounds (flips to `#111827` in dark mode) |
+| `brand-muted` | `#64748B` | Body text on light backgrounds |
+
+### Foreground (text on dark surfaces)
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `brand-foreground` | `#E1E8EF` | Primary text on dark surfaces |
+| `brand-foreground-muted` | `#9CA3AF` | Muted/secondary text on dark surfaces |
 
 ### Purple Accent
 

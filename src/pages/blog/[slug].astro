@@ -57,46 +57,48 @@ const articleJsonLd = {
   canonical={`/blog/${slug}`}
   ogType="article"
 >
-  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
     <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
 
     <div class="flex items-center gap-3 mb-4">
       <span
         class={`px-2.5 py-0.5 text-xs font-medium rounded-full ${
-          blogCategoryColours[category] || "bg-gray-100 text-gray-700"
+          blogCategoryColours[category] || "bg-white/10 text-brand-foreground"
         }`}
       >
         {blogCategoryLabels[category] || category}
       </span>
       {formatted && (
-        <span class="text-sm text-gray-500 dark:text-gray-400">{formatted}</span>
+        <span class="text-sm text-brand-foreground-muted">{formatted}</span>
       )}
     </div>
 
-    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
       {post.title}
     </h1>
 
     {post.author && (
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">By {post.author}</p>
+      <p class="mt-3 text-sm text-brand-foreground-muted">By {post.author}</p>
     )}
 
     {contentHtml ? (
       <div
-        class="mt-8 prose prose-gray dark:prose-invert max-w-none"
+        class="mt-8 prose prose-gray max-w-none"
         set:html={contentHtml}
       />
     ) : post.excerpt ? (
-      <p class="mt-8 text-gray-600 dark:text-gray-400 leading-relaxed">{post.excerpt}</p>
+      <p class="mt-8 text-brand-foreground-muted leading-relaxed">{post.excerpt}</p>
     ) : null}
 
-    <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+    <div class="mt-12 pt-8 border-t border-white/10">
       <a
         href="/blog"
-        class="text-sm font-medium text-brand-gold hover:underline"
+        class="text-sm font-medium text-brand-accent hover:underline"
       >
         &larr; Back to blog
       </a>
+    </div>
     </div>
   </div>
 </BaseLayout>

@@ -10,11 +10,12 @@ const stats = await getStats();
   description="Learn about ICATS, Imperial College's algorithmic trading society. Our mission, history, and what we offer to aspiring quant traders and technologists."
   canonical="/about"
 >
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-    <h1 class="text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
       About ICATS
     </h1>
-    <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-3xl leading-relaxed">
+    <p class="mt-4 text-lg text-brand-foreground-muted max-w-3xl leading-relaxed">
       The Imperial College Algorithmic Trading Society (ICATS) is London&apos;s
       premier university society for students passionate about quantitative
       finance, algorithmic trading, and market technology. Founded in {stats.founded},
@@ -28,15 +29,15 @@ const stats = await getStats();
         { value: stats.eventsHosted, label: "Events per Year" },
         { value: stats.offers, label: "Offers Secured by Members" },
       ].map((s) => (
-        <div class="bg-brand-light dark:bg-gray-900/50 rounded-xl p-6 text-center">
-          <div class="text-2xl font-bold text-brand-navy dark:text-white">{s.value}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">{s.label}</div>
+        <div class="bg-white/5 rounded-xl p-6 text-center">
+          <div class="text-2xl font-bold text-brand-foreground">{s.value}</div>
+          <div class="text-sm text-brand-foreground-muted mt-1">{s.label}</div>
         </div>
       ))}
     </div>
 
-    <div class="mt-16 max-w-3xl space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed">
-      <h2 class="text-2xl font-bold text-brand-navy dark:text-white">Our Mission</h2>
+    <div class="mt-16 max-w-3xl space-y-6 text-brand-foreground leading-relaxed">
+      <h2 class="text-2xl font-bold text-brand-foreground">Our Mission</h2>
       <p>
         We exist to bridge the gap between academic knowledge and industry
         practice. Through our educational programmes, flagship competitions,
@@ -45,12 +46,12 @@ const stats = await getStats();
         quantitative finance.
       </p>
 
-      <h2 class="text-2xl font-bold text-brand-navy dark:text-white mt-10">
+      <h2 class="text-2xl font-bold text-brand-foreground mt-10">
         What We Do
       </h2>
       <ul class="space-y-3">
         <li class="flex gap-3">
-          <span class="text-brand-gold font-bold">01</span>
+          <span class="text-brand-accent font-bold">01</span>
           <span>
             <strong>Educate</strong> - Bootcamp, AlgoCourse, Markets 101,
             and weekly quant sessions prepare members for careers and
@@ -58,7 +59,7 @@ const stats = await getStats();
           </span>
         </li>
         <li class="flex gap-3">
-          <span class="text-brand-gold font-bold">02</span>
+          <span class="text-brand-accent font-bold">02</span>
           <span>
             <strong>Compete</strong> - Algothon, Estimathon, and our internal
             QTC competition give members hands-on trading experience in
@@ -66,7 +67,7 @@ const stats = await getStats();
           </span>
         </li>
         <li class="flex gap-3">
-          <span class="text-brand-gold font-bold">03</span>
+          <span class="text-brand-accent font-bold">03</span>
           <span>
             <strong>Invest</strong> - Queen&apos;s Tower Capital is our
             student-managed quantitative fund, where analysts build and
@@ -75,7 +76,7 @@ const stats = await getStats();
           </span>
         </li>
         <li class="flex gap-3">
-          <span class="text-brand-gold font-bold">04</span>
+          <span class="text-brand-accent font-bold">04</span>
           <span>
             <strong>Connect</strong> - We partner with {stats.partners}{" "}
             leading firms to bring industry insight, career opportunities,
@@ -88,10 +89,11 @@ const stats = await getStats();
     <div class="mt-12">
       <a
         href="/about/committee"
-        class="inline-block px-6 py-3 text-sm font-semibold bg-brand-navy text-white rounded-lg hover:bg-brand-dark transition-colors"
+        class="inline-block px-6 py-3 text-sm font-semibold bg-brand-accent text-brand-primary rounded-lg hover:bg-amber-400 transition-colors"
       >
         Meet the Committee &rarr;
       </a>
+    </div>
     </div>
   </div>
 </BaseLayout>
