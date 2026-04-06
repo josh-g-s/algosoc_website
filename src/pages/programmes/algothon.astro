@@ -1,0 +1,220 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import SponsorLogo from "@/components/content/SponsorLogo.astro";
+import { client } from "@/lib/sanity";
+import { toHTML } from "@portabletext/to-html";
+
+type AlgothonSponsor = {
+  name: string;
+  logo?: { asset?: { url?: string } };
+  description?: string;
+  websiteUrl?: string;
+};
+
+type AlgothonEdition = {
+  title: string;
+  slug: { current: string };
+  year: number;
+  date?: string;
+  participants?: number;
+  recap?: any[];
+  images?: Array<{
+    alt?: string;
+    caption?: string;
+    asset?: { url?: string };
+  }>;
+  sponsors?: AlgothonSponsor[];
+};
+
+const editions = await client.fetch<AlgothonEdition[]>(
+  `*[_type == "algothon"] | order(year desc){
+    title,
+    slug,
+    year,
+    date,
+    participants,
+    recap,
+    images[]{ alt, caption, asset->{ url } },
+    sponsors[]->{ name, logo{ asset->{ url } }, description, websiteUrl }
+  }`
+) || [];
+---
+
+<BaseLayout
+  title="Algothon"
+  description="Algothon is ICATS' flagship annual inter-university algorithmic trading hackathon. Teams build and submit trading strategies, competing for prizes from top firms."
+  canonical="/programmes/algothon"
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <a
+      href="/programmes"
+      class="text-sm font-medium text-brand-gold hover:underline"
+    >
+      &larr; All programmes
+    </a>
+
+    <h1 class="mt-4 text-3xl sm:text-4xl font-bold text-brand-navy dark:text-white">
+      Algothon
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-2xl">
+      Our flagship annual London inter-university hackathon where students
+      compete in algorithmic trading challenges. Teams build and submit trading
+      strategies against a live or historical dataset, judged on risk-adjusted
+      returns.
+    </p>
+
+    {editions.length === 0 ? (
+      <p class="mt-10 text-gray-500 dark:text-gray-400">
+        Details for upcoming Algothon editions will be announced soon.
+      </p>
+    ) : (
+      <div class="mt-12 space-y-16">
+        {editions.map((edition) => {
+          const sponsorCount = edition.sponsors?.length ?? 0;
+          const recapHtml = edition.recap ? toHTML(edition.recap) : "";
+
+          return (
+            <section
+              id={edition.slug.current}
+              class="scroll-mt-24"
+            >
+              {/* Header + stats */}
+              <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <h2 class="text-2xl font-bold text-brand-navy dark:text-white">
+                  {edition.title}
+                </h2>
+                <div class="flex gap-6">
+                  {edition.participants != null && (
+                    <div class="text-center">
+                      <div class="text-2xl font-bold text-brand-gold">{edition.participants}</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">Participants</div>
+                    </div>
+                  )}
+                  {sponsorCount > 0 && (
+                    <div class="text-center">
+                      <div class="text-2xl font-bold text-brand-gold">{sponsorCount}</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">Sponsors</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Image carousel */}
+              {edition.images && edition.images.length > 0 && (
+                <div
+                  class="algothon-carousel mt-6 relative overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-900"
+                  data-carousel
+                >
+                  <div class="carousel-track flex transition-transform duration-500 ease-in-out">
+                    {edition.images.map((img) => (
+                      <div class="carousel-slide w-full flex-shrink-0">
+                        <img
+                          src={img.asset?.url}
+                          alt={img.alt || edition.title}
+                          loading="lazy"
+                          class="w-full h-auto object-contain"
+                        />
+                        {img.caption && (
+                          <p class="absolute bottom-0 inset-x-0 bg-black/50 text-white text-sm px-4 py-2">
+                            {img.caption}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {edition.images.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        class="carousel-prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+                        aria-label="Previous image"
+                      >
+                        &#8249;
+                      </button>
+                      <button
+                        type="button"
+                        class="carousel-next absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+                        aria-label="Next image"
+                      >
+                        &#8250;
+                      </button>
+                      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                        {edition.images.map((_, i) => (
+                          <button
+                            type="button"
+                            class={`carousel-dot w-2.5 h-2.5 rounded-full transition-colors ${i === 0 ? "bg-white" : "bg-white/50"}`}
+                            data-index={i}
+                            aria-label={`Go to image ${i + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Recap */}
+              {recapHtml && (
+                <div
+                  class="mt-6 prose prose-gray dark:prose-invert max-w-none"
+                  set:html={recapHtml}
+                />
+              )}
+
+              {/* Sponsors */}
+              {edition.sponsors && edition.sponsors.length > 0 && (
+                <div class="mt-8">
+                  <h3 class="text-lg font-semibold text-brand-navy dark:text-white mb-4">
+                    Sponsors
+                  </h3>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {edition.sponsors.map((s) => (
+                      <SponsorLogo
+                        name={s.name}
+                        logo={s.logo?.asset?.url || ""}
+                        description={s.description}
+                        websiteUrl={s.websiteUrl}
+                        variant="dark"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+    const track = carousel.querySelector<HTMLElement>(".carousel-track");
+    const slides = carousel.querySelectorAll(".carousel-slide");
+    const dots = carousel.querySelectorAll<HTMLButtonElement>(".carousel-dot");
+    const prevBtn = carousel.querySelector<HTMLButtonElement>(".carousel-prev");
+    const nextBtn = carousel.querySelector<HTMLButtonElement>(".carousel-next");
+
+    if (!track || slides.length <= 1) return;
+
+    let current = 0;
+    const total = slides.length;
+
+    function goTo(index: number) {
+      current = ((index % total) + total) % total;
+      track!.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((d, i) => {
+        d.classList.toggle("bg-white", i === current);
+        d.classList.toggle("bg-white/50", i !== current);
+      });
+    }
+
+    prevBtn?.addEventListener("click", () => goTo(current - 1));
+    nextBtn?.addEventListener("click", () => goTo(current + 1));
+    dots.forEach((d) =>
+      d.addEventListener("click", () => goTo(Number(d.dataset.index)))
+    );
+  });
+</script>

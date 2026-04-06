@@ -81,8 +81,10 @@ All schemas live in `src/sanity/schemas/`. The index at `src/sanity/schemas/inde
 | `event` | document | Events (has `attendees` count field) |
 | `teamMember` | document | Committee members (`photoUrl` is a URL, not image) |
 | `sponsor` | document | Sponsors (`logo` is a Sanity image asset) |
+| `sponsorAlgothon` | document | Algothon-specific sponsors (same fields as `sponsor`) |
 | `resource` | document | Resources |
 | `programme` | document | Programmes (stats are value/label pairs) |
+| `algothon` | document | Algothon editions (year, images carousel, sponsors, participants, recap) |
 | `siteConfig` | document | Site-wide config and stats |
 | `witEvent` | document | WIT recurring event types (title + description) |
 
