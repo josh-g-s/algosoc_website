@@ -15,6 +15,10 @@ node_modules/
 # sanity generated files
 .sanity/
 scripts/sanity/sanity-export.tar.gz
+scripts/sanity/production-export-*/
+
+# macOS
+.DS_Store
 
 # logs
 npm-debug.log*
