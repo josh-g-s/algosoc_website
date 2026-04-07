@@ -11,7 +11,12 @@ When the user wants to wrap up work on the current branch, follow these steps:
    - Run `git diff --stat` to summarise what changed
    - If there are no changes, tell the user and stop
 
-2. **Commit:**
+2. **Check documentation:**
+   - If the changes affect Sanity schemas, shared utilities, or project structure, update `CLAUDE.md`
+   - If the changes affect the spec or task tracker, update `spec.md` and/or `todo.md`
+   - Stage any doc updates alongside the code changes
+
+3. **Commit:**
    - Stage the relevant files (not `.env`, credentials, or generated files)
    - Write a concise commit message in imperative mood describing the "why"
    - Use a HEREDOC for the message

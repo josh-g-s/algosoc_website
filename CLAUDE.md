@@ -83,10 +83,12 @@ All schemas live in `src/sanity/schemas/`. The index at `src/sanity/schemas/inde
 | `sponsor` | document | Sponsors (`logo` is a Sanity image asset) |
 | `sponsorAlgothon` | document | Algothon-specific sponsors (same fields as `sponsor`) |
 | `resource` | document | Resources |
-| `programme` | document | Programmes (stats are value/label pairs) |
+| `programme` | document | Programmes (stats are value/label pairs, optional curriculum grid, highlights) |
 | `algothon` | document | Algothon editions (year, images carousel, sponsors, participants, recap) |
 | `siteConfig` | document | Site-wide config and stats |
 | `witEvent` | document | WIT recurring event types (title + description) |
+| `aboutPage` | document | About page content (mission statement, "What We Do" pillars). Singleton. Pillar descriptions support `{partners}` token for live sponsor count. |
+| `joinPage` | document | Join page content (heading, intro, CTA label/URL/note). Singleton. Programmes and events are auto-populated from their respective document types. |
 
 ### Schema Change Workflow
 
