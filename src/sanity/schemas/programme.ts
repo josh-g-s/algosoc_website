@@ -38,6 +38,25 @@ export default defineType({
       type: "array",
       of: [{ type: "string" }],
     }),
+    defineField({
+      name: "curriculum",
+      title: "Curriculum",
+      description: "Structured curriculum items displayed in a grid (e.g. weekly topics)",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({ name: "label", title: "Label", type: "string", description: "e.g. 'Week 1' or '01'" }),
+            defineField({ name: "title", title: "Title", type: "string" }),
+            defineField({ name: "description", title: "Description", type: "text", rows: 2 }),
+          ],
+          preview: {
+            select: { title: "title", subtitle: "label" },
+          },
+        },
+      ],
+    }),
     defineField({ name: "sortOrder", title: "Sort Order", type: "number", initialValue: 99 }),
   ],
   orderings: [{ title: "Sort Order", name: "sortOrder", by: [{ field: "sortOrder", direction: "asc" }] }],
