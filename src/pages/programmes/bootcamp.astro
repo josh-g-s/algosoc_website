@@ -1,5 +1,21 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
+import { toHTML } from "@portabletext/to-html";
+
+const programme = await client.fetch<{
+  title: string;
+  slug: { current: string };
+  description?: string;
+  body?: any[];
+  stats?: Array<{ value: string; label: string }>;
+  highlights?: string[];
+  curriculum?: Array<{ label: string; title: string; description: string }>;
+}>(`*[_type == "programme" && slug.current == "bootcamp"][0]{
+  title, slug, description, body, stats, highlights, curriculum
+}`);
+
+const bodyHtml = programme?.body ? toHTML(programme.body) : "";
 ---
 
 <BaseLayout
@@ -7,7 +23,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
   description="ICATS Bootcamp: a pre-requisite crash course for AlgoCourse, covering foundational concepts in quantitative trading. Accessible to all backgrounds."
   canonical="/programmes/bootcamp"
 >
-  <div class="bg-brand-primary">
+  <div class="bg-brand-primary min-h-[60vh]">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
       <a
         href="/programmes"
@@ -16,87 +32,70 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         &larr; All programmes
       </a>
 
-      <div class="mt-8">
-        <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
-          Bootcamp
-        </h1>
-        <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-3xl">
-          A pre-requisite crash course for the AlgoCourse, covering
-          foundational concepts for members new to quantitative trading.
-          No prior experience required.
+      {programme ? (
+        <div class="mt-8">
+          <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
+            {programme.title}
+          </h1>
+
+          {programme.description && (
+            <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-3xl">
+              {programme.description}
+            </p>
+          )}
+
+          {programme.highlights && programme.highlights.length > 0 && (
+            <div class="mt-8 flex flex-wrap gap-3">
+              {programme.highlights.map((h) => (
+                <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
+                  {h}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {programme.stats && programme.stats.length > 0 && (
+            <div class="mt-12 flex gap-10">
+              {programme.stats.map((s) => (
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-brand-accent">{s.value}</div>
+                  <div class="text-sm text-brand-foreground-muted mt-1">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {programme.curriculum && programme.curriculum.length > 0 && (
+            <>
+              <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-8">
+                What You'll Learn
+              </h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {programme.curriculum.map((item) => (
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+                    <div class="flex items-baseline gap-3">
+                      <span class="text-sm font-bold text-brand-accent">{item.label}</span>
+                      <h3 class="font-semibold text-brand-foreground">{item.title}</h3>
+                    </div>
+                    <p class="mt-2 text-sm text-brand-foreground-muted">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {bodyHtml && (
+            <div
+              class="mt-12 prose prose-invert prose-lg max-w-none prose-li:text-brand-foreground prose-p:text-brand-foreground"
+              set:html={bodyHtml}
+            />
+          )}
+        </div>
+      ) : (
+        <p class="mt-10 text-brand-foreground-muted">
+          Details for Bootcamp will be announced soon.
         </p>
-
-        <div class="mt-8 flex flex-wrap gap-3">
-          <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
-            All Backgrounds Welcome
-          </span>
-          <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
-            Feeds into AlgoCourse
-          </span>
-          <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
-            Hands-on Coding
-          </span>
-        </div>
-
-        <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-8">
-          What You'll Learn
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="bg-white/5 border border-white/10 rounded-xl p-5">
-            <div class="flex items-baseline gap-3">
-              <span class="text-sm font-bold text-brand-accent">01</span>
-              <h3 class="font-semibold text-brand-foreground">Market Microstructure</h3>
-            </div>
-            <p class="mt-2 text-sm text-brand-foreground-muted">
-              Order books, price formation, and the economics of the bid-ask spread.
-            </p>
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-5">
-            <div class="flex items-baseline gap-3">
-              <span class="text-sm font-bold text-brand-accent">02</span>
-              <h3 class="font-semibold text-brand-foreground">Python Fundamentals</h3>
-            </div>
-            <p class="mt-2 text-sm text-brand-foreground-muted">
-              Core Python for working with financial data, libraries, and basic analysis.
-            </p>
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-5">
-            <div class="flex items-baseline gap-3">
-              <span class="text-sm font-bold text-brand-accent">03</span>
-              <h3 class="font-semibold text-brand-foreground">Trading Concepts</h3>
-            </div>
-            <p class="mt-2 text-sm text-brand-foreground-muted">
-              Introduction to algorithmic trading, strategy types, and key terminology.
-            </p>
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-5">
-            <div class="flex items-baseline gap-3">
-              <span class="text-sm font-bold text-brand-accent">04</span>
-              <h3 class="font-semibold text-brand-foreground">Hands-on Exercises</h3>
-            </div>
-            <p class="mt-2 text-sm text-brand-foreground-muted">
-              Practical coding exercises to reinforce concepts and prepare for AlgoCourse.
-            </p>
-          </div>
-        </div>
-
-        <div class="mt-16 bg-white/5 border border-white/10 rounded-xl p-8">
-          <h2 class="text-xl font-bold text-brand-foreground">
-            Ready for More?
-          </h2>
-          <p class="mt-2 text-brand-foreground-muted max-w-2xl">
-            Bootcamp is designed as a stepping stone into AlgoCourse, our
-            intensive 8-week programme. Complete the Bootcamp and you'll have
-            everything you need to hit the ground running.
-          </p>
-          <a
-            href="/programmes/algocourse"
-            class="inline-block mt-4 text-sm font-medium text-brand-accent hover:underline"
-          >
-            View AlgoCourse &rarr;
-          </a>
-        </div>
-      </div>
+      )}
     </div>
   </div>
 </BaseLayout>
