@@ -46,7 +46,7 @@ const bodyHtml = programme?.body ? toHTML(programme.body) : "";
           {programme.highlights && programme.highlights.length > 0 && (
             <div class="mt-8 flex flex-wrap gap-3">
               {programme.highlights.map((h) => (
-                <span class="px-5 py-2 text-sm font-semibold uppercase tracking-wider text-brand-foreground border border-brand-purple-light rounded-full">
+                <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
                   {h}
                 </span>
               ))}
