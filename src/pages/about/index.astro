@@ -1,8 +1,14 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
 import { getStats } from "@/lib/content";
 
 const stats = await getStats();
+
+const about = await client.fetch<{
+  mission?: string;
+  pillars?: Array<{ title: string; description: string }>;
+}>(`*[_type == "aboutPage"][0]{ mission, pillars }`);
 ---
 
 <BaseLayout
@@ -37,53 +43,30 @@ const stats = await getStats();
     </div>
 
     <div class="mt-16 max-w-3xl space-y-6 text-brand-foreground leading-relaxed">
-      <h2 class="text-2xl font-bold text-brand-foreground">Our Mission</h2>
-      <p>
-        We exist to bridge the gap between academic knowledge and industry
-        practice. Through our educational programmes, flagship competitions,
-        and student-managed quantitative fund, we give members the skills,
-        experience, and connections they need to launch careers in
-        quantitative finance.
-      </p>
+      {about?.mission && (
+        <>
+          <h2 class="text-2xl font-bold text-brand-foreground">Our Mission</h2>
+          <p>{about.mission}</p>
+        </>
+      )}
 
-      <h2 class="text-2xl font-bold text-brand-foreground mt-10">
-        What We Do
-      </h2>
-      <ul class="space-y-3">
-        <li class="flex gap-3">
-          <span class="text-brand-accent font-bold">01</span>
-          <span>
-            <strong>Educate</strong> - Bootcamp, AlgoCourse, Markets 101,
-            and weekly quant sessions prepare members for careers and
-            interviews in trading and quant research.
-          </span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-brand-accent font-bold">02</span>
-          <span>
-            <strong>Compete</strong> - Algothon, Estimathon, and our internal
-            QTC competition give members hands-on trading experience in
-            competitive settings.
-          </span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-brand-accent font-bold">03</span>
-          <span>
-            <strong>Invest</strong> - Queen&apos;s Tower Capital is our
-            student-managed quantitative fund, where analysts build and
-            execute real trading strategies across Market Making, Market
-            Taking, and Options divisions.
-          </span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-brand-accent font-bold">04</span>
-          <span>
-            <strong>Connect</strong> - We partner with {stats.partners}{" "}
-            leading firms to bring industry insight, career opportunities,
-            and mentorship to our members.
-          </span>
-        </li>
-      </ul>
+      {about?.pillars && about.pillars.length > 0 && (
+        <>
+          <h2 class="text-2xl font-bold text-brand-foreground mt-10">
+            What We Do
+          </h2>
+          <ul class="space-y-3">
+            {about.pillars.map((item, i) => (
+              <li class="flex gap-3">
+                <span class="text-brand-accent font-bold">{String(i + 1).padStart(2, "0")}</span>
+                <span>
+                  <strong>{item.title}</strong> - {item.description.replace("{partners}", stats.partners)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
 
     <div class="mt-12">
