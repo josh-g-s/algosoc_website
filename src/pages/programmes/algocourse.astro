@@ -1,0 +1,85 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const weeks = [
+  { number: 1, title: "Python Fundamentals", description: "Core Python for finance: data types, control flow, functions, and libraries." },
+  { number: 2, title: "Data Analysis", description: "NumPy, pandas, and data wrangling for financial datasets." },
+  { number: 3, title: "Market Microstructure", description: "Order books, price formation, and the economics of the bid-ask spread." },
+  { number: 4, title: "Statistical Foundations", description: "Probability, distributions, hypothesis testing, and time series analysis." },
+  { number: 5, title: "Signal Generation", description: "Alpha research, factor models, and building trading signals from data." },
+  { number: 6, title: "Backtesting", description: "Strategy evaluation, avoiding overfitting, and performance metrics." },
+  { number: 7, title: "Options & Derivatives", description: "Options pricing, Greeks, volatility surfaces, and basic strategies." },
+  { number: 8, title: "Execution & ML", description: "Execution algorithms, slippage, and machine learning applications in trading." },
+];
+---
+
+<BaseLayout
+  title="AlgoCourse"
+  description="An intensive 8-week course covering the fundamentals needed for a career in financial markets. Taught by Imperial students with industry experience."
+  canonical="/programmes/algocourse"
+>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <a
+        href="/programmes"
+        class="text-sm font-medium text-brand-accent hover:underline"
+      >
+        &larr; All programmes
+      </a>
+
+      <div class="mt-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
+          AlgoCourse
+        </h1>
+        <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-3xl">
+          An intensive 8-week comprehensive course covering all fundamentals
+          needed for a successful career in financial markets. Taught by fellow
+          Imperial students with industry internship experience, covering
+          everything from Python basics to advanced trading strategies.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
+            8 Weeks
+          </span>
+          <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
+            Python to Strategies
+          </span>
+          <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
+            Taught by Students
+          </span>
+        </div>
+
+        <div class="mt-12 flex gap-10">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-brand-accent">8</div>
+            <div class="text-sm text-brand-foreground-muted mt-1">Weeks</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-brand-accent">520+</div>
+            <div class="text-sm text-brand-foreground-muted mt-1">Past Attendees</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-brand-accent">7</div>
+            <div class="text-sm text-brand-foreground-muted mt-1">Lectures</div>
+          </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-8">
+          Curriculum
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {weeks.map((w) => (
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-baseline gap-3">
+                <span class="text-sm font-bold text-brand-accent">Week {w.number}</span>
+                <h3 class="font-semibold text-brand-foreground">{w.title}</h3>
+              </div>
+              <p class="mt-2 text-sm text-brand-foreground-muted">{w.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
