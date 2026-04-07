@@ -97,7 +97,7 @@ const organizationJsonLd = {
       <div class="max-w-3xl">
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
           Imperial College&apos;s Premier Society for{" "}
-          <span class="text-brand-accent">Aspiring Traders</span>
+          <span class="text-brand-accent whitespace-nowrap">Aspiring Traders</span>
         </h1>
         <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-2xl">
           Building the next generation of quantitative traders, researchers,
@@ -226,7 +226,7 @@ const organizationJsonLd = {
         </p>
         <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 max-w-5xl mx-auto">
           {sponsors.map((s) => (
-            <SponsorLogo {...s} variant="dark" />
+            <SponsorLogo {...s} />
           ))}
         </div>
         <div class="mt-8">

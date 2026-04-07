@@ -4,21 +4,15 @@ interface Props {
   logo: string;
   description?: string;
   websiteUrl?: string;
-  /** Use "light" on dark backgrounds (white card), "dark" on light backgrounds */
-  variant?: "light" | "dark";
 }
 
-const { name, logo, description, websiteUrl, variant = "light" } = Astro.props;
+const { name, logo, description, websiteUrl } = Astro.props;
 const Tag = websiteUrl ? "a" : "div";
 const linkProps = websiteUrl ? { href: websiteUrl, target: "_blank", rel: "noopener noreferrer" } : {};
-
-const cardClass = variant === "light"
-  ? "bg-white/5 border border-white/20"
-  : "bg-white/10 rounded-lg";
 ---
 
 <Tag {...linkProps} class="sponsor-card relative group">
-  <div class={`flex items-center justify-center h-20 rounded-lg px-4 transition-shadow hover:shadow-md ${cardClass}`}>
+  <div class="flex items-center justify-center h-20 rounded-lg px-4 transition-shadow hover:shadow-md bg-white">
     {logo ? (
       <img
         src={logo}
@@ -27,7 +21,7 @@ const cardClass = variant === "light"
         class="max-h-12 max-w-[140px] w-auto h-auto object-contain"
       />
     ) : (
-      <span class="text-sm font-semibold text-brand-foreground-muted">{name}</span>
+      <span class="text-sm font-semibold text-gray-500">{name}</span>
     )}
   </div>
   <div class="sponsor-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-brand-primary text-brand-foreground text-xs rounded-lg px-4 py-2.5 shadow-lg pointer-events-none z-10 w-48 text-center">
