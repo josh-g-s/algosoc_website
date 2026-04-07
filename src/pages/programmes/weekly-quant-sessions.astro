@@ -1,0 +1,81 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
+import { toHTML } from "@portabletext/to-html";
+
+const programme = await client.fetch<{
+  title: string;
+  slug: { current: string };
+  description?: string;
+  body?: any[];
+  stats?: Array<{ value: string; label: string }>;
+  highlights?: string[];
+}>(`*[_type == "programme" && slug.current == "weekly-quant-sessions"][0]{
+  title, slug, description, body, stats, highlights
+}`);
+
+const bodyHtml = programme?.body ? toHTML(programme.body) : "";
+---
+
+<BaseLayout
+  title="Weekly Quant Sessions"
+  description="Weekly collaborative sessions exploring quantitative finance topics, problem-solving, and strategy development with fellow Imperial students."
+  canonical="/programmes/weekly-quant-sessions"
+>
+  <div class="bg-brand-primary min-h-[60vh]">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <a
+        href="/programmes"
+        class="text-sm font-medium text-brand-accent hover:underline"
+      >
+        &larr; All programmes
+      </a>
+
+      {programme ? (
+        <div class="mt-8">
+          <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
+            {programme.title}
+          </h1>
+
+          {programme.description && (
+            <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-3xl">
+              {programme.description}
+            </p>
+          )}
+
+          {programme.highlights && programme.highlights.length > 0 && (
+            <div class="mt-8 flex flex-wrap gap-3">
+              {programme.highlights.map((h) => (
+                <span class="px-4 py-1.5 text-xs font-medium bg-white/10 text-brand-foreground-muted rounded-full">
+                  {h}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {programme.stats && programme.stats.length > 0 && (
+            <div class="mt-12 flex gap-10">
+              {programme.stats.map((s) => (
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-brand-accent">{s.value}</div>
+                  <div class="text-sm text-brand-foreground-muted mt-1">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {bodyHtml && (
+            <div
+              class="mt-12 prose prose-invert prose-lg max-w-none prose-li:text-brand-foreground prose-p:text-brand-foreground"
+              set:html={bodyHtml}
+            />
+          )}
+        </div>
+      ) : (
+        <p class="mt-10 text-brand-foreground-muted">
+          Details for Weekly Quant Sessions will be announced soon.
+        </p>
+      )}
+    </div>
+  </div>
+</BaseLayout>
