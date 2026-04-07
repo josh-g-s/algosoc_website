@@ -9,7 +9,7 @@ const programmes = await client.fetch<Array<{
   description?: string;
   body?: any[];
   stats?: Array<{ value: string; label: string }>;
-}>>(`*[_type == "programme"] | order(sortOrder asc){ title, slug, description, body, stats }`) || [];
+}>>(`*[_type == "programme"] | order(sortOrder asc){ title, slug, description, stats }`) || [];
 ---
 
 <BaseLayout
@@ -58,7 +58,7 @@ const programmes = await client.fetch<Array<{
               )}
             </div>
             {p.body && (
-              <div class="mt-4 text-sm text-brand-foreground-muted prose prose-sm max-w-none" set:html={toHTML(p.body)} />
+              <div class="mt-4 text-sm text-brand-foreground-muted prose prose-invert prose-sm max-w-none" set:html={toHTML(p.body)} />
             )}
             <a
               href={`/programmes/${p.slug.current}`}
