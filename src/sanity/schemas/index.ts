@@ -9,5 +9,6 @@ import siteConfig from "./siteConfig";
 import witEvent from "./witEvent";
 import algothon from "./algothon";
 import aboutPage from "./aboutPage";
+import joinPage from "./joinPage";
 
-export const schemaTypes = [post, event, teamMember, sponsor, sponsorAlgothon, resource, programme, siteConfig, witEvent, algothon, aboutPage];
+export const schemaTypes = [post, event, teamMember, sponsor, sponsorAlgothon, resource, programme, siteConfig, witEvent, algothon, aboutPage, joinPage];
