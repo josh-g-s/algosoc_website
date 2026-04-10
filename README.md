@@ -1,6 +1,6 @@
-# ICATS Website
+# AlgoSoc Website
 
-Astro + Sanity CMS rebuild of the ICATS website. Static output hosted on S3 + CloudFront, with automatic rebuilds triggered by Sanity content changes.
+Astro + Sanity CMS rebuild of the AlgoSoc website. Static output hosted on S3 + CloudFront, with automatic rebuilds triggered by Sanity content changes.
 
 **Preview:** https://icats.z16.web.core.windows.net/
 
@@ -12,7 +12,7 @@ Astro + Sanity CMS rebuild of the ICATS website. Static output hosted on S3 + Cl
 |-------|-----------|
 | Framework | Astro 6 (static output), TypeScript strict |
 | Styling | Tailwind CSS 4 |
-| CMS | Sanity (hosted Studio at icats.sanity.studio) |
+| CMS | Sanity (hosted Studio at algosoc.sanity.studio) |
 | Fonts | Archivo (headings), Albert Sans (body) |
 | Hosting | Azure Blob Storage (static website) |
 | CI/CD | GitHub Actions (build + deploy on content change) |
@@ -41,7 +41,7 @@ Ask a team member for the values, or find them in the Sanity dashboard (manage.s
 
 ## Sanity Studio
 
-- **URL**: https://icats.sanity.studio/
+- **URL**: https://algosoc.sanity.studio/
 
 Content types: Blog Posts, Events, Team Members, Sponsors, Resources, Programmes, WIT Events, Site Config (singleton).
 

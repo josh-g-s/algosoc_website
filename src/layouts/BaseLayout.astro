@@ -13,14 +13,14 @@ interface Props {
 }
 
 const {
-  title = "ICATS - Imperial College Algorithmic Trading Society",
+  title = "AlgoSoc - Imperial College Algorithmic Trading Society",
   description = "Imperial College London's premier society for algorithmic trading, quantitative finance, and market technology. Home to Algothon, Queen's Tower Capital, and AlgoCourse.",
   canonical,
   ogType = "website",
   ogImage = "/og-image.png",
 } = Astro.props;
 
-const fullTitle = title.includes("ICATS") ? title : `${title} | ICATS`;
+const fullTitle = title.includes("AlgoSoc") ? title : `${title} | AlgoSoc`;
 ---
 
 <!doctype html>
@@ -31,12 +31,12 @@ const fullTitle = title.includes("ICATS") ? title : `${title} | ICATS`;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="keywords" content="Imperial College, algorithmic trading, ICATS, quantitative finance, Queen's Tower Capital, Algothon, quant finance society" />
+    <meta name="keywords" content="Imperial College, algorithmic trading, AlgoSoc, quantitative finance, Queen's Tower Capital, Algothon, quant finance society" />
     {canonical && <link rel="canonical" href={canonical} />}
 
     <!-- Open Graph -->
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content="ICATS - Imperial College Algorithmic Trading Society" />
+    <meta property="og:site_name" content="AlgoSoc - Imperial College Algorithmic Trading Society" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={Astro.url.href} />
@@ -52,7 +52,7 @@ const fullTitle = title.includes("ICATS") ? title : `${title} | ICATS`;
     <meta name="twitter:image" content={new URL(ogImage, Astro.site || Astro.url).href} />
 
     <!-- RSS -->
-    <link rel="alternate" type="application/rss+xml" title="ICATS RSS Feed" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="AlgoSoc RSS Feed" href="/rss.xml" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

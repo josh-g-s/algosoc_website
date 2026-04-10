@@ -1,4 +1,4 @@
-# ICATS Brand Guidelines
+# AlgoSoc Brand Guidelines
 
 Source of truth for colours and typography. CSS custom properties are defined in `src/styles/globals.css`. A visual preview is at `/brand`.
 

@@ -45,8 +45,8 @@ export async function GET(context: APIContext) {
     .slice(0, 50);
 
   return rss({
-    title: "ICATS - Imperial College Algorithmic Trading Society",
-    description: "Blog posts, events, and updates from ICATS.",
+    title: "AlgoSoc - Imperial College Algorithmic Trading Society",
+    description: "Blog posts, events, and updates from AlgoSoc.",
     site: context.site!,
     items,
   });

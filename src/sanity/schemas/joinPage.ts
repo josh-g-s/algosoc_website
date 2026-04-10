@@ -9,7 +9,7 @@ export default defineType({
       name: "heading",
       title: "Heading",
       type: "string",
-      initialValue: "Join ICATS",
+      initialValue: "Join AlgoSoc",
       validation: (r) => r.required(),
     }),
     defineField({

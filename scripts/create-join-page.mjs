@@ -20,7 +20,7 @@ if (!process.env.SANITY_TOKEN) {
 const doc = {
   _id: "joinPage",
   _type: "joinPage",
-  heading: "Join ICATS",
+  heading: "Join AlgoSoc",
   intro:
     "Become part of Imperial College's largest algorithmic trading and quantitative finance community. Membership gives you access to all our programmes, events, and resources.",
   ctaLabel: "Join via Imperial College Union",

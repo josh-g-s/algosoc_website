@@ -3,8 +3,8 @@ import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./src/sanity/schemas";
 
 export default defineConfig({
-  name: "icats",
-  title: "ICATS Website",
+  name: "algosoc",
+  title: "AlgoSoc Website",
   projectId: "bd3zp068",
   dataset: "production",
   plugins: [structureTool()],

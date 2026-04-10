@@ -44,7 +44,7 @@ const articleJsonLd = {
   ...(post.featuredImage?.asset?.url && { image: post.featuredImage.asset.url }),
   publisher: {
     "@type": "Organization",
-    name: "ICATS - Imperial College Algorithmic Trading Society",
+    name: "AlgoSoc - Imperial College Algorithmic Trading Society",
     url: "https://algosoc.com",
   },
   mainEntityOfPage: `https://algosoc.com/blog/${slug}`,
@@ -53,7 +53,7 @@ const articleJsonLd = {
 
 <BaseLayout
   title={post.title}
-  description={post.excerpt || `Read "${post.title}" on the ICATS blog.`}
+  description={post.excerpt || `Read "${post.title}" on the AlgoSoc blog.`}
   canonical={`/blog/${slug}`}
   ogType="article"
 >

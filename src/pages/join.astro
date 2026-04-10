@@ -32,7 +32,7 @@ const [joinPage, programmes, upcomingEvents, stats] = await Promise.all([
   getStats(),
 ]);
 
-const heading = joinPage?.heading || "Join ICATS";
+const heading = joinPage?.heading || "Join AlgoSoc";
 const intro = joinPage?.intro || "";
 const ctaLabel = joinPage?.ctaLabel || "Join via Imperial College Union";
 const ctaUrl = joinPage?.ctaUrl || "#";
@@ -40,8 +40,8 @@ const ctaNote = joinPage?.ctaNote || "";
 ---
 
 <BaseLayout
-  title="Join ICATS"
-  description="Join ICATS and become part of Imperial College's algorithmic trading community. Access competitions, courses, networking, and career opportunities in quant finance."
+  title="Join AlgoSoc"
+  description="Join AlgoSoc and become part of Imperial College's algorithmic trading community. Access competitions, courses, networking, and career opportunities in quant finance."
   canonical="/join"
 >
   <div class="bg-brand-primary">

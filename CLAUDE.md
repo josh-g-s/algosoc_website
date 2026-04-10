@@ -1,4 +1,4 @@
-# ICATS Website
+# AlgoSoc Website
 
 Astro 6 static site for the Imperial College Algorithmic Trading Society. Must be live by **22 September 2026**.
 

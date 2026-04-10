@@ -44,7 +44,7 @@ const doc = {
         {
           _type: "span",
           _key: "s2",
-          text: "Weekly Quant Sessions are informal, collaborative meetups where ICATS members work through quantitative finance problems together. Each session focuses on a different topic, from brainteasers and probability puzzles to real-world strategy development and data analysis.",
+          text: "Weekly Quant Sessions are informal, collaborative meetups where AlgoSoc members work through quantitative finance problems together. Each session focuses on a different topic, from brainteasers and probability puzzles to real-world strategy development and data analysis.",
         },
       ],
       markDefs: [],

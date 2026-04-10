@@ -1,4 +1,4 @@
-# ICATS Website Rebuild - Implementation Plan
+# AlgoSoc Website Rebuild - Implementation Plan
 
 ## Context
 
@@ -16,7 +16,7 @@ The current algosoc.com is a static HTML site hosted on **AWS (S3 + CloudFront +
 |-------|-----------|------|
 | Front-end | **Astro 6** (static output), TypeScript, Tailwind CSS 4 | Free |
 | Hosting | **AWS Amplify** | Free tier |
-| CMS | **Sanity** (hosted, project bd3zp068, Studio at icats.sanity.studio) | Free tier |
+| CMS | **Sanity** (hosted, project bd3zp068, Studio at algosoc.sanity.studio) | Free tier |
 | Database | **AWS RDS PostgreSQL** (free tier) or **Supabase** (hosted on AWS) | Free tier or ~$15/mo |
 | Auth | TBD for Fantasy League - email OTP restricted to @ic.ac.uk (MVP), Entra ID SSO later | Free |
 | Storage | **S3** (already exists) | Pennies/month |
@@ -39,7 +39,7 @@ algosoc.com/
   /blog                        Blog listing (newsletter, market recap, research)
   /blog/[slug]                 Individual post (rich text, LaTeX, embedded charts)
   /resources                   Member resources (bootcamp, notebooks, problem sets, reading lists)
-  /sponsors                    ICATS tiers (Platinum/Gold/Silver/Bronze) + ICWiT tiers
+  /sponsors                    AlgoSoc tiers (Platinum/Gold/Silver/Bronze) + ICWiT tiers
   /wit                         ICWiT section (mission, leadership, sponsors, events)
   /fantasy-league              Landing page + link to league.algosoc.com
   /leaderboard                 Points leaderboard (public)
