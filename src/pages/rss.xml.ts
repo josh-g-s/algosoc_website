@@ -5,7 +5,7 @@ import { isPublished } from "@/lib/content";
 import { toHTML } from "@portabletext/to-html";
 
 export async function GET(context: APIContext) {
-  const [posts, events] = await Promise.all([
+  const [posts, newsletters, recaps, events] = await Promise.all([
     client.fetch<Array<{
       title: string;
       slug: { current: string };
@@ -13,6 +13,22 @@ export async function GET(context: APIContext) {
       expiryDate?: string;
       excerpt?: string;
     }>>(`*[_type == "post"]{ title, slug, publishDate, expiryDate, excerpt }`).catch(() => []),
+    client.fetch<Array<{
+      title: string;
+      slug: { current: string };
+      weekStart?: string;
+      publishDate?: string;
+      expiryDate?: string;
+      excerpt?: string;
+    }>>(`*[_type == "newsletter"]{ title, slug, weekStart, publishDate, expiryDate, excerpt }`).catch(() => []),
+    client.fetch<Array<{
+      title: string;
+      slug: { current: string };
+      weekStart?: string;
+      publishDate?: string;
+      expiryDate?: string;
+      excerpt?: string;
+    }>>(`*[_type == "marketRecap"]{ title, slug, weekStart, publishDate, expiryDate, excerpt }`).catch(() => []),
     client.fetch<Array<{
       title: string;
       date?: string;
@@ -28,7 +44,25 @@ export async function GET(context: APIContext) {
       title: p.title,
       description: p.excerpt || "",
       pubDate: p.publishDate ? new Date(p.publishDate) : new Date(),
-      link: `/blog/${p.slug.current}`,
+      link: `/news-and-research/${p.slug.current}`,
+    }));
+
+  const newsletterItems = newsletters
+    .filter((n) => isPublished(n.publishDate, n.expiryDate))
+    .map((n) => ({
+      title: n.title,
+      description: n.excerpt || "",
+      pubDate: new Date(n.publishDate || n.weekStart || Date.now()),
+      link: `/newsletter/${n.slug.current}`,
+    }));
+
+  const recapItems = recaps
+    .filter((r) => isPublished(r.publishDate, r.expiryDate))
+    .map((r) => ({
+      title: r.title,
+      description: r.excerpt || "",
+      pubDate: new Date(r.publishDate || r.weekStart || Date.now()),
+      link: `/market-recap/${r.slug.current}`,
     }));
 
   const eventItems = events
@@ -40,7 +74,7 @@ export async function GET(context: APIContext) {
       link: "/events",
     }));
 
-  const items = [...postItems, ...eventItems]
+  const items = [...postItems, ...newsletterItems, ...recapItems, ...eventItems]
     .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
     .slice(0, 50);
 

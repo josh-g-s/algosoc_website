@@ -1,0 +1,252 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
+import { blogCategoryColours, blogCategoryLabels } from "@/lib/categories";
+import { isPublished } from "@/lib/content";
+import { formatDate } from "@/lib/format";
+
+type FeedType = "post" | "newsletter" | "market-recap";
+
+type FeedItem = {
+  type: FeedType;
+  href: string;
+  title: string;
+  badgeKey: string;
+  date?: string;
+  excerpt?: string;
+  authorLine?: string;
+  meta?: string;
+};
+
+const [rawPosts, rawIssues, rawRecaps] = await Promise.all([
+  client.fetch<Array<{
+    slug: { current: string };
+    title: string;
+    category?: string;
+    publishDate?: string;
+    expiryDate?: string;
+    excerpt?: string;
+    author?: { name?: string };
+  }>>(`*[_type == "post"]{
+    slug, title, category, publishDate, expiryDate, excerpt,
+    "author": author->{name}
+  }`).catch(() => []),
+  client.fetch<Array<{
+    slug: { current: string };
+    title: string;
+    issueNumber?: number;
+    weekStart?: string;
+    weekEnd?: string;
+    publishDate?: string;
+    expiryDate?: string;
+    excerpt?: string;
+    editor?: { name?: string };
+  }>>(`*[_type == "newsletter"]{
+    slug, title, issueNumber, weekStart, weekEnd, publishDate, expiryDate, excerpt,
+    "editor": editor->{name}
+  }`).catch(() => []),
+  client.fetch<Array<{
+    slug: { current: string };
+    title: string;
+    weekStart?: string;
+    weekEnd?: string;
+    publishDate?: string;
+    expiryDate?: string;
+    excerpt?: string;
+    authors?: Array<{ name: string }>;
+  }>>(`*[_type == "marketRecap"]{
+    slug, title, weekStart, weekEnd, publishDate, expiryDate, excerpt,
+    "authors": authors[]->{name}
+  }`).catch(() => []),
+]);
+
+const postItems: FeedItem[] = rawPosts
+  .filter((p) => isPublished(p.publishDate, p.expiryDate))
+  .map((p) => ({
+    type: "post",
+    href: `/news-and-research/${p.slug.current}`,
+    title: p.title,
+    badgeKey: p.category || "announcement",
+    date: p.publishDate,
+    excerpt: p.excerpt,
+    authorLine: p.author?.name ? `By ${p.author.name}` : undefined,
+  }));
+
+const newsletterItems: FeedItem[] = rawIssues
+  .filter((i) => isPublished(i.publishDate, i.expiryDate))
+  .map((i) => ({
+    type: "newsletter",
+    href: `/newsletter/${i.slug.current}`,
+    title: i.title,
+    badgeKey: "newsletter",
+    date: i.publishDate || i.weekStart,
+    excerpt: i.excerpt,
+    authorLine: i.editor?.name ? `By ${i.editor.name}` : undefined,
+    meta: typeof i.issueNumber === "number" ? `Issue #${i.issueNumber}` : undefined,
+  }));
+
+const recapItems: FeedItem[] = rawRecaps
+  .filter((r) => isPublished(r.publishDate, r.expiryDate))
+  .map((r) => ({
+    type: "market-recap",
+    href: `/market-recap/${r.slug.current}`,
+    title: r.title,
+    badgeKey: "market-recap",
+    date: r.publishDate || r.weekStart,
+    excerpt: r.excerpt,
+    authorLine: r.authors?.length ? `By ${r.authors.map((a) => a.name).join(", ")}` : undefined,
+    meta:
+      r.weekStart && r.weekEnd
+        ? `${formatDate(r.weekStart)} → ${formatDate(r.weekEnd)}`
+        : undefined,
+  }));
+
+const items: FeedItem[] = [...postItems, ...newsletterItems, ...recapItems].sort((a, b) =>
+  (b.date || "").localeCompare(a.date || ""),
+);
+
+const filters: Array<{ value: "all" | FeedType; label: string; count: number }> = [
+  { value: "all", label: "All", count: items.length },
+  { value: "post", label: "Blog posts", count: postItems.length },
+  { value: "newsletter", label: "Newsletters", count: newsletterItems.length },
+  { value: "market-recap", label: "Market recaps", count: recapItems.length },
+];
+---
+
+<BaseLayout
+  title="News & Research"
+  description="News and research from AlgoSoc: weekly market recaps, newsletter issues, research notes, and announcements from Imperial College's algorithmic trading society."
+  canonical="/news-and-research"
+>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">News &amp; Research</h1>
+      <p class="mt-2 text-brand-foreground-muted max-w-xl">
+        Weekly market recaps, newsletter issues, research notes, and announcements from the AlgoSoc committee.
+      </p>
+
+      <div class="mt-6 flex flex-wrap gap-2 text-sm" role="tablist" aria-label="Filter by type">
+        {filters.map((f, i) => (
+          <button
+            type="button"
+            role="tab"
+            data-filter={f.value}
+            aria-selected={i === 0 ? "true" : "false"}
+            class={`feed-filter px-3 py-1 rounded-full border text-brand-foreground transition-colors ${
+              i === 0
+                ? "bg-brand-accent text-brand-primary border-brand-accent"
+                : "border-white/10 hover:border-brand-accent/40"
+            }`}
+            disabled={f.value !== "all" && f.count === 0}
+          >
+            {f.label}
+            <span class="ml-1.5 opacity-70 text-xs">{f.count}</span>
+          </button>
+        ))}
+      </div>
+
+      {items.length === 0 ? (
+        <p class="mt-10 text-brand-foreground-muted">No posts yet. Check back soon.</p>
+      ) : (
+        <div class="mt-8 space-y-6" id="feed-list">
+          <p
+            id="feed-empty"
+            class="text-brand-foreground-muted"
+            hidden
+          >
+            Nothing in this filter yet.
+          </p>
+          {items.map((item) => {
+            const formatted = item.date ? formatDate(item.date) : "";
+            return (
+              <a
+                href={item.href}
+                data-type={item.type}
+                class="feed-item group block bg-white/5 border border-white/10 rounded-xl p-6 hover:shadow-md hover:border-brand-accent/30 transition-all"
+              >
+                <div class="flex items-center gap-3 mb-2 flex-wrap">
+                  <span
+                    class={`px-2.5 py-0.5 text-xs font-medium rounded-full ${
+                      blogCategoryColours[item.badgeKey] || "bg-white/10 text-brand-foreground"
+                    }`}
+                  >
+                    {blogCategoryLabels[item.badgeKey] || item.badgeKey}
+                  </span>
+                  {item.meta && (
+                    <span class="text-xs text-brand-foreground-muted">{item.meta}</span>
+                  )}
+                  {formatted && (
+                    <span class="text-xs text-brand-foreground-muted">{formatted}</span>
+                  )}
+                </div>
+                <h2 class="text-lg font-semibold text-brand-foreground group-hover:text-brand-accent transition-colors">
+                  {item.title}
+                </h2>
+                {item.excerpt && (
+                  <p class="mt-2 text-sm text-brand-foreground-muted leading-relaxed">{item.excerpt}</p>
+                )}
+                {item.authorLine && (
+                  <p class="mt-3 text-xs text-brand-foreground-muted">{item.authorLine}</p>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </div>
+
+  <script>
+    function initFeedFilter() {
+      const list = document.getElementById("feed-list");
+      if (!list || list.dataset.filterReady === "1") return;
+      const buttons = Array.from(
+        document.querySelectorAll<HTMLButtonElement>(".feed-filter"),
+      );
+      const items = Array.from(
+        document.querySelectorAll<HTMLAnchorElement>(".feed-item"),
+      );
+      const empty = document.getElementById("feed-empty");
+      if (!buttons.length || !items.length) return;
+      list.dataset.filterReady = "1";
+
+      const activeClasses = ["bg-brand-accent", "text-brand-primary", "border-brand-accent"];
+      const inactiveClasses = ["border-white/10", "hover:border-brand-accent/40"];
+
+      function applyFilter(filter: string) {
+        let visible = 0;
+        for (const item of items) {
+          const match = filter === "all" || item.dataset.type === filter;
+          item.toggleAttribute("hidden", !match);
+          if (match) visible++;
+        }
+        if (empty) empty.toggleAttribute("hidden", visible !== 0);
+        for (const btn of buttons) {
+          const isActive = btn.dataset.filter === filter;
+          btn.setAttribute("aria-selected", String(isActive));
+          if (isActive) {
+            btn.classList.add(...activeClasses);
+            btn.classList.remove(...inactiveClasses);
+          } else {
+            btn.classList.remove(...activeClasses);
+            btn.classList.add(...inactiveClasses);
+          }
+        }
+      }
+
+      for (const btn of buttons) {
+        btn.addEventListener("click", () => {
+          if (btn.disabled) return;
+          applyFilter(btn.dataset.filter || "all");
+        });
+      }
+    }
+
+    document.addEventListener("astro:page-load", initFeedFilter);
+    if (document.readyState !== "loading") {
+      initFeedFilter();
+    } else {
+      document.addEventListener("DOMContentLoaded", initFeedFilter);
+    }
+  </script>
+</BaseLayout>

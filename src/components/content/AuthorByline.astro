@@ -1,0 +1,63 @@
+---
+type Author = {
+  name: string;
+  role?: string;
+  photoUrl?: string;
+  linkedIn?: string;
+};
+
+interface Props {
+  authors: Author[];
+  prefix?: string;
+}
+
+const { authors = [], prefix = "By" } = Astro.props;
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0]?.toUpperCase() ?? "")
+    .join("");
+}
+---
+
+{authors.length > 0 && (
+  <div class="flex items-center flex-wrap gap-x-2 gap-y-1 text-sm text-brand-foreground-muted">
+    {prefix && <span>{prefix}</span>}
+    {authors.map((a, i) => {
+      const linkProps = a.linkedIn
+        ? { href: a.linkedIn, target: "_blank", rel: "noopener noreferrer" }
+        : {};
+      const inner = (
+        <>
+          <span class="w-6 h-6 rounded-full overflow-hidden bg-white/10 inline-flex items-center justify-center flex-none">
+            {a.photoUrl ? (
+              <img
+                src={a.photoUrl}
+                alt={a.name}
+                width={24}
+                height={24}
+                loading="lazy"
+                class="w-full h-full object-cover"
+              />
+            ) : (
+              <span class="text-[10px] font-bold text-brand-foreground">{initials(a.name)}</span>
+            )}
+          </span>
+          <span class="font-medium text-brand-foreground">{a.name}</span>
+          {a.role && <span class="opacity-70">· {a.role}</span>}
+          {i < authors.length - 1 && <span class="opacity-70">,</span>}
+        </>
+      );
+      return a.linkedIn ? (
+        <a {...linkProps} class="inline-flex items-center gap-2 hover:text-brand-foreground">
+          {inner}
+        </a>
+      ) : (
+        <span class="inline-flex items-center gap-2">{inner}</span>
+      );
+    })}
+  </div>
+)}

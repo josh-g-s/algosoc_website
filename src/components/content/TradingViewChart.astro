@@ -1,0 +1,82 @@
+---
+type Props = {
+  symbol: string;
+  interval: string;
+  startDateTime: string;
+  endDateTime: string;
+  caption?: string;
+  height?: number;
+};
+
+const { symbol, interval, startDateTime, endDateTime, caption, height = 480 } = Astro.props;
+
+// TradingView's free embed cannot pin an arbitrary historical window.
+// We derive the closest preset range from the requested duration; the chart
+// renders that range relative to "now".
+function deriveRange(start: string, end: string): string {
+  const startMs = Date.parse(start);
+  const endMs = Date.parse(end);
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) return "1M";
+  const days = (endMs - startMs) / 86_400_000;
+  if (days <= 1.5) return "1D";
+  if (days <= 7) return "5D";
+  if (days <= 35) return "1M";
+  if (days <= 100) return "3M";
+  if (days <= 200) return "6M";
+  if (days <= 400) return "12M";
+  if (days <= 2000) return "60M";
+  return "ALL";
+}
+
+const range = deriveRange(startDateTime, endDateTime);
+
+const config = {
+  autosize: false,
+  width: "100%",
+  height,
+  symbol,
+  interval,
+  range,
+  timezone: "Etc/UTC",
+  theme: "light",
+  style: "1",
+  locale: "en",
+  hide_side_toolbar: false,
+  allow_symbol_change: false,
+  save_image: false,
+  withdateranges: true,
+  details: false,
+  studies: [],
+  support_host: "https://www.tradingview.com",
+};
+
+const startLabel = new Date(startDateTime).toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+const endLabel = new Date(endDateTime).toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+---
+
+<figure class="my-8">
+  <div class="tradingview-widget-container" style={`height:${height}px;width:100%`}>
+    <div class="tradingview-widget-container__widget" style={`height:${height}px;width:100%`}></div>
+    <script
+      is:inline
+      type="text/javascript"
+      src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
+      async
+      set:html={JSON.stringify(config)}
+    />
+  </div>
+  <figcaption class="mt-2 text-xs text-brand-foreground-muted">
+    {caption ? <span class="font-medium">{caption}</span> : <span class="font-medium">{symbol}</span>}
+    <span class="opacity-70">
+      {" "}· {symbol} · {interval} · requested window {startLabel} → {endLabel}
+    </span>
+  </figcaption>
+</figure>

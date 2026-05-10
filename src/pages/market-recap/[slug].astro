@@ -1,0 +1,249 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AuthorByline from "@/components/content/AuthorByline.astro";
+import TradingViewChart from "@/components/content/TradingViewChart.astro";
+import { client } from "@/lib/sanity";
+import { toHTML } from "@portabletext/to-html";
+import { isPublished } from "@/lib/content";
+import { formatDate } from "@/lib/format";
+
+export async function getStaticPaths() {
+  const recaps = await client.fetch<Array<{ slug: { current: string } }>>(
+    `*[_type == "marketRecap"]{ slug }`,
+  );
+  return (recaps || []).map((r) => ({ params: { slug: r.slug.current } }));
+}
+
+const { slug } = Astro.params;
+
+type Recap = {
+  title: string;
+  slug: { current: string };
+  weekStart?: string;
+  weekEnd?: string;
+  publishDate?: string;
+  expiryDate?: string;
+  excerpt?: string;
+  metaDescription?: string;
+  featuredImageUrl?: string;
+  ogImageUrl?: string;
+  summary?: any[];
+  keyMetrics?: Array<{
+    ticker: string;
+    label?: string;
+    weekClose?: number;
+    weekChangePct?: number;
+    note?: string;
+  }>;
+  movers?: Array<{ ticker: string; name?: string; changePct: number; note?: string }>;
+  macroEvents?: Array<{ date: string; event: string; note?: string }>;
+  tradingViewCharts?: Array<{
+    symbol: string;
+    interval: string;
+    startDateTime: string;
+    endDateTime: string;
+    caption?: string;
+  }>;
+  quantSection?: any[];
+  assetClasses?: string[];
+  dataSource?: string;
+  disclaimer?: string;
+  authors?: Array<{ name: string; role?: string; photoUrl?: string; linkedIn?: string }>;
+};
+
+const recap = await client.fetch<Recap>(
+  `*[_type == "marketRecap" && slug.current == $slug][0]{
+    ...,
+    "featuredImageUrl": featuredImage.asset->url,
+    "ogImageUrl": ogImage.asset->url,
+    "authors": authors[]->{name, role, photoUrl, linkedIn}
+  }`,
+  { slug },
+);
+
+if (!recap || !isPublished(recap.publishDate, recap.expiryDate)) {
+  return Astro.redirect("/market-recap");
+}
+
+const range = [recap.weekStart, recap.weekEnd]
+  .filter(Boolean)
+  .map((d) => formatDate(d as string))
+  .join(" → ");
+
+const summaryHtml = recap.summary?.length ? toHTML(recap.summary) : "";
+const quantHtml = recap.quantSection?.length ? toHTML(recap.quantSection) : "";
+
+const ogImage = recap.ogImageUrl || recap.featuredImageUrl;
+const description =
+  recap.metaDescription || recap.excerpt || `Market recap for ${range || recap.title}.`;
+
+const defaultDisclaimer =
+  "For information only. Not investment advice. Past performance does not predict future returns.";
+
+function fmtNum(v?: number, digits = 2): string {
+  if (typeof v !== "number" || !Number.isFinite(v)) return "";
+  return v.toLocaleString("en-GB", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+function fmtPct(v?: number): string {
+  if (typeof v !== "number" || !Number.isFinite(v)) return "";
+  const sign = v > 0 ? "+" : "";
+  return `${sign}${v.toFixed(2)}%`;
+}
+
+function pctTone(v?: number): string {
+  if (typeof v !== "number" || !Number.isFinite(v)) return "text-brand-foreground-muted";
+  if (v > 0) return "text-emerald-600";
+  if (v < 0) return "text-rose-600";
+  return "text-brand-foreground-muted";
+}
+---
+
+<BaseLayout
+  title={recap.title}
+  description={description}
+  canonical={`/market-recap/${slug}`}
+  ogType="article"
+  ogImage={ogImage}
+>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+      <div class="flex items-center gap-3 mb-4 flex-wrap">
+        <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+          Market Recap
+        </span>
+        {range && <span class="text-sm text-brand-foreground-muted">{range}</span>}
+        {recap.assetClasses?.map((c) => (
+          <span class="px-2 py-0.5 text-[10px] uppercase tracking-wide rounded-full bg-white/10 text-brand-foreground-muted">
+            {c}
+          </span>
+        ))}
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">{recap.title}</h1>
+
+      {recap.authors?.length ? (
+        <div class="mt-4">
+          <AuthorByline authors={recap.authors} />
+        </div>
+      ) : null}
+
+      {summaryHtml && (
+        <div
+          class="mt-8 prose prose-invert max-w-none prose-li:text-brand-foreground prose-p:text-brand-foreground"
+          set:html={summaryHtml}
+        />
+      )}
+
+      {recap.keyMetrics?.length ? (
+        <section class="mt-10">
+          <h2 class="text-2xl font-semibold text-brand-foreground">Key metrics</h2>
+          <div class="mt-3 overflow-x-auto rounded-lg border border-white/10">
+            <table class="w-full text-sm">
+              <thead class="bg-white/5 text-brand-foreground-muted">
+                <tr>
+                  <th class="text-left px-4 py-2 font-medium">Ticker</th>
+                  <th class="text-right px-4 py-2 font-medium">Close</th>
+                  <th class="text-right px-4 py-2 font-medium">Week %</th>
+                  <th class="text-left px-4 py-2 font-medium">Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recap.keyMetrics.map((m) => (
+                  <tr class="border-t border-white/10">
+                    <td class="px-4 py-2 font-medium text-brand-foreground">
+                      {m.label || m.ticker}
+                    </td>
+                    <td class="px-4 py-2 text-right text-brand-foreground">
+                      {fmtNum(m.weekClose)}
+                    </td>
+                    <td class={`px-4 py-2 text-right font-medium ${pctTone(m.weekChangePct)}`}>
+                      {fmtPct(m.weekChangePct)}
+                    </td>
+                    <td class="px-4 py-2 text-brand-foreground-muted">{m.note || ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+
+      {recap.movers?.length ? (
+        <section class="mt-10">
+          <h2 class="text-2xl font-semibold text-brand-foreground">Top movers</h2>
+          <ul class="mt-3 grid sm:grid-cols-2 gap-3">
+            {recap.movers.map((m) => (
+              <li class="border border-white/10 rounded-lg p-4 bg-white/5">
+                <div class="flex items-baseline justify-between gap-3">
+                  <span class="font-medium text-brand-foreground">{m.ticker}</span>
+                  <span class={`text-sm font-medium ${pctTone(m.changePct)}`}>
+                    {fmtPct(m.changePct)}
+                  </span>
+                </div>
+                {m.name && <div class="text-xs text-brand-foreground-muted mt-0.5">{m.name}</div>}
+                {m.note && <div class="text-sm text-brand-foreground-muted mt-2">{m.note}</div>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {recap.tradingViewCharts?.length ? (
+        <section class="mt-10">
+          <h2 class="text-2xl font-semibold text-brand-foreground">Charts</h2>
+          {recap.tradingViewCharts.map((c) => (
+            <TradingViewChart
+              symbol={c.symbol}
+              interval={c.interval}
+              startDateTime={c.startDateTime}
+              endDateTime={c.endDateTime}
+              caption={c.caption}
+            />
+          ))}
+        </section>
+      ) : null}
+
+      {recap.macroEvents?.length ? (
+        <section class="mt-10">
+          <h2 class="text-2xl font-semibold text-brand-foreground">Macro events</h2>
+          <ul class="mt-3 space-y-3">
+            {recap.macroEvents.map((e) => (
+              <li class="border border-white/10 rounded-lg p-4 bg-white/5">
+                <div class="text-xs text-brand-foreground-muted">{formatDate(e.date)}</div>
+                <div class="font-medium text-brand-foreground mt-0.5">{e.event}</div>
+                {e.note && (
+                  <div class="text-sm text-brand-foreground-muted mt-2">{e.note}</div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {quantHtml && (
+        <section class="mt-12">
+          <h2 class="text-2xl font-semibold text-brand-foreground">Quant notes</h2>
+          <div
+            class="mt-3 prose prose-invert max-w-none prose-li:text-brand-foreground prose-p:text-brand-foreground"
+            set:html={quantHtml}
+          />
+        </section>
+      )}
+
+      <div class="mt-12 pt-6 border-t border-white/10 text-xs text-brand-foreground-muted">
+        {recap.dataSource && <p>Data: {recap.dataSource}</p>}
+        <p class="mt-1">{recap.disclaimer || defaultDisclaimer}</p>
+      </div>
+
+      <div class="mt-8">
+        <a href="/news-and-research" class="text-sm font-medium text-brand-accent hover:underline">
+          &larr; Back to news &amp; research
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

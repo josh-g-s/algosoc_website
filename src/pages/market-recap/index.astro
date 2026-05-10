@@ -1,0 +1,84 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { client } from "@/lib/sanity";
+import { isPublished } from "@/lib/content";
+import { formatDate } from "@/lib/format";
+
+type Recap = {
+  slug: { current: string };
+  title: string;
+  weekStart?: string;
+  weekEnd?: string;
+  publishDate?: string;
+  expiryDate?: string;
+  excerpt?: string;
+  authors?: Array<{ name: string; photoUrl?: string }>;
+  assetClasses?: string[];
+};
+
+const recaps = (
+  await client.fetch<Recap[]>(
+    `*[_type == "marketRecap"]{
+      slug, title, weekStart, weekEnd, publishDate, expiryDate, excerpt, assetClasses,
+      "authors": authors[]->{name, photoUrl}
+    } | order(coalesce(publishDate, weekStart) desc)`,
+  ) || []
+).filter((r) => isPublished(r.publishDate, r.expiryDate));
+---
+
+<BaseLayout
+  title="Market Recap"
+  description="Weekly market and quant recap from AlgoSoc: key metrics, top movers, macro events, and quant notes."
+  canonical="/market-recap"
+>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">Market Recap</h1>
+      <p class="mt-2 text-brand-foreground-muted max-w-xl">
+        Weekly market and quant recap with charts, top movers, and macro notes.
+      </p>
+
+      {recaps.length === 0 ? (
+        <p class="mt-10 text-brand-foreground-muted">No recaps yet. Check back soon.</p>
+      ) : (
+        <div class="mt-8 space-y-6">
+          {recaps.map((r) => {
+            const range = [r.weekStart, r.weekEnd]
+              .filter(Boolean)
+              .map((d) => formatDate(d as string))
+              .join(" → ");
+            return (
+              <a
+                href={`/market-recap/${r.slug.current}`}
+                class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:shadow-md hover:border-brand-accent/30 transition-all"
+              >
+                <div class="flex items-center gap-3 mb-2 flex-wrap">
+                  <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                    Market Recap
+                  </span>
+                  {range && <span class="text-xs text-brand-foreground-muted">{range}</span>}
+                  {r.assetClasses?.map((c) => (
+                    <span class="px-2 py-0.5 text-[10px] uppercase tracking-wide rounded-full bg-white/10 text-brand-foreground-muted">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+                <h2 class="text-lg font-semibold text-brand-foreground group-hover:text-brand-accent transition-colors">
+                  {r.title}
+                </h2>
+                {r.excerpt && (
+                  <p class="mt-2 text-sm text-brand-foreground-muted leading-relaxed">{r.excerpt}</p>
+                )}
+                {r.authors?.length ? (
+                  <p class="mt-3 text-xs text-brand-foreground-muted">
+                    By {r.authors.map((a) => a.name).join(", ")}
+                  </p>
+                ) : null}
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </div>
+</BaseLayout>
