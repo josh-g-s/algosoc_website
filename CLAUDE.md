@@ -10,7 +10,7 @@ Astro 6 static site for the Imperial College Algorithmic Trading Society. Must b
 | Styling | Tailwind CSS 4 (PostCSS transformer) |
 | CMS | Sanity (hosted, project `bd3zp068`, dataset `production`) |
 | Fonts | Archivo (headings), Albert Sans (body) |
-| Hosting | AWS Amplify (from `main` branch) |
+| Hosting | AWS S3 + CloudFront (private bucket via OAC), deployed by GitHub Actions from `main` |
 | Live chart | Canvas-based candlestick pulling from Yahoo Finance API |
 
 ## Running Locally
@@ -58,7 +58,7 @@ All UI changes must be tested in: **Safari (desktop and mobile)**, **Chrome**, a
 
 ## Git Workflow
 
-- **Never deploy from a non-main branch.** Amplify deploys from `main`.
+- **Never deploy from a non-main branch.** The GitHub Actions deploy workflow runs only on `main`.
 - Feature branches + pull requests required. No committing directly to `main` for code changes.
 - **Never force push to `main`.**
 - Commit messages: imperative mood, concise, describe the "why" not the "what".
