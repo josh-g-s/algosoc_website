@@ -4,7 +4,7 @@ Astro + Sanity CMS rebuild of the AlgoSoc website. Static output hosted on S3 + 
 
 **Preview:** https://d3arqmzuctjtc5.cloudfront.net/ (CloudFront default URL; production DNS at `www.algosoc.com` cuts over later)
 
-[![Build & Deploy](https://github.com/josh-g-s/icats_website/actions/workflows/deploy.yml/badge.svg)](https://github.com/josh-g-s/icats_website/actions/workflows/deploy.yml)
+[![Build & Deploy](https://github.com/josh-g-s/algosoc_website/actions/workflows/deploy.yml/badge.svg)](https://github.com/josh-g-s/algosoc_website/actions/workflows/deploy.yml)
 
 ## Tech Stack
 
@@ -107,7 +107,7 @@ Configure a webhook in Sanity (manage.sanity.io > project > API > Webhooks) to t
 | Field | Value |
 |-------|-------|
 | Name | Deploy Website |
-| URL | `https://api.github.com/repos/josh-g-s/icats_website/dispatches` |
+| URL | `https://api.github.com/repos/josh-g-s/algosoc_website/dispatches` |
 | HTTP method | POST |
 | Header | `Authorization: Bearer <github-pat>` |
 | Header | `Accept: application/vnd.github.v3+json` |
@@ -115,12 +115,12 @@ Configure a webhook in Sanity (manage.sanity.io > project > API > Webhooks) to t
 | Trigger on | Create, Update, Delete |
 | Dataset | `production` |
 
-The PAT should be a fine-grained token from the `josh-g-s` GitHub account, scoped to `josh-g-s/icats_website` only, with `Contents: Read & Write` and `Metadata: Read`.
+The PAT should be a fine-grained token from the `josh-g-s` GitHub account, scoped to `josh-g-s/algosoc_website` only, with `Contents: Read & Write` and `Metadata: Read`.
 
 ### Manual Rebuild
 
 ```bash
-gh workflow run deploy.yml --repo josh-g-s/icats_website
+gh workflow run deploy.yml --repo josh-g-s/algosoc_website
 ```
 
 ### Usage Limits
