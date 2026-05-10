@@ -15,7 +15,7 @@ The current algosoc.com is a static HTML site hosted on **AWS (S3 + CloudFront +
 | Layer | Technology | Cost |
 |-------|-----------|------|
 | Front-end | **Astro 6** (static output), TypeScript, Tailwind CSS 4 | Free |
-| Hosting | **AWS Amplify** | Free tier |
+| Hosting | **AWS S3 + CloudFront** (private bucket via OAC) | Pennies/month |
 | CMS | **Sanity** (hosted, project bd3zp068, Studio at algosoc.sanity.studio) | Free tier |
 | Database | **AWS RDS PostgreSQL** (free tier) or **Supabase** (hosted on AWS) | Free tier or ~$15/mo |
 | Auth | TBD for Fantasy League - email OTP restricted to @ic.ac.uk (MVP), Entra ID SSO later | Free |

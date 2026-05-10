@@ -3,9 +3,12 @@ name: Build & Deploy
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Manual trigger
-  repository_dispatch: # Webhook trigger from Sanity
+  workflow_dispatch:
+  repository_dispatch:
     types: [sanity-publish]
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
@@ -24,18 +27,32 @@ jobs:
           SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
           SANITY_DATASET: ${{ secrets.SANITY_DATASET }}
 
-      # --- Deploy to Azure Blob Storage ---
-      # Will migrate to AWS S3 in future.
-
-      - uses: azure/login@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
 
-      - name: Upload to Azure Blob Storage
+      - name: Sync hashed assets (long cache)
         run: |
-          az storage blob upload-batch \
-            --source dist/ \
-            --destination '$web' \
-            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} \
-            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \
-            --overwrite
+          aws s3 sync dist/ s3://algosoc-website/ \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "sitemap*.xml" \
+            --exclude "robots.txt"
+
+      - name: Sync HTML and crawler files (no cache)
+        run: |
+          aws s3 sync dist/ s3://algosoc-website/ \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --exclude "*" \
+            --include "*.html" \
+            --include "sitemap*.xml" \
+            --include "robots.txt"
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E33QZJV3IBVAJ8 \
+            --paths "/*"

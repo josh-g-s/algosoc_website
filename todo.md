@@ -11,7 +11,8 @@
 - [ ] Get AWS account access from current Head of Tech
 - [ ] Get brand colours, logos and font guidelines from Heads of Marketing
 - [ ] Set up GitHub repo (private)
-- [ ] Set up AWS infrastructure: Amplify project, RDS PostgreSQL, SES
+- [x] Set up AWS hosting: S3 bucket `algosoc-website` + CloudFront `E33QZJV3IBVAJ8` (private bucket via OAC, eu-west-2)
+- [ ] Set up remaining AWS infrastructure: RDS PostgreSQL, SES
 - [ ] Write developer onboarding README
 - [ ] Recruit 3-5 developers
 - [ ] (Nice to have) Request Entra ID app registration from ICT for future SSO
@@ -22,7 +23,7 @@
 - [ ] Favicon + web manifest (blocked on icon asset from Marketing)
 - [ ] Wire up newsletter signup form (API route + SES or subscriber table)
 - [ ] Wire up contact page email form (API route + SES)
-- [ ] Scheduled rebuilds (GitHub Actions or Amplify cron) for publishDate/expiryDate to take effect
+- [ ] Scheduled rebuilds (GitHub Actions cron) for publishDate/expiryDate to take effect
 - [ ] Calendar view for events (month grid) - nice to have
 - [ ] Content dashboard at /admin/content showing status of all content (active/scheduled/expired) - nice to have
 
@@ -46,7 +47,7 @@
 - [ ] Accessibility audit
 - [ ] SEO validation (Search Console, structured data)
 - [ ] Security review (env vars, auth flows)
-- [ ] Update Route 53 records to point at Amplify
+- [ ] Update Route 53 records to point at CloudFront (algosoc.com / www.algosoc.com -> distribution E33QZJV3IBVAJ8)
 - [ ] Final QA with Heads of Marketing + President
 
 ## Dependencies (waiting on other people)

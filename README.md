@@ -14,7 +14,7 @@ Astro + Sanity CMS rebuild of the AlgoSoc website. Static output hosted on S3 + 
 | Styling | Tailwind CSS 4 |
 | CMS | Sanity (hosted Studio at algosoc.sanity.studio) |
 | Fonts | Archivo (headings), Albert Sans (body) |
-| Hosting | Azure Blob Storage (static website) |
+| Hosting | AWS S3 + CloudFront (private bucket via OAC) |
 | CI/CD | GitHub Actions (build + deploy on content change) |
 
 ## Local Development
