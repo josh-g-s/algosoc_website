@@ -2,9 +2,9 @@
 
 Astro + Sanity CMS rebuild of the AlgoSoc website. Static output hosted on S3 + CloudFront, with automatic rebuilds triggered by Sanity content changes.
 
-**Preview:** https://icats.z16.web.core.windows.net/
+**Preview:** https://d3arqmzuctjtc5.cloudfront.net/ (CloudFront default URL; production DNS at `www.algosoc.com` cuts over later)
 
-[![Build & Deploy](https://github.com/joshthecoder-hub/icats_website/actions/workflows/deploy.yml/badge.svg)](https://github.com/joshthecoder-hub/icats_website/actions/workflows/deploy.yml)
+[![Build & Deploy](https://github.com/josh-g-s/icats_website/actions/workflows/deploy.yml/badge.svg)](https://github.com/josh-g-s/icats_website/actions/workflows/deploy.yml)
 
 ## Tech Stack
 
@@ -73,122 +73,79 @@ GitHub Actions workflow runs:
 Site is live with new content (~1-2 minutes)
 ```
 
-### Setup Steps
+### Current Setup
 
-#### 1. GitHub Actions Workflow
+The deployment pipeline is already configured. The canonical workflow lives at [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). Reference details:
 
-Create `.github/workflows/deploy.yml` in the repo:
+| Component | Value |
+|-----------|-------|
+| Trigger | Push to `main`, manual dispatch, or `repository_dispatch` type `sanity-publish` |
+| Build | Node 22, `npm ci`, `npm run build` (Astro static output to `dist/`) |
+| Target bucket | `s3://algosoc-website` (eu-west-2, private, served via OAC) |
+| CloudFront distribution | `E33QZJV3IBVAJ8` (default URL `https://d3arqmzuctjtc5.cloudfront.net`) |
+| Cache strategy | Hashed assets `max-age=31536000, immutable`; HTML, sitemap, and `robots.txt` `max-age=0, must-revalidate` |
+| Post-sync | Full `/*` CloudFront invalidation |
+| IAM identity | IAM user `github-icats-deploy` with least-privilege inline policy (S3 read/write on the bucket + `cloudfront:CreateInvalidation` on this distribution only) |
 
-```yaml
-name: Build & Deploy
+### Required GitHub Secrets
 
-on:
-  workflow_dispatch:     # Manual trigger
-  repository_dispatch:   # Webhook trigger from Sanity
-    types: [sanity-publish]
+These are already set on the repo. Listed here so they can be re-created if rotated.
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: website
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: website/package-lock.json
-
-      - run: npm ci
-      - run: npm run build
-        env:
-          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
-          SANITY_DATASET: ${{ secrets.SANITY_DATASET }}
-
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
-
-      - name: Sync to S3
-        run: aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} --delete
-
-      - name: Invalidate CloudFront
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-```
-
-#### 2. GitHub Secrets
-
-Add these secrets to the repo (Settings > Secrets and variables > Actions):
-
-| Secret | Value |
+| Secret | Notes |
 |--------|-------|
-| `SANITY_PROJECT_ID` | From Sanity dashboard |
-| `SANITY_DATASET` | From Sanity dashboard |
-| `AWS_ACCESS_KEY_ID` | From AWS IAM user with S3 + CloudFront access |
-| `AWS_SECRET_ACCESS_KEY` | Corresponding secret key |
-| `S3_BUCKET` | The S3 bucket name (e.g. `algosoc.com`) |
-| `CLOUDFRONT_DISTRIBUTION_ID` | The CloudFront distribution ID |
+| `AWS_ACCESS_KEY_ID` | Access key for IAM user `github-icats-deploy` |
+| `AWS_SECRET_ACCESS_KEY` | Corresponding secret |
+| `SANITY_PROJECT_ID` | Sanity project ID (`bd3zp068`) |
+| `SANITY_DATASET` | Sanity dataset (`production`) |
 
-#### 3. GitHub Personal Access Token
+The bucket name and distribution ID are intentionally hardcoded in `deploy.yml` rather than stored as secrets, since they are not sensitive.
 
-Create a fine-grained personal access token (Settings > Developer settings > Personal access tokens > Fine-grained tokens):
+### Sanity Webhook (Auto-Rebuild on Content Change)
 
-- **Repository access**: Select the AlgoSoc repo only
-- **Permissions**: Contents (read), Actions (write)
-- Copy the token for the next step
-
-#### 4. Sanity Webhook
-
-In the Sanity dashboard (manage.sanity.io > project > API > Webhooks), create a webhook:
+Configure a webhook in Sanity (manage.sanity.io > project > API > Webhooks) to trigger a deploy whenever content is published:
 
 | Field | Value |
 |-------|-------|
-| **Name** | Deploy Website |
-| **URL** | `https://api.github.com/repos/YOUR_USERNAME/AlgoSoc/dispatches` |
-| **HTTP method** | POST |
-| **HTTP headers** | `Authorization: Bearer YOUR_GITHUB_TOKEN` |
-| **HTTP headers** | `Accept: application/vnd.github.v3+json` |
-| **Request body** | `{"event_type": "sanity-publish"}` |
-| **Trigger on** | Create, Update, Delete |
-| **Filter** | Leave blank (triggers on all content types) |
-| **Dataset** | production |
+| Name | Deploy Website |
+| URL | `https://api.github.com/repos/josh-g-s/icats_website/dispatches` |
+| HTTP method | POST |
+| Header | `Authorization: Bearer <github-pat>` |
+| Header | `Accept: application/vnd.github.v3+json` |
+| Body | `{"event_type": "sanity-publish"}` |
+| Trigger on | Create, Update, Delete |
+| Dataset | `production` |
 
-#### 5. Usage Limits
-
-GitHub Actions free tier for private repos: **2,000 minutes/month**. Each rebuild takes ~2 minutes, giving roughly **1,000 deploys/month**. Publishing content 30+ times per day, every day, would be needed to approach this limit.
+The PAT should be a fine-grained token from the `josh-g-s` GitHub account, scoped to `josh-g-s/icats_website` only, with `Contents: Read & Write` and `Metadata: Read`.
 
 ### Manual Rebuild
 
-Trigger a rebuild manually from the GitHub Actions tab, or via CLI:
-
 ```bash
-gh workflow run deploy.yml
+gh workflow run deploy.yml --repo josh-g-s/icats_website
 ```
+
+### Usage Limits
+
+GitHub Actions free tier for private repos: 2,000 minutes/month. Each rebuild takes ~1.5 minutes, so roughly 1,300 deploys/month. Publishing content 40+ times per day every day would be needed to approach this limit. (The repo is currently public, which has unlimited Actions minutes.)
 
 ## Project Structure
 
 ```
-website/
-  public/               Static assets (images, docs, favicon)
-  src/
-    layouts/            BaseLayout.astro (HTML shell, branding, fonts)
-    pages/              Astro pages (one per route)
-    components/
-      layout/           Header, Footer
-      ui/               LiveChart, FadeIn
-      content/          MemberCard, SponsorLogo
-    lib/                Shared utilities (sanity client, categories, format, content, data)
-    styles/             globals.css (Tailwind + brand tokens + custom CSS)
-    sanity/schemas/     Sanity schema definitions (8 types)
-  sanity.config.ts      Sanity Studio config
-  sanity.cli.ts         Sanity CLI config
-  astro.config.mjs      Astro config
-  postcss.config.mjs    Tailwind/PostCSS config
+public/                 Static assets (images, docs, favicon)
+src/
+  layouts/              BaseLayout.astro (HTML shell, branding, fonts)
+  pages/                Astro pages (one per route)
+  components/
+    layout/             Header, Footer
+    ui/                 LiveChart, FadeIn
+    content/            MemberCard, SponsorLogo
+  lib/                  Shared utilities (sanity client, categories, format, content, data)
+  styles/               globals.css (Tailwind + brand tokens + custom CSS)
+  sanity/schemas/       Sanity schema definitions
+sanity.config.ts        Sanity Studio config
+sanity.cli.ts           Sanity CLI config
+astro.config.mjs        Astro config
+postcss.config.mjs      Tailwind/PostCSS config
+.github/workflows/      GitHub Actions (deploy.yml)
 ```
 
 ## Client-Side JavaScript
