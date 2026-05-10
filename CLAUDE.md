@@ -77,7 +77,9 @@ All schemas live in `src/sanity/schemas/`. The index at `src/sanity/schemas/inde
 
 | Schema | Type | Notes |
 |--------|------|-------|
-| `post` | document | Blog posts |
+| `post` | document | Blog posts (research, announcements). Author is a reference to `teamMember`. |
+| `newsletter` | document | Weekly newsletter issues. Editor + co-authors are references to `teamMember`. Sectioned body, featured links, references to upcoming events. |
+| `marketRecap` | document | Weekly market and quant recap. Authors are references to `teamMember`. Includes `keyMetrics`, `movers`, `macroEvents`, `tradingViewCharts` (live embeds with custom start/end + interval), `quantSection`. |
 | `event` | document | Events (has `attendees` count field) |
 | `teamMember` | document | Committee members (`photoUrl` is a URL, not image) |
 | `sponsor` | document | Sponsors (`logo` is a Sanity image asset) |

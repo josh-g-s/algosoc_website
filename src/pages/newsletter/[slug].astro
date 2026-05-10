@@ -1,0 +1,187 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AuthorByline from "@/components/content/AuthorByline.astro";
+import { client } from "@/lib/sanity";
+import { toHTML } from "@portabletext/to-html";
+import { isPublished } from "@/lib/content";
+import { formatDate } from "@/lib/format";
+
+export async function getStaticPaths() {
+  const issues = await client.fetch<Array<{ slug: { current: string } }>>(
+    `*[_type == "newsletter"]{ slug }`,
+  );
+  return (issues || []).map((i) => ({ params: { slug: i.slug.current } }));
+}
+
+const { slug } = Astro.params;
+
+type Issue = {
+  title: string;
+  slug: { current: string };
+  issueNumber?: number;
+  weekStart?: string;
+  weekEnd?: string;
+  publishDate?: string;
+  expiryDate?: string;
+  excerpt?: string;
+  metaDescription?: string;
+  featuredImageUrl?: string;
+  ogImageUrl?: string;
+  intro?: any[];
+  sections?: Array<{ heading: string; body?: any[] }>;
+  featuredLinks?: Array<{ title: string; url: string; source?: string; blurb?: string }>;
+  featuredEvents?: Array<{
+    _id: string;
+    title: string;
+    date?: string;
+    location?: string;
+    rsvpUrl?: string;
+    slug?: { current: string };
+  }>;
+  editor?: { name: string; role?: string; photoUrl?: string; linkedIn?: string };
+  coAuthors?: Array<{ name: string; role?: string; photoUrl?: string; linkedIn?: string }>;
+};
+
+const issue = await client.fetch<Issue>(
+  `*[_type == "newsletter" && slug.current == $slug][0]{
+    ...,
+    "featuredImageUrl": featuredImage.asset->url,
+    "ogImageUrl": ogImage.asset->url,
+    "editor": editor->{name, role, photoUrl, linkedIn},
+    "coAuthors": coAuthors[]->{name, role, photoUrl, linkedIn},
+    "featuredEvents": featuredEvents[]->{_id, title, date, location, rsvpUrl, slug}
+  }`,
+  { slug },
+);
+
+if (!issue || !isPublished(issue.publishDate, issue.expiryDate)) {
+  return Astro.redirect("/newsletter");
+}
+
+const range = [issue.weekStart, issue.weekEnd]
+  .filter(Boolean)
+  .map((d) => formatDate(d as string))
+  .join(" → ");
+
+const introHtml = issue.intro?.length ? toHTML(issue.intro) : "";
+const authors = [issue.editor, ...(issue.coAuthors || [])].filter(Boolean) as Array<{
+  name: string;
+  role?: string;
+  photoUrl?: string;
+  linkedIn?: string;
+}>;
+
+const ogImage = issue.ogImageUrl || issue.featuredImageUrl;
+const description = issue.metaDescription || issue.excerpt || `Newsletter issue: ${issue.title}.`;
+---
+
+<BaseLayout
+  title={issue.title}
+  description={description}
+  canonical={`/newsletter/${slug}`}
+  ogType="article"
+  ogImage={ogImage}
+>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-700">
+          Newsletter
+        </span>
+        {typeof issue.issueNumber === "number" && (
+          <span class="text-sm text-brand-foreground-muted">Issue #{issue.issueNumber}</span>
+        )}
+        {range && <span class="text-sm text-brand-foreground-muted">{range}</span>}
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">{issue.title}</h1>
+
+      {authors.length > 0 && (
+        <div class="mt-4">
+          <AuthorByline authors={authors} prefix="By" />
+        </div>
+      )}
+
+      {introHtml && (
+        <div
+          class="mt-8 prose prose-invert max-w-none prose-li:text-brand-foreground prose-p:text-brand-foreground"
+          set:html={introHtml}
+        />
+      )}
+
+      {issue.sections?.length ? (
+        <div class="mt-10 space-y-10">
+          {issue.sections.map((section) => (
+            <section>
+              <h2 class="text-2xl font-semibold text-brand-foreground">{section.heading}</h2>
+              {section.body?.length ? (
+                <div
+                  class="mt-3 prose prose-invert max-w-none prose-li:text-brand-foreground prose-p:text-brand-foreground"
+                  set:html={toHTML(section.body)}
+                />
+              ) : null}
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {issue.featuredEvents?.length ? (
+        <section class="mt-12">
+          <h2 class="text-2xl font-semibold text-brand-foreground">Upcoming events</h2>
+          <ul class="mt-3 space-y-3">
+            {issue.featuredEvents.map((e) => (
+              <li class="border border-white/10 rounded-lg p-4 bg-white/5">
+                <div class="font-medium text-brand-foreground">{e.title}</div>
+                <div class="text-sm text-brand-foreground-muted mt-0.5">
+                  {[e.date && formatDate(e.date), e.location].filter(Boolean).join(" · ")}
+                </div>
+                {e.rsvpUrl && (
+                  <a
+                    href={e.rsvpUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mt-2 inline-block text-sm font-medium text-brand-accent hover:underline"
+                  >
+                    RSVP
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {issue.featuredLinks?.length ? (
+        <section class="mt-12">
+          <h2 class="text-2xl font-semibold text-brand-foreground">Around the web</h2>
+          <ul class="mt-3 space-y-3">
+            {issue.featuredLinks.map((l) => (
+              <li class="border border-white/10 rounded-lg p-4 bg-white/5">
+                <a
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-medium text-brand-foreground hover:text-brand-accent"
+                >
+                  {l.title}
+                </a>
+                {l.source && (
+                  <span class="ml-2 text-xs text-brand-foreground-muted">{l.source}</span>
+                )}
+                {l.blurb && (
+                  <p class="mt-1 text-sm text-brand-foreground-muted">{l.blurb}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <div class="mt-12 pt-8 border-t border-white/10">
+        <a href="/news-and-research" class="text-sm font-medium text-brand-accent hover:underline">
+          &larr; Back to news &amp; research
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

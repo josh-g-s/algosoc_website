@@ -1,4 +1,6 @@
 import post from "./post";
+import newsletter from "./newsletter";
+import marketRecap from "./marketRecap";
 import event from "./event";
 import teamMember from "./teamMember";
 import sponsor from "./sponsor";
@@ -11,4 +13,19 @@ import algothon from "./algothon";
 import aboutPage from "./aboutPage";
 import joinPage from "./joinPage";
 
-export const schemaTypes = [post, event, teamMember, sponsor, sponsorAlgothon, resource, programme, siteConfig, witEvent, algothon, aboutPage, joinPage];
+export const schemaTypes = [
+  post,
+  newsletter,
+  marketRecap,
+  event,
+  teamMember,
+  sponsor,
+  sponsorAlgothon,
+  resource,
+  programme,
+  siteConfig,
+  witEvent,
+  algothon,
+  aboutPage,
+  joinPage,
+];

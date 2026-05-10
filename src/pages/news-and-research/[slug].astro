@@ -1,0 +1,132 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AuthorByline from "@/components/content/AuthorByline.astro";
+import { client } from "@/lib/sanity";
+import { toHTML } from "@portabletext/to-html";
+import { blogCategoryColours, blogCategoryLabels } from "@/lib/categories";
+import { isPublished } from "@/lib/content";
+import { formatDate } from "@/lib/format";
+
+export async function getStaticPaths() {
+  const posts = await client.fetch<Array<{ slug: { current: string } }>>(
+    `*[_type == "post"]{ slug }`,
+  );
+  return (posts || []).map((p) => ({ params: { slug: p.slug.current } }));
+}
+
+const { slug } = Astro.params;
+
+type Post = {
+  title: string;
+  slug: { current: string };
+  category?: string;
+  publishDate?: string;
+  expiryDate?: string;
+  excerpt?: string;
+  metaDescription?: string;
+  tags?: string[];
+  readingTime?: number;
+  featuredImageUrl?: string;
+  ogImageUrl?: string;
+  content?: any[];
+  author?: { name: string; role?: string; photoUrl?: string; linkedIn?: string };
+};
+
+const post = await client.fetch<Post>(
+  `*[_type == "post" && slug.current == $slug][0]{
+    ...,
+    "featuredImageUrl": featuredImage.asset->url,
+    "ogImageUrl": ogImage.asset->url,
+    "author": author->{name, role, photoUrl, linkedIn}
+  }`,
+  { slug },
+);
+
+if (!post || !isPublished(post.publishDate, post.expiryDate)) {
+  return Astro.redirect("/news-and-research");
+}
+
+const formatted = post.publishDate ? formatDate(post.publishDate) : "";
+const contentHtml = post.content ? toHTML(post.content) : "";
+const category = post.category || "";
+const ogImage = post.ogImageUrl || post.featuredImageUrl;
+const description =
+  post.metaDescription || post.excerpt || `Read "${post.title}" on the AlgoSoc news and research feed.`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.title,
+  ...(description && { description }),
+  ...(post.publishDate && { datePublished: post.publishDate }),
+  ...(post.author?.name && { author: { "@type": "Person", name: post.author.name } }),
+  ...(ogImage && { image: ogImage }),
+  publisher: {
+    "@type": "Organization",
+    name: "AlgoSoc - Imperial College Algorithmic Trading Society",
+    url: "https://algosoc.com",
+  },
+  mainEntityOfPage: `https://algosoc.com/news-and-research/${slug}`,
+};
+---
+
+<BaseLayout
+  title={post.title}
+  description={description}
+  canonical={`/news-and-research/${slug}`}
+  ogType="article"
+  ogImage={ogImage}
+>
+  <div class="bg-brand-primary">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+      <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+
+      <div class="flex items-center gap-3 mb-4 flex-wrap">
+        <span
+          class={`px-2.5 py-0.5 text-xs font-medium rounded-full ${
+            blogCategoryColours[category] || "bg-white/10 text-brand-foreground"
+          }`}
+        >
+          {blogCategoryLabels[category] || category}
+        </span>
+        {formatted && <span class="text-sm text-brand-foreground-muted">{formatted}</span>}
+        {typeof post.readingTime === "number" && (
+          <span class="text-sm text-brand-foreground-muted">{post.readingTime} min read</span>
+        )}
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">{post.title}</h1>
+
+      {post.author && (
+        <div class="mt-4">
+          <AuthorByline authors={[post.author]} />
+        </div>
+      )}
+
+      {post.tags?.length ? (
+        <div class="mt-4 flex flex-wrap gap-2">
+          {post.tags.map((t) => (
+            <span class="px-2 py-0.5 text-[11px] uppercase tracking-wide rounded-full bg-white/10 text-brand-foreground-muted">
+              {t}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      {contentHtml ? (
+        <div
+          class="mt-8 prose prose-invert max-w-none prose-li:text-brand-foreground prose-p:text-brand-foreground"
+          set:html={contentHtml}
+        />
+      ) : post.excerpt ? (
+        <p class="mt-8 text-brand-foreground-muted leading-relaxed">{post.excerpt}</p>
+      ) : null}
+
+      <div class="mt-12 pt-8 border-t border-white/10">
+        <a href="/news-and-research" class="text-sm font-medium text-brand-accent hover:underline">
+          &larr; Back to news &amp; research
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
