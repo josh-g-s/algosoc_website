@@ -18,7 +18,7 @@ type FeedItem = {
   meta?: string;
 };
 
-const [rawPosts, rawIssues, rawRecaps] = await Promise.all([
+const [rawPosts, rawIssues, rawRecaps, page] = await Promise.all([
   client.fetch<Array<{
     slug: { current: string };
     title: string;
@@ -58,6 +58,11 @@ const [rawPosts, rawIssues, rawRecaps] = await Promise.all([
     slug, title, weekStart, weekEnd, publishDate, expiryDate, excerpt,
     "authors": authors[]->{name}
   }`).catch(() => []),
+  client.fetch<{
+    heading?: string;
+    intro?: string;
+    emptyState?: string;
+  } | null>(`*[_type == "newsPage"][0]`).catch(() => null),
 ]);
 
 const postItems: FeedItem[] = rawPosts
@@ -111,6 +116,12 @@ const filters: Array<{ value: "all" | FeedType; label: string; count: number }> 
   { value: "newsletter", label: "Newsletters", count: newsletterItems.length },
   { value: "market-recap", label: "Market recaps", count: recapItems.length },
 ];
+
+const heading = page?.heading ?? "News & Research";
+const intro =
+  page?.intro ??
+  "Weekly market recaps, newsletter issues, research notes, and announcements from the AlgoSoc committee.";
+const emptyState = page?.emptyState ?? "No posts yet. Check back soon.";
 ---
 
 <BaseLayout
@@ -120,9 +131,9 @@ const filters: Array<{ value: "all" | FeedType; label: string; count: number }> 
 >
   <div class="bg-brand-primary">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">News &amp; Research</h1>
+      <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">{heading}</h1>
       <p class="mt-2 text-brand-foreground-muted max-w-xl">
-        Weekly market recaps, newsletter issues, research notes, and announcements from the AlgoSoc committee.
+        {intro}
       </p>
 
       <div class="mt-6 flex flex-wrap gap-2 text-sm" role="tablist" aria-label="Filter by type">
@@ -146,7 +157,7 @@ const filters: Array<{ value: "all" | FeedType; label: string; count: number }> 
       </div>
 
       {items.length === 0 ? (
-        <p class="mt-10 text-brand-foreground-muted">No posts yet. Check back soon.</p>
+        <p class="mt-10 text-brand-foreground-muted">{emptyState}</p>
       ) : (
         <div class="mt-8 space-y-6" id="feed-list">
           <p
