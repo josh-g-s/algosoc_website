@@ -77,6 +77,7 @@ All schemas live in `src/sanity/schemas/`. The index at `src/sanity/schemas/inde
 
 | Schema | Type | Notes |
 |--------|------|-------|
+| `homePage` | document | Home page editable copy (hero heading/subheading/CTAs, section heading+intro pairs). Singleton. Dynamic data (events, programmes, sponsors, stats, live chart) is not stored here. The page falls back to default copy if a field is empty. |
 | `post` | document | Blog posts (research, announcements). Author is a reference to `teamMember`. |
 | `newsletter` | document | Weekly newsletter issues. Editor + co-authors are references to `teamMember`. Sectioned body, featured links, references to upcoming events. |
 | `marketRecap` | document | Weekly market and quant recap. Authors are references to `teamMember`. Includes `keyMetrics`, `movers`, `macroEvents`, `tradingViewCharts` (live embeds with custom start/end + interval), `quantSection`. |
