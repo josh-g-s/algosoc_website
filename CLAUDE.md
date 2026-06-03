@@ -79,6 +79,7 @@ All schemas live in `src/sanity/schemas/`. The index at `src/sanity/schemas/inde
 |--------|------|-------|
 | `homePage` | document | Home page editable copy (hero heading/subheading/CTAs, section heading+intro pairs). Singleton. Dynamic data (events, programmes, sponsors, stats, live chart) is not stored here. The page falls back to default copy if a field is empty. |
 | `sponsorsPage` | document | Sponsors page editable copy (header, group headings, per-tier description/amount via `tierCopy`, CTA box). Singleton. Tier keys/names/order are fixed in `sponsors.astro`; `tierCopy` only overrides text per tier. Logos and tier assignments come from `sponsor`. Falls back to default copy. |
+| `resourcesPage` | document | Resources page editable copy (heading, intro, empty-state message). Singleton. Resource cards come from `resource`. Falls back to default copy. |
 | `post` | document | Blog posts (research, announcements). Author is a reference to `teamMember`. |
 | `newsletter` | document | Weekly newsletter issues. Editor + co-authors are references to `teamMember`. Sectioned body, featured links, references to upcoming events. |
 | `marketRecap` | document | Weekly market and quant recap. Authors are references to `teamMember`. Includes `keyMetrics`, `movers`, `macroEvents`, `tradingViewCharts` (live embeds with custom start/end + interval), `quantSection`. |
