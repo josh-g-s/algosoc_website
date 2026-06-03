@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# legacy bucket dumps (reference only, not for deploy)
+legacy-bucket/
+
 # generated types
 .astro/
 

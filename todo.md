@@ -19,7 +19,7 @@
 
 ## Phase 1: Remaining (before devs join)
 
-- [ ] Get URL for "Join via Imperial College Union" button on /join page (currently links to `#`)
+- [ ] Set the "Join via Imperial College Union" URL in Sanity (`joinPage.ctaUrl`; falls back to `#` when unset)
 - [ ] Favicon + web manifest (blocked on icon asset from Marketing)
 - [ ] Wire up newsletter signup form (API route + SES or subscriber table)
 - [ ] Wire up contact page email form (API route + SES)
@@ -30,7 +30,7 @@
 ## Phase 2: Dynamic Features (July - August 2026)
 
 - [ ] Individual event pages (`/events/[slug]`)
-- [ ] Programme subpages (`/programmes/algothon`, `/programmes/algocourse`, `/programmes/queens-tower-capital`)
+- [x] Programme subpages (`/programmes/algothon`, `/programmes/algocourse`, `/programmes/queens-tower-capital`, plus bootcamp, markets-101, weekly-quant-sessions)
 - [ ] Auth for Fantasy League + admin (restricted to @ic.ac.uk)
 - [ ] Points system backend (database schema, admin API routes)
 - [ ] Leaderboard page (live data replacing current mock)
