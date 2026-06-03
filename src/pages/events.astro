@@ -6,17 +6,29 @@ import { isPublished } from "@/lib/content";
 import { formatDateLong } from "@/lib/format";
 import { toHTML } from "@portabletext/to-html";
 
-const allEvents = await client.fetch<Array<{
-  title: string;
-  date?: string;
-  time?: string;
-  location?: string;
-  category?: string;
-  body?: any[];
-  rsvpUrl?: string;
-  publishDate?: string;
-  expiryDate?: string;
-}>>(`*[_type == "event"]{ title, date, time, location, category, body, rsvpUrl, publishDate, expiryDate }`);
+const [allEvents, page] = await Promise.all([
+  client.fetch<Array<{
+    title: string;
+    date?: string;
+    time?: string;
+    location?: string;
+    category?: string;
+    body?: any[];
+    rsvpUrl?: string;
+    publishDate?: string;
+    expiryDate?: string;
+  }>>(`*[_type == "event"]{ title, date, time, location, category, body, rsvpUrl, publishDate, expiryDate }`),
+  client.fetch<{
+    heading?: string;
+    intro?: string;
+    emptyState?: string;
+  } | null>(`*[_type == "eventsPage"][0]`).catch(() => null),
+]);
+
+const heading = page?.heading ?? "Events";
+const intro =
+  page?.intro ?? "Competitions, workshops, lectures, and socials throughout the academic year.";
+const emptyState = page?.emptyState ?? "No upcoming events. Check back soon.";
 
 const events = allEvents
   .filter((e) => isPublished(e.publishDate, e.expiryDate, e.date))
@@ -54,13 +66,13 @@ const eventsJsonLd = events.map((e) => ({
       <script type="application/ld+json" set:html={JSON.stringify(eventsJsonLd)} />
     )}
 
-    <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">Events</h1>
+    <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">{heading}</h1>
     <p class="mt-2 text-brand-foreground-muted max-w-xl">
-      Competitions, workshops, lectures, and socials throughout the academic year.
+      {intro}
     </p>
 
     {events.length === 0 ? (
-      <p class="mt-10 text-brand-foreground-muted">No upcoming events. Check back soon.</p>
+      <p class="mt-10 text-brand-foreground-muted">{emptyState}</p>
     ) : (
       <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {events.map((e) => {
