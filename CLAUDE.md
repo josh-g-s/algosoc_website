@@ -107,6 +107,16 @@ When you modify a schema file in `src/sanity/schemas/`:
 
 **Important:** `npx sanity schema deploy` only pushes the schema to the GraphQL API. To update the Studio UI (where editors add content), you must run `npx sanity deploy`.
 
+### Studio Structure
+
+The Studio sidebar uses a custom desk structure defined in `sanity.config.ts` (the `structureTool({ structure })` callback), modelled on the Queen's Tower Exchange Studio:
+
+- A **Pages** folder groups the per-route page documents. Page singletons are opened directly via `S.document().documentId(...)`. New page docs (one per route) get added to this folder as their copy is migrated out of the `.astro` templates.
+- Collections (Programmes, Events, News & Research, Team Members, Sponsors, etc.) and **Site Configuration** sit at the top level alongside Pages.
+- **Singletons** (`aboutPage`, `joinPage`, `siteConfig`) are listed in the `singletons` array and hidden from the global "Create" menu so editors cannot make duplicates, which would break the `[0]` queries the site uses to fetch them.
+
+Changes to the structure require `npx sanity deploy` to appear in the hosted Studio. They do not change document shape, so no site rebuild is needed. When adding a new page singleton, give it a fixed `_id` (see `scripts/create-about-page.mjs`) so the structure can open it directly.
+
 ### Derived Stats
 
 Some stats on the website are computed automatically from Sanity document counts. Do NOT add manual fields for these in siteConfig:
