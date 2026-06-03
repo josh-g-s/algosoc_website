@@ -2,6 +2,7 @@ import homePage from "./homePage";
 import eventsPage from "./eventsPage";
 import programmesPage from "./programmesPage";
 import algothonPage from "./algothonPage";
+import newsPage from "./newsPage";
 import sponsorsPage from "./sponsorsPage";
 import resourcesPage from "./resourcesPage";
 import post from "./post";
@@ -24,6 +25,7 @@ export const schemaTypes = [
   eventsPage,
   programmesPage,
   algothonPage,
+  newsPage,
   sponsorsPage,
   resourcesPage,
   post,

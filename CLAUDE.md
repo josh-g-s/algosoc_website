@@ -83,6 +83,7 @@ All schemas live in `src/sanity/schemas/`. The index at `src/sanity/schemas/inde
 | `eventsPage` | document | Events page editable copy (heading, intro, empty-state message). Singleton. Event cards come from `event`. Falls back to default copy. |
 | `programmesPage` | document | Programmes index editable copy (heading, intro, empty-state). Singleton. Programme cards come from `programme`; each subpage renders from its own `programme` doc. Falls back to default copy. |
 | `algothonPage` | document | Algothon landing header copy (heading, intro, empty-state) for `/programmes/algothon`. Singleton. Editions come from `algothon`. Falls back to default copy. |
+| `newsPage` | document | News & Research index editable copy (heading, intro, empty-state). Singleton. Feed items come from `post`, `newsletter`, `marketRecap`; filter labels stay in code. Falls back to default copy. |
 | `post` | document | Blog posts (research, announcements). Author is a reference to `teamMember`. |
 | `newsletter` | document | Weekly newsletter issues. Editor + co-authors are references to `teamMember`. Sectioned body, featured links, references to upcoming events. |
 | `marketRecap` | document | Weekly market and quant recap. Authors are references to `teamMember`. Includes `keyMetrics`, `movers`, `macroEvents`, `tradingViewCharts` (live embeds with custom start/end + interval), `quantSection`. |
