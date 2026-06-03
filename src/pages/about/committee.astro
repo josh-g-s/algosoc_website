@@ -12,15 +12,33 @@ type Member = {
   linkedIn?: string;
 };
 
-const cmsMembers = await client.fetch<Array<{
-  name: string;
-  role: string;
-  division: string;
-  bio?: string;
-  photoUrl?: string;
-  linkedIn?: string;
-  sortOrder?: number;
-}>>(`*[_type == "teamMember"] | order(sortOrder asc)`) || [];
+const [cmsMembers, page] = await Promise.all([
+  client.fetch<Array<{
+    name: string;
+    role: string;
+    division: string;
+    bio?: string;
+    photoUrl?: string;
+    linkedIn?: string;
+    sortOrder?: number;
+  }>>(`*[_type == "teamMember"] | order(sortOrder asc)`).catch(() => []),
+  client.fetch<{
+    heading?: string;
+    intro?: string;
+    algosocHeading?: string;
+    algosocEmpty?: string;
+    icwitHeading?: string;
+    icwitEmpty?: string;
+  } | null>(`*[_type == "committeePage"][0]`).catch(() => null),
+]);
+
+const heading = page?.heading ?? "Our Committees";
+const intro =
+  page?.intro ?? "The AlgoSoc & ICWiT committees driving our programmes, events, and partnerships.";
+const algosocHeading = page?.algosocHeading ?? "AlgoSoc Leadership";
+const algosocEmpty = page?.algosocEmpty ?? "Committee members will be announced soon.";
+const icwitHeading = page?.icwitHeading ?? "ICWiT Leadership";
+const icwitEmpty = page?.icwitEmpty ?? "ICWiT committee members will be announced soon.";
 
 const members: Member[] = cmsMembers.map((m) => ({
   name: m.name,
@@ -43,15 +61,14 @@ const witCommittee = members.filter((m) => m.division === "icwit");
   <div class="bg-brand-primary">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
-      Our Committees
+      {heading}
     </h1>
     <p class="mt-2 text-brand-foreground-muted">
-      The AlgoSoc &amp; ICWiT committees driving our programmes, events, and
-      partnerships.
+      {intro}
     </p>
 
     <h2 class="text-xl font-bold text-brand-foreground mt-12 mb-6">
-      AlgoSoc Leadership
+      {algosocHeading}
     </h2>
     {committee.length > 0 ? (
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -60,11 +77,11 @@ const witCommittee = members.filter((m) => m.division === "icwit");
         ))}
       </div>
     ) : (
-      <p class="text-brand-foreground-muted">Committee members will be announced soon.</p>
+      <p class="text-brand-foreground-muted">{algosocEmpty}</p>
     )}
 
     <h2 class="text-xl font-bold text-brand-foreground mt-16 mb-6">
-      ICWiT Leadership
+      {icwitHeading}
     </h2>
     {witCommittee.length > 0 ? (
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -73,7 +90,7 @@ const witCommittee = members.filter((m) => m.division === "icwit");
         ))}
       </div>
     ) : (
-      <p class="text-brand-foreground-muted">ICWiT committee members will be announced soon.</p>
+      <p class="text-brand-foreground-muted">{icwitEmpty}</p>
     )}
     </div>
   </div>
