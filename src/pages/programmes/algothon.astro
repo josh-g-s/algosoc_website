@@ -26,18 +26,31 @@ type AlgothonEdition = {
   sponsors?: AlgothonSponsor[];
 };
 
-const editions = await client.fetch<AlgothonEdition[]>(
-  `*[_type == "algothon"] | order(year desc){
-    title,
-    slug,
-    year,
-    date,
-    participants,
-    recap,
-    images[]{ alt, caption, asset->{ url } },
-    sponsors[]->{ name, logo{ asset->{ url } }, description, websiteUrl }
-  }`
-) || [];
+const [editions, page] = await Promise.all([
+  client.fetch<AlgothonEdition[]>(
+    `*[_type == "algothon"] | order(year desc){
+      title,
+      slug,
+      year,
+      date,
+      participants,
+      recap,
+      images[]{ alt, caption, asset->{ url } },
+      sponsors[]->{ name, logo{ asset->{ url } }, description, websiteUrl }
+    }`
+  ).catch(() => []),
+  client.fetch<{
+    heading?: string;
+    intro?: string;
+    emptyState?: string;
+  } | null>(`*[_type == "algothonPage"][0]`).catch(() => null),
+]);
+
+const heading = page?.heading ?? "Algothon";
+const intro =
+  page?.intro ??
+  "Our flagship annual London inter-university hackathon where students compete in algorithmic trading challenges. Teams build and submit trading strategies against a live or historical dataset, judged on risk-adjusted returns.";
+const emptyState = page?.emptyState ?? "Details for upcoming Algothon editions will be announced soon.";
 ---
 
 <BaseLayout
@@ -55,18 +68,15 @@ const editions = await client.fetch<AlgothonEdition[]>(
       </a>
 
       <h1 class="mt-4 text-3xl sm:text-4xl font-bold text-brand-foreground">
-        Algothon
+        {heading}
       </h1>
       <p class="mt-2 text-brand-foreground-muted max-w-2xl">
-        Our flagship annual London inter-university hackathon where students
-        compete in algorithmic trading challenges. Teams build and submit trading
-        strategies against a live or historical dataset, judged on risk-adjusted
-        returns.
+        {intro}
       </p>
 
       {editions.length === 0 ? (
         <p class="mt-10 text-brand-foreground-muted">
-          Details for upcoming Algothon editions will be announced soon.
+          {emptyState}
         </p>
       ) : (
         <div class="mt-12 space-y-16">

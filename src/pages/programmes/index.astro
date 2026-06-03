@@ -3,13 +3,25 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { client } from "@/lib/sanity";
 import { toHTML } from "@portabletext/to-html";
 
-const programmes = await client.fetch<Array<{
-  title: string;
-  slug: { current: string };
-  description?: string;
-  body?: any[];
-  stats?: Array<{ value: string; label: string }>;
-}>>(`*[_type == "programme"] | order(sortOrder asc){ title, slug, description, stats }`) || [];
+const [programmes, page] = await Promise.all([
+  client.fetch<Array<{
+    title: string;
+    slug: { current: string };
+    description?: string;
+    body?: any[];
+    stats?: Array<{ value: string; label: string }>;
+  }>>(`*[_type == "programme"] | order(sortOrder asc){ title, slug, description, stats }`).catch(() => []),
+  client.fetch<{
+    heading?: string;
+    intro?: string;
+    emptyState?: string;
+  } | null>(`*[_type == "programmesPage"][0]`).catch(() => null),
+]);
+
+const heading = page?.heading ?? "Programmes";
+const intro =
+  page?.intro ?? "Educational initiatives, competitions, and hands-on trading experience for every level.";
+const emptyState = page?.emptyState ?? "Programmes will be announced soon.";
 ---
 
 <BaseLayout
@@ -20,15 +32,14 @@ const programmes = await client.fetch<Array<{
   <div class="bg-brand-primary">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
-      Programmes
+      {heading}
     </h1>
     <p class="mt-2 text-brand-foreground-muted max-w-xl">
-      Educational initiatives, competitions, and hands-on trading experience
-      for every level.
+      {intro}
     </p>
 
     {programmes.length === 0 ? (
-      <p class="mt-10 text-brand-foreground-muted">Programmes will be announced soon.</p>
+      <p class="mt-10 text-brand-foreground-muted">{emptyState}</p>
     ) : (
       <div class="mt-10 space-y-8">
         {programmes.map((p) => (
