@@ -10,53 +10,80 @@ type Sponsor = {
   websiteUrl?: string;
 };
 
-const allSponsors = await client.fetch<Array<{
-  name: string;
-  tier: string;
-  logo?: { asset?: { url?: string } };
-  description?: string;
-  websiteUrl?: string;
-}>>(`*[_type == "sponsor"]{ name, tier, logo{ asset->{ url } }, description, websiteUrl }`);
+const [allSponsors, page] = await Promise.all([
+  client.fetch<Array<{
+    name: string;
+    tier: string;
+    logo?: { asset?: { url?: string } };
+    description?: string;
+    websiteUrl?: string;
+  }>>(`*[_type == "sponsor"]{ name, tier, logo{ asset->{ url } }, description, websiteUrl }`),
+  client.fetch<{
+    heading?: string;
+    intro?: string;
+    algosocHeading?: string;
+    icwitHeading?: string;
+    tierCopy?: Array<{ tier: string; description?: string; amount?: string }>;
+    ctaHeading?: string;
+    ctaIntro?: string;
+    ctaLabel?: string;
+    ctaUrl?: string;
+  } | null>(`*[_type == "sponsorsPage"][0]`).catch(() => null),
+]);
 
 const byTier = (tier: string): Sponsor[] =>
   allSponsors
     .filter((s) => s.tier === tier)
     .map((s) => ({ name: s.name, logo: s.logo?.asset?.url || "", description: s.description, websiteUrl: s.websiteUrl }));
 
-const platinum = byTier("platinum");
-const gold = byTier("gold");
-const silver = byTier("silver");
-const bronze = byTier("bronze");
-const icwitAlpha = byTier("icwit-alpha");
-const icwitBeta = byTier("icwit-beta");
-const icwitGamma = byTier("icwit-gamma");
+// Tier order, display names, grouping, and the default copy live in code. The
+// Sponsors Page document only overrides each tier's description + amount text,
+// looked up by tier key, so the structure cannot be broken from the Studio.
+const tierCopyByKey = new Map((page?.tierCopy ?? []).map((t) => [t.tier, t]));
 
-type TierConfig = {
-  tier: string;
-  label: string;
-  amount: string;
-  sponsors: Sponsor[];
-};
-
-const allTiers: { heading: string; tiers: TierConfig[] }[] = [
+const SPONSOR_GROUPS = [
   {
-    heading: "AlgoSoc Sponsors",
+    heading: page?.algosocHeading ?? "AlgoSoc Sponsors",
     tiers: [
-      { tier: "Platinum", label: "Exclusive naming rights on a flagship event, priority CV book access, dedicated newsletter feature, and branded presence across all channels.", amount: "Top tier", sponsors: platinum },
-      { tier: "Gold", label: "Logo on all key materials, two sponsored events, CV book access, and featured newsletter post.", amount: "Mid tier", sponsors: gold },
-      { tier: "Silver", label: "Logo on website and social media, one sponsored event, and newsletter mention.", amount: "Supporting tier", sponsors: silver },
-      { tier: "Bronze", label: "Logo on website and event programmes.", amount: "Entry tier", sponsors: bronze },
+      { key: "platinum", name: "Platinum", description: "Exclusive naming rights on a flagship event, priority CV book access, dedicated newsletter feature, and branded presence across all channels.", amount: "Top tier" },
+      { key: "gold", name: "Gold", description: "Logo on all key materials, two sponsored events, CV book access, and featured newsletter post.", amount: "Mid tier" },
+      { key: "silver", name: "Silver", description: "Logo on website and social media, one sponsored event, and newsletter mention.", amount: "Supporting tier" },
+      { key: "bronze", name: "Bronze", description: "Logo on website and event programmes.", amount: "Entry tier" },
     ],
   },
   {
-    heading: "ICWiT Sponsors (2025-26)",
+    heading: page?.icwitHeading ?? "ICWiT Sponsors (2025-26)",
     tiers: [
-      { tier: "Alpha", label: "Exclusive naming rights, priority CV book access, dedicated newsletter features, and branded presence across all channels.", amount: "2025-26", sponsors: icwitAlpha },
-      { tier: "Beta", label: "Logo on all key materials, sponsored events, CV book access, and featured newsletter posts.", amount: "2025-26", sponsors: icwitBeta },
-      { tier: "Gamma", label: "Logo on website and social media, sponsored event, and newsletter mention.", amount: "2025-26", sponsors: icwitGamma },
+      { key: "icwit-alpha", name: "Alpha", description: "Exclusive naming rights, priority CV book access, dedicated newsletter features, and branded presence across all channels.", amount: "2025-26" },
+      { key: "icwit-beta", name: "Beta", description: "Logo on all key materials, sponsored events, CV book access, and featured newsletter posts.", amount: "2025-26" },
+      { key: "icwit-gamma", name: "Gamma", description: "Logo on website and social media, sponsored event, and newsletter mention.", amount: "2025-26" },
     ],
   },
 ];
+
+const allTiers = SPONSOR_GROUPS.map((group) => ({
+  heading: group.heading,
+  tiers: group.tiers.map((t) => {
+    const override = tierCopyByKey.get(t.key);
+    return {
+      tier: t.name,
+      label: override?.description ?? t.description,
+      amount: override?.amount ?? t.amount,
+      sponsors: byTier(t.key),
+    };
+  }),
+}));
+
+const heading = page?.heading ?? "Our Sponsors";
+const intro =
+  page?.intro ??
+  "AlgoSoc is proudly supported by leading firms in quantitative finance, algorithmic trading, and technology.";
+const ctaHeading = page?.ctaHeading ?? "Interested in Sponsoring AlgoSoc?";
+const ctaIntro =
+  page?.ctaIntro ??
+  "Partner with London's largest university algorithmic trading society. Reach 1,000+ ambitious students in STEM.";
+const ctaLabel = page?.ctaLabel ?? "Get in Touch";
+const ctaUrl = page?.ctaUrl ?? "mailto:algo.trade@imperial.ac.uk";
 ---
 
 <BaseLayout
@@ -67,11 +94,10 @@ const allTiers: { heading: string; tiers: TierConfig[] }[] = [
   <div class="bg-brand-primary">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
       <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
-        Our Sponsors
+        {heading}
     </h1>
     <p class="mt-2 text-brand-foreground-muted max-w-xl">
-      AlgoSoc is proudly supported by leading firms in quantitative finance,
-      algorithmic trading, and technology.
+      {intro}
     </p>
 
     {allTiers.map((group) => (
@@ -108,17 +134,16 @@ const allTiers: { heading: string; tiers: TierConfig[] }[] = [
 
     <div class="mt-16 bg-white/5 rounded-xl p-8 text-center">
       <h2 class="text-xl font-bold text-brand-foreground">
-        Interested in Sponsoring AlgoSoc?
+        {ctaHeading}
       </h2>
       <p class="mt-2 text-brand-foreground-muted max-w-md mx-auto">
-        Partner with London&apos;s largest university algorithmic trading
-        society. Reach 1,000+ ambitious students in STEM.
+        {ctaIntro}
       </p>
       <a
-        href="mailto:algo.trade@imperial.ac.uk"
+        href={ctaUrl}
         class="inline-block mt-4 px-6 py-3 text-sm font-semibold bg-brand-accent text-brand-primary rounded-lg hover:bg-amber-400 transition-colors"
       >
-        Get in Touch
+        {ctaLabel}
       </a>
     </div>
     </div>
