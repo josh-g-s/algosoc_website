@@ -30,8 +30,25 @@ async function fetchChartData() {
   }
 }
 
-const [stats, allEvents, allSponsors, allProgrammes, chartData] = await Promise.all([
+const [stats, home, allEvents, allSponsors, allProgrammes, chartData] = await Promise.all([
   getStats(),
+  client.fetch<{
+    heroHeadingLead?: string;
+    heroHeadingHighlight?: string;
+    heroSubheading?: string;
+    heroPrimaryCtaLabel?: string;
+    heroPrimaryCtaUrl?: string;
+    heroSecondaryCtaLabel?: string;
+    heroSecondaryCtaUrl?: string;
+    programmesHeading?: string;
+    programmesIntro?: string;
+    eventsHeading?: string;
+    eventsIntro?: string;
+    sponsorsHeading?: string;
+    sponsorsIntro?: string;
+    newsletterHeading?: string;
+    newsletterIntro?: string;
+  } | null>(`*[_type == "homePage"][0]`).catch(() => null),
   client.fetch<Array<{
     title: string;
     date?: string;
@@ -63,6 +80,32 @@ const sponsors = allSponsors.map((s) => ({
   logo: s.logo?.asset?.url || "",
   description: s.description,
 }));
+
+// Editable copy from the Home Page document, with the original hardcoded
+// strings as fallbacks so the page renders even if the document is missing.
+const copy = {
+  heroHeadingLead: home?.heroHeadingLead ?? "Imperial College's Premier Society for",
+  heroHeadingHighlight: home?.heroHeadingHighlight ?? "Aspiring Traders",
+  heroSubheading:
+    home?.heroSubheading ??
+    "Building the next generation of quantitative traders, researchers, and technologists through education, competitions, and real-world experience.",
+  heroPrimaryCtaLabel: home?.heroPrimaryCtaLabel ?? "Join AlgoSoc",
+  heroPrimaryCtaUrl: home?.heroPrimaryCtaUrl ?? "/join",
+  heroSecondaryCtaLabel: home?.heroSecondaryCtaLabel ?? "Explore Programmes",
+  heroSecondaryCtaUrl: home?.heroSecondaryCtaUrl ?? "/programmes",
+  programmesHeading: home?.programmesHeading ?? "Our Programmes",
+  programmesIntro:
+    home?.programmesIntro ??
+    "From introductory courses to competitive trading, we offer something for every level of experience.",
+  eventsHeading: home?.eventsHeading ?? "Upcoming Events",
+  eventsIntro: home?.eventsIntro ?? "What's coming up this term.",
+  sponsorsHeading: home?.sponsorsHeading ?? "Our Partners",
+  sponsorsIntro: home?.sponsorsIntro ?? "Supported by leading firms in quantitative finance and trading.",
+  newsletterHeading: home?.newsletterHeading ?? "Stay in the Loop",
+  newsletterIntro:
+    home?.newsletterIntro ??
+    "Get weekly market recaps, event updates, and quant insights straight to your inbox.",
+};
 
 const organizationJsonLd = {
   "@context": "https://schema.org",
@@ -96,26 +139,24 @@ const organizationJsonLd = {
     <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
       <div class="max-w-3xl">
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-          Imperial College&apos;s Premier Society for{" "}
-          <span class="text-brand-accent whitespace-nowrap">Aspiring Traders</span>
+          {copy.heroHeadingLead}{" "}
+          <span class="text-brand-accent whitespace-nowrap">{copy.heroHeadingHighlight}</span>
         </h1>
         <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-2xl">
-          Building the next generation of quantitative traders, researchers,
-          and technologists through education, competitions, and real-world
-          experience.
+          {copy.heroSubheading}
         </p>
         <div class="mt-8 flex flex-wrap gap-4">
           <a
-            href="/join"
+            href={copy.heroPrimaryCtaUrl}
             class="px-6 py-3 text-sm font-semibold bg-brand-accent text-brand-primary rounded-lg hover:bg-amber-400 transition-colors btn-glow"
           >
-            Join AlgoSoc
+            {copy.heroPrimaryCtaLabel}
           </a>
           <a
-            href="/programmes"
+            href={copy.heroSecondaryCtaUrl}
             class="px-6 py-3 text-sm font-semibold border border-white/30 text-brand-foreground rounded-lg hover:bg-white/10 transition-colors"
           >
-            Explore Programmes
+            {copy.heroSecondaryCtaLabel}
           </a>
         </div>
       </div>
@@ -142,11 +183,10 @@ const organizationJsonLd = {
     <section class="py-16 sm:py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 class="text-2xl sm:text-3xl font-bold text-brand-foreground">
-          Our Programmes
+          {copy.programmesHeading}
         </h2>
         <p class="mt-2 text-brand-foreground-muted max-w-xl">
-          From introductory courses to competitive trading, we offer something
-          for every level of experience.
+          {copy.programmesIntro}
         </p>
         {allProgrammes.length > 0 && (
           <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -179,10 +219,10 @@ const organizationJsonLd = {
         <div class="flex items-end justify-between mb-8">
           <div>
             <h2 class="text-2xl sm:text-3xl font-bold text-brand-foreground">
-              Upcoming Events
+              {copy.eventsHeading}
             </h2>
             <p class="mt-2 text-brand-foreground-muted">
-              What&apos;s coming up this term.
+              {copy.eventsIntro}
             </p>
           </div>
           <a href="/events" class="text-sm font-medium text-brand-accent hover:underline">
@@ -219,10 +259,10 @@ const organizationJsonLd = {
     <section class="py-16 sm:py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-2xl sm:text-3xl font-bold text-brand-foreground">
-          Our Partners
+          {copy.sponsorsHeading}
         </h2>
         <p class="mt-2 text-brand-foreground-muted max-w-xl mx-auto">
-          Supported by leading firms in quantitative finance and trading.
+          {copy.sponsorsIntro}
         </p>
         <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 max-w-5xl mx-auto">
           {sponsors.map((s) => (
@@ -244,10 +284,9 @@ const organizationJsonLd = {
     style="background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-slate) 50%, var(--color-brand-primary) 100%)"
   >
     <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-2xl sm:text-3xl font-bold">Stay in the Loop</h2>
+      <h2 class="text-2xl sm:text-3xl font-bold">{copy.newsletterHeading}</h2>
       <p class="mt-2 text-brand-foreground-muted max-w-md mx-auto">
-        Get weekly market recaps, event updates, and quant insights straight
-        to your inbox.
+        {copy.newsletterIntro}
       </p>
       <form class="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
         <input
