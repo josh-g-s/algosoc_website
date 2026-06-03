@@ -1,5 +1,6 @@
 import homePage from "./homePage";
 import sponsorsPage from "./sponsorsPage";
+import resourcesPage from "./resourcesPage";
 import post from "./post";
 import newsletter from "./newsletter";
 import marketRecap from "./marketRecap";
@@ -18,6 +19,7 @@ import joinPage from "./joinPage";
 export const schemaTypes = [
   homePage,
   sponsorsPage,
+  resourcesPage,
   post,
   newsletter,
   marketRecap,

@@ -3,14 +3,21 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { client } from "@/lib/sanity";
 import { resourceTypeStyles, resourceTypeLabels, resourceCategoryLabels } from "@/lib/categories";
 
-const allResources = await client.fetch<Array<{
-  title: string;
-  category?: string;
-  fileType?: string;
-  description?: string;
-  fileUrl?: string;
-  sortOrder?: number;
-}>>(`*[_type == "resource"] | order(sortOrder asc)`);
+const [allResources, page] = await Promise.all([
+  client.fetch<Array<{
+    title: string;
+    category?: string;
+    fileType?: string;
+    description?: string;
+    fileUrl?: string;
+    sortOrder?: number;
+  }>>(`*[_type == "resource"] | order(sortOrder asc)`),
+  client.fetch<{
+    heading?: string;
+    intro?: string;
+    emptyState?: string;
+  } | null>(`*[_type == "resourcesPage"][0]`).catch(() => null),
+]);
 
 const resources = allResources.map((r) => ({
   title: r.title,
@@ -20,6 +27,12 @@ const resources = allResources.map((r) => ({
   fileUrl: r.fileUrl || "",
   sortOrder: r.sortOrder ?? 99,
 }));
+
+const heading = page?.heading ?? "Resources";
+const intro =
+  page?.intro ??
+  "Lecture slides, problem sets, code notebooks, and career guides for AlgoSoc members.";
+const emptyState = page?.emptyState ?? "No resources yet. Check back soon.";
 ---
 
 <BaseLayout
@@ -30,15 +43,14 @@ const resources = allResources.map((r) => ({
   <div class="bg-brand-primary">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">
-      Resources
+      {heading}
     </h1>
     <p class="mt-2 text-brand-foreground-muted max-w-xl">
-      Lecture slides, problem sets, code notebooks, and career guides for
-      AlgoSoc members.
+      {intro}
     </p>
 
     {resources.length === 0 ? (
-      <p class="mt-10 text-brand-foreground-muted">No resources yet. Check back soon.</p>
+      <p class="mt-10 text-brand-foreground-muted">{emptyState}</p>
     ) : (
       <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {resources.map((r) => (
