@@ -6,7 +6,7 @@ import { schemaTypes } from "./src/sanity/schemas";
 // (under "Pages" / "Site Configuration") and hidden from the global "Create"
 // menu so editors cannot make duplicates, which would break the `[0]` queries
 // the site uses to fetch them.
-const singletons = ["homePage", "aboutPage", "joinPage", "siteConfig"];
+const singletons = ["homePage", "aboutPage", "sponsorsPage", "joinPage", "siteConfig"];
 
 export default defineConfig({
   name: "algosoc",
@@ -33,6 +33,9 @@ export default defineConfig({
                     S.listItem()
                       .title("About Page")
                       .child(S.document().schemaType("aboutPage").documentId("aboutPage")),
+                    S.listItem()
+                      .title("Sponsors Page")
+                      .child(S.document().schemaType("sponsorsPage").documentId("sponsorsPage")),
                     S.listItem()
                       .title("Join Page")
                       .child(S.document().schemaType("joinPage").documentId("joinPage")),
