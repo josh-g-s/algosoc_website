@@ -3,6 +3,7 @@ import eventsPage from "./eventsPage";
 import programmesPage from "./programmesPage";
 import algothonPage from "./algothonPage";
 import newsPage from "./newsPage";
+import witPage from "./witPage";
 import sponsorsPage from "./sponsorsPage";
 import resourcesPage from "./resourcesPage";
 import post from "./post";
@@ -26,6 +27,7 @@ export const schemaTypes = [
   programmesPage,
   algothonPage,
   newsPage,
+  witPage,
   sponsorsPage,
   resourcesPage,
   post,
