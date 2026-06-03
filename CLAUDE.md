@@ -42,6 +42,8 @@ See [brand.md](brand.md) for colours, typography, and usage rules. Never hardcod
 
 All displayable data must come from Sanity. The only non-CMS data is `navItems` in `src/lib/data.ts`. Stats must go through `getStats()` in `lib/content.ts`, never imported directly.
 
+Editable page copy (headings, intros, CTAs, empty-state messages) lives in per-route singleton documents (see [Page Content Pattern](#page-content-pattern)). The original strings remain in the `.astro` templates only as fallbacks for build resilience, not as the source of truth.
+
 ## Shared Utilities
 
 | Module | Purpose |
@@ -120,11 +122,65 @@ When you modify a schema file in `src/sanity/schemas/`:
 
 The Studio sidebar uses a custom desk structure defined in `sanity.config.ts` (the `structureTool({ structure })` callback), modelled on the Queen's Tower Exchange Studio:
 
-- A **Pages** folder groups the per-route page documents. Page singletons are opened directly via `S.document().documentId(...)`. New page docs (one per route) get added to this folder as their copy is migrated out of the `.astro` templates.
-- Collections (Programmes, Events, News & Research, Team Members, Sponsors, etc.) and **Site Configuration** sit at the top level alongside Pages.
-- **Singletons** (`aboutPage`, `joinPage`, `siteConfig`) are listed in the `singletons` array and hidden from the global "Create" menu so editors cannot make duplicates, which would break the `[0]` queries the site uses to fetch them.
+- A **Pages** folder groups the per-route page documents (the `*Page` singletons). They are opened directly via `S.document().documentId(...)`. See [Page Content Pattern](#page-content-pattern) for how page copy is modelled and how to add a page.
+- Collections (Programmes, Events, News & Research, Team Members, Sponsors, etc.) and **Site Configuration** sit at the top level alongside Pages. Collections hold the data shown on pages; the `*Page` singletons hold only the surrounding copy.
+- **Singletons** (every `*Page` document plus `siteConfig`) are listed in the `singletons` array and hidden from the global "Create" menu so editors cannot make duplicates, which would break the `[0]` queries the site uses to fetch them.
 
 Changes to the structure require `npx sanity deploy` to appear in the hosted Studio. They do not change document shape, so no site rebuild is needed. When adding a new page singleton, give it a fixed `_id` (see `scripts/create-about-page.mjs`) so the structure can open it directly.
+
+### Page Content Pattern
+
+Each route's editable copy (headings, intros, section labels, CTAs, empty-state messages) lives in its own **per-route singleton document** named `<route>Page` (e.g. `homePage`, `eventsPage`, `witPage`). These are the documents under the Studio **Pages** folder. The actual content shown on a page (event cards, programme entries, team members, sponsor logos, etc.) comes from separate **collection** document types, never the page singleton.
+
+**Page singletons and the collections they display**
+
+| Page singleton (copy) | Route | Collection(s) shown |
+|-----------------------|-------|---------------------|
+| `homePage` | `/` | `event`, `programme`, `sponsor` + stats |
+| `aboutPage` | `/about` | (copy only) + stats |
+| `committeePage` | `/about/committee` | `teamMember` (split by `division`) |
+| `eventsPage` | `/events` | `event` |
+| `programmesPage` | `/programmes` | `programme` |
+| `algothonPage` | `/programmes/algothon` | `algothon` |
+| `newsPage` | `/news-and-research` | `post`, `newsletter`, `marketRecap` |
+| `sponsorsPage` | `/sponsors` | `sponsor` (+ `sponsorAlgothon`) |
+| `resourcesPage` | `/resources` | `resource` |
+| `witPage` | `/wit` | `witEvent`, `teamMember` (icwit) + stats |
+| `joinPage` | `/join` | `programme`, `event` (auto-populated) |
+
+Several collections feed more than one page: `teamMember` → committee + WiT; `event` → events + home + join; `sponsor` → sponsors + home; `programme` → programmes + home + join. `siteConfig` is global, not a page. The five `programme`-backed subpages (AlgoCourse, Bootcamp, Markets 101, Queen's Tower Capital, Weekly Quant Sessions) have no page singleton: each renders entirely from its own `programme` document (title, description, stats, curriculum, body).
+
+**Conventions**
+
+- **Fixed `_id`**: each page singleton uses a fixed `_id` equal to its schema name (e.g. `homePage`), so the structure opens it directly. The one exception is `siteConfig` (auto-generated id, referenced by type).
+- **Fallbacks**: every page fetches `*[_type == "<route>Page"][0]` and renders each field with the original hardcoded string as a fallback (`page?.heading ?? "Events"`). This keeps the build working before the document is seeded and resilient to empty fields. When changing default copy, update **both** the `.astro` fallback and the seed script.
+- **Seed scripts**: each page has `scripts/create-<route>-page.mjs` that creates/updates the document with the current copy. Run with `SANITY_TOKEN=<token> node scripts/create-<route>-page.mjs`. Exception: `create-programmes-page.mjs` seeds both `programmesPage` and `algothonPage`.
+- **Tokens in copy**: intro/description text can embed `{token}` placeholders replaced with live stats at render time: `{partners}` (aboutPage pillars), `{members}` and `{events}` (witPage intro). Replacement happens in the page's `.astro` frontmatter.
+
+**Adding or migrating a page**
+
+1. Create `src/sanity/schemas/<route>Page.ts` (document type; fields for the editable copy; use `fieldsets` to group related fields).
+2. Register it in `src/sanity/schemas/index.ts` (import + add to `schemaTypes`).
+3. Add it to the **Pages** folder and the `singletons` array in `sanity.config.ts`.
+4. Add `scripts/create-<route>-page.mjs` seeding the current copy with a fixed `_id`.
+5. Wire the `.astro` page: fetch the doc, replace hardcoded copy with `page?.field ?? "<original>"` fallbacks. Keep dynamic data (collections, stats) untouched.
+6. Add a row to the schema table above; build with `npm run build` and `npx sanity build`.
+7. After merge: `npx sanity deploy`, then run the seed script.
+
+**Still hardcoded (not yet migrated)**
+
+- `/newsletter` (`newsletter/index.astro`) and `/market-recap` (`market-recap/index.astro`) listing-page headers.
+- The `[slug]` detail templates (`post`, `newsletter`, `marketRecap`) render content documents directly and have only structural labels.
+- Per-page SEO `description` (meta) and the headline stat **labels** (e.g. "Members", "Events Hosted") are intentionally left in the templates.
+
+**Planned: full consolidation under Pages**
+
+The intent is to make the Studio sidebar's top level just the **Pages** folder, nesting collections under their page. This is a `sanity.config.ts` structure-only change (no schema or data change). Open decision:
+
+- **Full nest**: most minimal sidebar, but shared collections (`teamMember`, `event`, `sponsor`, `programme`) land under a single page even though they are used on several.
+- **Hybrid**: nest only the page-specific collections (`algothon`, `resource`, `witEvent`) under their page; keep shared collections and `siteConfig` at the top level.
+
+Do **not** consolidate by embedding collection data inside page documents: that loses references and reuse, makes editing clunky, and breaks the derived stat counts.
 
 ### Derived Stats
 
