@@ -16,7 +16,7 @@ The current algosoc.com is a static HTML site hosted on **AWS (S3 + CloudFront +
 |-------|-----------|------|
 | Front-end | **Astro 6** (static output), TypeScript, Tailwind CSS 4 | Free |
 | Hosting | **AWS S3 + CloudFront** (private bucket via OAC) | Pennies/month |
-| CMS | **Sanity** (hosted, project bd3zp068, Studio at algosoc.sanity.studio) | Free tier |
+| CMS | **Sanity** (hosted, project bd3zp068, Studio at icats.sanity.studio) | Free tier |
 | Database | **AWS RDS PostgreSQL** (free tier) or **Supabase** (hosted on AWS) | Free tier or ~$15/mo |
 | Auth | TBD for Fantasy League - email OTP restricted to @ic.ac.uk (MVP), Entra ID SSO later | Free |
 | Storage | **S3** (already exists) | Pennies/month |
@@ -36,8 +36,12 @@ algosoc.com/
   /programmes                  All programmes overview
   /events                      Calendar + list view (filterable by category)
   /events/[slug]               Individual event page with RSVP link
-  /blog                        Blog listing (newsletter, market recap, research)
-  /blog/[slug]                 Individual post (rich text, LaTeX, embedded charts)
+  /news-and-research           News & research listing (research, announcements)
+  /news-and-research/[slug]    Individual post (rich text, LaTeX, embedded charts)
+  /newsletter                  Newsletter issue listing
+  /newsletter/[slug]           Individual newsletter issue
+  /market-recap                Market recap listing
+  /market-recap/[slug]         Individual market & quant recap
   /resources                   Member resources (bootcamp, notebooks, problem sets, reading lists)
   /sponsors                    AlgoSoc tiers (Platinum/Gold/Silver/Bronze) + ICWiT tiers
   /wit                         ICWiT section (mission, leadership, sponsors, events)
@@ -60,10 +64,16 @@ algosoc.com/
 | `sponsor` | name, tier, logo (image asset), websiteUrl, description | Sponsors page |
 | `resource` | title, description, category, fileUrl, sortOrder | Resources page |
 | `programme` | title, slug, description, body, stats | Programmes page |
+| `algothon` | year, images, sponsors, participants, recap | Algothon editions |
+| `newsletter` | title, slug, editor, coAuthors, sections, featuredLinks, upcomingEvents | News & Research (newsletter) |
+| `marketRecap` | title, slug, authors, keyMetrics, movers, macroEvents, tradingViewCharts, quantSection | Market Recap |
+| `sponsorAlgothon` | name, tier, logo (image asset), websiteUrl, description | Algothon sponsors |
 | `witEvent` | title, description, sortOrder | WiT page recurring event types |
+| `aboutPage` | mission statement, pillars (singleton) | About page |
+| `joinPage` | heading, intro, ctaLabel, ctaUrl, ctaNote (singleton) | Join page |
 | `siteConfig` | contactEmail, stats (members, founded, offers, witMembers) | Global settings |
 
-Stats for Industry Partners and Events Hosted are derived automatically from document counts.
+Stats for Industry Partners, Events Hosted, and ICWiT Events are derived automatically from document counts.
 
 ---
 
@@ -198,7 +208,7 @@ src/
     content/            MemberCard, SponsorLogo
   lib/                  Shared utilities (sanity client, categories, format, content, data)
   styles/               globals.css (Tailwind + brand tokens + custom CSS)
-  sanity/schemas/       Sanity schema definitions (8 types)
+  sanity/schemas/       Sanity schema definitions (14 types)
 scripts/                Data import scripts
 CLAUDE.md               Agent instructions (single source of truth)
 AGENTS.md               Points agents to CLAUDE.md

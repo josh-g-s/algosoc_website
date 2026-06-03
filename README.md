@@ -12,7 +12,7 @@ Astro + Sanity CMS rebuild of the AlgoSoc website. Static output hosted on S3 + 
 |-------|-----------|
 | Framework | Astro 6 (static output), TypeScript strict |
 | Styling | Tailwind CSS 4 |
-| CMS | Sanity (hosted Studio at algosoc.sanity.studio) |
+| CMS | Sanity (hosted Studio at icats.sanity.studio) |
 | Fonts | Archivo (headings), Albert Sans (body) |
 | Hosting | AWS S3 + CloudFront (private bucket via OAC) |
 | CI/CD | GitHub Actions (build + deploy on content change) |
@@ -41,9 +41,9 @@ Ask a team member for the values, or find them in the Sanity dashboard (manage.s
 
 ## Sanity Studio
 
-- **URL**: https://algosoc.sanity.studio/
+- **URL**: https://icats.sanity.studio/
 
-Content types: Blog Posts, Events, Team Members, Sponsors, Resources, Programmes, WIT Events, Site Config (singleton).
+Content types: Blog Posts, Newsletters, Market Recaps, Events, Team Members, Sponsors, Algothon Sponsors, Resources, Programmes, Algothon editions, WIT Events, About Page (singleton), Join Page (singleton), Site Config (singleton).
 
 To redeploy the Studio after schema changes:
 
@@ -137,7 +137,7 @@ src/
   components/
     layout/             Header, Footer
     ui/                 LiveChart, FadeIn
-    content/            MemberCard, SponsorLogo
+    content/            MemberCard, SponsorLogo, AuthorByline, TradingViewChart
   lib/                  Shared utilities (sanity client, categories, format, content, data)
   styles/               globals.css (Tailwind + brand tokens + custom CSS)
   sanity/schemas/       Sanity schema definitions
