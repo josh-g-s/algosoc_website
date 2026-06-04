@@ -16,7 +16,7 @@ export default defineType({
           { title: "Career", value: "career" },
           { title: "Bootcamp", value: "bootcamp" },
           { title: "AlgoCourse", value: "algocourse" },
-          { title: "QTC", value: "qtc" },
+          { title: "QTE", value: "qtc" },
           { title: "Quant Sessions", value: "quant-sessions" },
           { title: "EduFund", value: "edufund" },
           { title: "Reading List", value: "reading-list" },

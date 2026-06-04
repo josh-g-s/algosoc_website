@@ -21,7 +21,7 @@ const doc = {
   _id: "aboutPage",
   _type: "aboutPage",
   mission:
-    "We exist to bridge the gap between academic knowledge and industry practice. Through our educational programmes, flagship competitions, and student-managed quantitative fund, we give members the skills, experience, and connections they need to launch careers in quantitative finance.",
+    "We exist to bridge the gap between academic knowledge and industry practice. Through our educational programmes, flagship competitions, and live-market exchange simulation, we give members the skills, experience, and connections they need to launch careers in quantitative finance.",
   pillars: [
     {
       _key: "educate",
@@ -33,13 +33,13 @@ const doc = {
       _key: "compete",
       title: "Compete",
       description:
-        "Algothon, Estimathon, and our internal QTC competition give members hands-on trading experience in competitive settings.",
+        "Algothon, Estimathon, and our internal Queen's Tower Exchange competition give members hands-on trading experience in competitive settings.",
     },
     {
       _key: "invest",
       title: "Invest",
       description:
-        "Queen's Tower Capital is our student-managed quantitative fund, where analysts build and execute real trading strategies across Market Making, Market Taking, and Options divisions.",
+        "Queen's Tower Exchange is our live-market exchange simulation, where student teams trade and compete across eight specialised arms, from Market Making and Options to Execution, FPGA, and Agentic AI.",
     },
     {
       _key: "connect",

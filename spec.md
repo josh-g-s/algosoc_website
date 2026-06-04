@@ -88,7 +88,7 @@ Stats for Industry Partners, Events Hosted, and ICWiT Events are derived automat
 
 ### Events Calendar
 - List view (filterable by category)
-- Category filters (Bootcamp, AlgoCourse, Trading Sim, Algothon, QTC, Social, ICWiT, etc.)
+- Category filters (Bootcamp, AlgoCourse, Trading Sim, Algothon, QTE, Social, ICWiT, etc.)
 - RSVP links to external tools (Google Forms, Eventbrite)
 - iCal export per event
 - Past events archive
@@ -100,7 +100,7 @@ Stats for Industry Partners, Events Hosted, and ICWiT Events are derived automat
 
 ### Member Resources
 - Public access - no auth required
-- Categories: Bootcamp, AlgoCourse, QTC, Reading Lists, Career Guides
+- Categories: Bootcamp, AlgoCourse, QTE, Reading Lists, Career Guides
 - Files in S3
 
 ### Points / Leaderboard

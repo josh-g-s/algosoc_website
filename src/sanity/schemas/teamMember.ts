@@ -21,7 +21,7 @@ export default defineType({
           { title: "Technology", value: "technology" },
           { title: "Marketing", value: "marketing" },
           { title: "ICWiT", value: "icwit" },
-          { title: "QTC", value: "qtc" },
+          { title: "QTE", value: "qtc" },
           { title: "EduFund", value: "edufund" },
         ],
       },

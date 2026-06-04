@@ -10,7 +10,7 @@ const programme = await client.fetch<{
   body?: any[];
   stats?: Array<{ value: string; label: string }>;
   highlights?: string[];
-}>(`*[_type == "programme" && slug.current == "queens-tower-capital"][0]{
+}>(`*[_type == "programme" && slug.current == "queens-tower-exchange"][0]{
   title, slug, description, body, stats, highlights
 }`);
 
@@ -18,9 +18,9 @@ const bodyHtml = programme?.body ? toHTML(programme.body) : "";
 ---
 
 <BaseLayout
-  title="Queen's Tower Capital"
-  description="AlgoSoc's student-managed quantitative fund. Develop, backtest, and implement trading strategies with real portfolio management and risk assessment."
-  canonical="/programmes/queens-tower-capital"
+  title="Queen's Tower Exchange"
+  description="AlgoSoc's live-market exchange simulation. Student teams trade across equities, FX, commodities, fixed income, and options on real L2 order-book data, competing across eight specialised arms."
+  canonical="/programmes/queens-tower-exchange"
 >
   <div class="bg-brand-primary min-h-[60vh]">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
@@ -73,7 +73,7 @@ const bodyHtml = programme?.body ? toHTML(programme.body) : "";
         </div>
       ) : (
         <p class="mt-10 text-brand-foreground-muted">
-          Details for Queen's Tower Capital will be announced soon.
+          Details for Queen's Tower Exchange will be announced soon.
         </p>
       )}
     </div>
