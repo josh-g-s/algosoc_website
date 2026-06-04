@@ -8,6 +8,8 @@ export default defineType({
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
     defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title" }, validation: (r) => r.required() }),
     defineField({ name: "description", title: "Short Description", type: "text", rows: 3 }),
+    defineField({ name: "externalUrl", title: "External Link URL", type: "url", description: "Optional. If set, the programme page shows a prominent call-to-action button linking here (e.g. a dedicated external site)." }),
+    defineField({ name: "externalUrlLabel", title: "External Link Label", type: "string", description: "Button text for the external link (defaults to 'Learn more')." }),
     defineField({
       name: "body",
       title: "Body",

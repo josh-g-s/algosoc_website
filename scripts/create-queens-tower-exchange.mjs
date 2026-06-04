@@ -20,72 +20,15 @@ if (!process.env.SANITY_TOKEN) {
   process.exit(1);
 }
 
-// One bullet block per QTE arm. Sub-descriptions are derived from QTE's
-// published role list (queenstowerexchange.com): market makers, takers,
-// hedge-fund researchers, execution specialists, hardware engineers,
-// technologists, and AI developers.
-const arms = [
-  ["a1", "Market Making - inventory risk, spread quoting, hedging"],
-  ["a2", "Market Taking - signal research, backtesting, execution"],
-  ["a3", "Options - volatility trading, Greeks management, options strategies"],
-  ["a4", "Fundamentals - hedge-fund-style research and valuation"],
-  ["a5", "Execution - optimal execution and slippage minimisation"],
-  ["a6", "FPGA - low-latency hardware engineering"],
-  ["a7", "Technology - exchange and trading infrastructure"],
-  ["a8", "Agentic AI - autonomous trading agents"],
-];
-
+// The QTE page is intentionally minimal: a one-line blurb plus a prominent
+// button out to the dedicated QTE site, where the full detail lives.
 const doc = {
   _type: "programme",
   title: "Queen's Tower Exchange",
   slug: { _type: "slug", current: "queens-tower-exchange" },
-  description:
-    "AlgoSoc's flagship live-market exchange simulation. Student teams trade across equities, FX, commodities, fixed income, and options on real L2 order-book data, competing simultaneously across eight specialised arms.",
-  highlights: ["8 Arms, One Exchange", "Live Market Simulation", "Real L2 Data"],
-  stats: [
-    { _key: "arms", value: "8", label: "Arms" },
-    { _key: "assets", value: "5", label: "Asset Classes" },
-  ],
-  body: [
-    {
-      _type: "block",
-      _key: "intro",
-      style: "normal",
-      markDefs: [],
-      children: [
-        {
-          _type: "span",
-          _key: "intro-s",
-          text:
-            "QTE runs as a single connected exchange where student teams take on distinct roles and compete across asset classes at the same time. The eight arms:",
-          marks: [],
-        },
-      ],
-    },
-    ...arms.map(([key, text]) => ({
-      _type: "block",
-      _key: key,
-      style: "normal",
-      listItem: "bullet",
-      level: 1,
-      markDefs: [],
-      children: [{ _type: "span", _key: `${key}-s`, text, marks: [] }],
-    })),
-    {
-      _type: "block",
-      _key: "outro",
-      style: "normal",
-      markDefs: [],
-      children: [
-        {
-          _type: "span",
-          _key: "outro-s",
-          text: "Performance is tracked across the exchange with live rankings and internal competition.",
-          marks: [],
-        },
-      ],
-    },
-  ],
+  description: "A closed exchange where Imperial students trade.",
+  externalUrl: "https://queenstowerexchange.com",
+  externalUrlLabel: "Press to learn more",
   sortOrder: 2,
 };
 
