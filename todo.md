@@ -30,7 +30,7 @@
 ## Phase 2: Dynamic Features (July - August 2026)
 
 - [ ] Individual event pages (`/events/[slug]`)
-- [x] Programme subpages (`/programmes/algothon`, `/programmes/algocourse`, `/programmes/queens-tower-capital`, plus bootcamp, markets-101, weekly-quant-sessions)
+- [x] Programme subpages (`/programmes/algothon`, `/programmes/algocourse`, `/programmes/queens-tower-exchange`, plus bootcamp, markets-101, weekly-quant-sessions)
 - [ ] Auth for Fantasy League + admin (restricted to @ic.ac.uk)
 - [ ] Points system backend (database schema, admin API routes)
 - [ ] Leaderboard page (live data replacing current mock)

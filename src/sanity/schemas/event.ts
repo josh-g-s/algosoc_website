@@ -23,7 +23,7 @@ export default defineType({
           { title: "Competition", value: "competition" },
           { title: "Workshop", value: "workshop" },
           { title: "Quant Session", value: "quant-session" },
-          { title: "QTC", value: "qtc" },
+          { title: "QTE", value: "qtc" },
           { title: "ICWiT", value: "icwit" },
           { title: "Company Presentation", value: "company-presentation" },
         ],

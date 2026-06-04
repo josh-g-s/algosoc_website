@@ -9,6 +9,8 @@ export default defineConfig({
   redirects: {
     "/blog": "/news-and-research",
     "/blog/[slug]": "/news-and-research/[slug]",
+    // Queen's Tower Capital was rebranded to Queen's Tower Exchange (QTC -> QTE).
+    "/programmes/queens-tower-capital": "/programmes/queens-tower-exchange",
   },
   vite: {
     css: {

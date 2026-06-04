@@ -14,7 +14,7 @@ interface Props {
 
 const {
   title = "AlgoSoc - Imperial College Algorithmic Trading Society",
-  description = "Imperial College London's premier society for algorithmic trading, quantitative finance, and market technology. Home to Algothon, Queen's Tower Capital, and AlgoCourse.",
+  description = "Imperial College London's premier society for algorithmic trading, quantitative finance, and market technology. Home to Algothon, Queen's Tower Exchange, and AlgoCourse.",
   canonical,
   ogType = "website",
   ogImage = "/og-image.png",
@@ -31,7 +31,7 @@ const fullTitle = title.includes("AlgoSoc") ? title : `${title} | AlgoSoc`;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="keywords" content="Imperial College, algorithmic trading, AlgoSoc, quantitative finance, Queen's Tower Capital, Algothon, quant finance society" />
+    <meta name="keywords" content="Imperial College, algorithmic trading, AlgoSoc, quantitative finance, Queen's Tower Exchange, Algothon, quant finance society" />
     {canonical && <link rel="canonical" href={canonical} />}
 
     <!-- Open Graph -->

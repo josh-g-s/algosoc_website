@@ -35,7 +35,7 @@ export const eventCategoryLabels: Record<string, string> = {
   algocourse: "AlgoCourse",
   workshop: "Workshop",
   "quant-session": "Quant Session",
-  qtc: "QTC",
+  qtc: "QTE",
   icwit: "ICWiT",
   "company-presentation": "Company Presentation",
 };
@@ -60,7 +60,7 @@ export const resourceCategoryLabels: Record<string, string> = {
   career: "Career",
   bootcamp: "Bootcamp",
   algocourse: "AlgoCourse",
-  qtc: "QTC",
+  qtc: "QTE",
   "quant-sessions": "Quant Sessions",
   edufund: "EduFund",
   "reading-list": "Reading List",

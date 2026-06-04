@@ -10,17 +10,23 @@ const programme = await client.fetch<{
   body?: any[];
   stats?: Array<{ value: string; label: string }>;
   highlights?: string[];
-}>(`*[_type == "programme" && slug.current == "queens-tower-capital"][0]{
-  title, slug, description, body, stats, highlights
+  externalUrl?: string;
+  externalUrlLabel?: string;
+}>(`*[_type == "programme" && slug.current == "queens-tower-exchange"][0]{
+  title, slug, description, body, stats, highlights, externalUrl, externalUrlLabel
 }`);
 
 const bodyHtml = programme?.body ? toHTML(programme.body) : "";
+
+// QTE has its own dedicated site; the page funnels visitors there.
+const ctaUrl = programme?.externalUrl ?? "https://queenstowerexchange.com";
+const ctaLabel = programme?.externalUrlLabel ?? "Press to learn more";
 ---
 
 <BaseLayout
-  title="Queen's Tower Capital"
-  description="AlgoSoc's student-managed quantitative fund. Develop, backtest, and implement trading strategies with real portfolio management and risk assessment."
-  canonical="/programmes/queens-tower-capital"
+  title="Queen's Tower Exchange"
+  description="AlgoSoc's live-market exchange simulation. Student teams trade across equities, FX, commodities, fixed income, and options on real L2 order-book data, competing across eight specialised arms."
+  canonical="/programmes/queens-tower-exchange"
 >
   <div class="bg-brand-primary min-h-[60vh]">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
@@ -41,6 +47,20 @@ const bodyHtml = programme?.body ? toHTML(programme.body) : "";
             <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-3xl">
               {programme.description}
             </p>
+          )}
+
+          {ctaUrl && (
+            <div class="mt-10">
+              <a
+                href={ctaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-glow inline-flex items-center gap-2 rounded-full bg-brand-accent px-8 py-4 text-base font-semibold text-brand-primary transition hover:scale-[1.02]"
+              >
+                {ctaLabel}
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
           )}
 
           {programme.highlights && programme.highlights.length > 0 && (
@@ -73,7 +93,7 @@ const bodyHtml = programme?.body ? toHTML(programme.body) : "";
         </div>
       ) : (
         <p class="mt-10 text-brand-foreground-muted">
-          Details for Queen's Tower Capital will be announced soon.
+          Details for Queen's Tower Exchange will be announced soon.
         </p>
       )}
     </div>

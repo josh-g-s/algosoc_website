@@ -110,7 +110,7 @@ const doc = {
       style: "normal",
       listItem: "bullet",
       level: 1,
-      children: [{ _type: "span", _key: "s9", text: "A great starting point before diving into AlgoCourse or Queen's Tower Capital" }],
+      children: [{ _type: "span", _key: "s9", text: "A great starting point before diving into AlgoCourse or Queen's Tower Exchange" }],
       markDefs: [],
     },
   ],

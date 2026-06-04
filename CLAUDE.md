@@ -148,7 +148,7 @@ Each route's editable copy (headings, intros, section labels, CTAs, empty-state 
 | `witPage` | `/wit` | `witEvent`, `teamMember` (icwit) + stats |
 | `joinPage` | `/join` | `programme`, `event` (auto-populated) |
 
-Several collections feed more than one page: `teamMember` → committee + WiT; `event` → events + home + join; `sponsor` → sponsors + home; `programme` → programmes + home + join. `siteConfig` is global, not a page. The five `programme`-backed subpages (AlgoCourse, Bootcamp, Markets 101, Queen's Tower Capital, Weekly Quant Sessions) have no page singleton: each renders entirely from its own `programme` document (title, description, stats, curriculum, body).
+Several collections feed more than one page: `teamMember` → committee + WiT; `event` → events + home + join; `sponsor` → sponsors + home; `programme` → programmes + home + join. `siteConfig` is global, not a page. The five `programme`-backed subpages (AlgoCourse, Bootcamp, Markets 101, Queen's Tower Exchange, Weekly Quant Sessions) have no page singleton: each renders entirely from its own `programme` document (title, description, stats, curriculum, body).
 
 **Conventions**
 
