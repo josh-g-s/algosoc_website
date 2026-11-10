@@ -5,7 +5,14 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://algosoc.com",
   output: "static",
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // Redirect stubs, not real pages.
+      filter: (page) =>
+        !page.includes("/programmes/queens-tower-capital") &&
+        !/\/blog\/?$/.test(page),
+    }),
+  ],
   redirects: {
     "/blog": "/news-and-research",
     "/blog/[slug]": "/news-and-research/[slug]",
