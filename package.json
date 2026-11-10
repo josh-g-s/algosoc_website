@@ -20,8 +20,10 @@
     "@tailwindcss/typography": "^0.5.19",
     "astro": "^6.0.8",
     "postcss": "^8.5.8",
-    "sanity": "^5.18.0",
     "styled-components": "^6.3.12",
     "tailwindcss": "^4.2.2"
+  },
+  "devDependencies": {
+    "sanity": "^5.31.2"
   }
 }
