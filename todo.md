@@ -8,8 +8,8 @@
 
 ## Phase 0: Foundations (Now - April 2026)
 
-- [x] Get AWS account access from current Head of Tech (inferred: the S3/CloudFront deploy workflow runs successfully; the Head can confirm)
-- [x] Get brand colours, logos and font guidelines from Heads of Marketing (brand.md exists and is applied; logo and font files unverified, ask the society)
+- [ ] Get AWS account access from current Head of Tech (unverified, ask the society; deploy runs use repo secrets, which does not show the account was handed over)
+- [ ] Get brand colours, logos and font guidelines from Heads of Marketing (brand.md exists and colours are applied; logo and font files unverified, ask the society)
 - [x] Set up GitHub repo (it is public, josh-g-s/algosoc_website, not private as first planned)
 - [x] Set up AWS hosting: S3 bucket `algosoc-website` + CloudFront `E33QZJV3IBVAJ8` (private bucket via OAC, eu-west-2)
 - [ ] Set up remaining AWS infrastructure: RDS PostgreSQL, SES (unverified, ask the society; nothing in the repo uses either yet)
@@ -20,11 +20,11 @@
 ## Phase 1: Remaining (before devs join)
 
 - [ ] Set the "Join via Imperial College Union" URL in Sanity (`joinPage.ctaUrl`; falls back to `#` when unset). Still open: the live /join page has a `#` link (checked 10 Nov 2026). Society-owned content
-- [x] Favicon: `public/favicon.ico` and `favicon.svg` are in and linked on the live site
+- [ ] Favicon: `public/favicon.ico` is served but not linked, and `BaseLayout.astro` links only `favicon.svg`, which is the Astro starter logo. Needs the AlgoSoc icon from Marketing
 - [ ] Web manifest: none in the repo, and /manifest.webmanifest returns 404 live
 - [ ] Wire up newsletter signup form (API route + SES or subscriber table). Still open: the home-page form has no action or handler. Needs a backend, since the site is static
 - [ ] Wire up contact page email form (API route + SES). Still open: the form has no action or handler (a mailto link exists). Needs a backend
-- [ ] Scheduled rebuilds (GitHub Actions cron) for publishDate/expiryDate to take effect. Still open: `deploy.yml` triggers only on push and repository_dispatch. Changing it needs the Head's OK
+- [ ] Scheduled rebuilds (GitHub Actions cron) for publishDate/expiryDate to take effect. Still open: `deploy.yml` triggers only on push, repository_dispatch and workflow_dispatch. Changing it needs the Head's OK
 - [ ] Calendar view for events (month grid) - nice to have
 - [ ] Content dashboard at /admin/content showing status of all content (active/scheduled/expired) - nice to have
 
