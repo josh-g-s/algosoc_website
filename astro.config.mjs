@@ -6,6 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://algosoc.com",
   output: "static",
+  // Astro 7 defaults to "jsx", which drops the space between text and inline elements.
+  compressHTML: true,
   integrations: [sitemap()],
   redirects: {
     "/blog": "/news-and-research",
