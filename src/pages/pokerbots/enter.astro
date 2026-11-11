@@ -13,9 +13,12 @@ const field = "rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-bran
       <h1 class="text-3xl font-bold text-brand-foreground">Enter All In</h1>
       <p class="mt-3 text-brand-foreground-muted">You need an Imperial College email address (imperial.ac.uk or ic.ac.uk). Teams have one or two people. <a href="/pokerbots/" class="underline text-brand-accent">Back to the competition page</a>.</p>
 
-      <p class="mt-3 text-sm text-brand-foreground-muted">Privacy: we store your Imperial email address, your name, your team and your bot files. Only AlgoSoc organisers can see them. They are deleted after the event.</p>
+      <p class="mt-3 text-sm text-brand-foreground-muted">Privacy: your team name and results may be shown publicly. Your email address, name and bot files are seen only by AlgoSoc organisers and are deleted within 90 days of the event.</p>
 
       <p id="notice" class="mt-6 text-brand-foreground" role="status" aria-live="polite">Loading...</p>
+
+      <button id="denied-out" type="button" class="mt-4 hidden underline text-brand-accent">Sign out and use another account</button>
+      <button id="retry-btn" type="button" class="mt-4 hidden underline text-brand-accent">Try again</button>
 
       <section id="signin" class="mt-8 hidden">
         <p class="text-brand-foreground">Sign in or create an account with your Imperial email. We send you a code to confirm it.</p>
@@ -136,29 +139,43 @@ const field = "rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-bran
     });
   }
 
+  async function locked(form: HTMLElement, fn: () => Promise<void>) {
+    const btns = Array.from(form.querySelectorAll<HTMLButtonElement>("button"));
+    if (btns.some((b) => b.disabled)) return;
+    btns.forEach((b) => (b.disabled = true));
+    try { await fn(); } finally { btns.forEach((b) => (b.disabled = false)); }
+  }
+
   async function refresh() {
     const r = await api("/me");
-    if (r.code === 403) { say(String(r.body.error || "A verified Imperial College email address is required.")); show("panel", false); show("signin", false); return; }
-    if (r.code !== 200) { fail(r); return; }
+    show("retry-btn", false);
+    if (r.code === 403) { say(String(r.body.error || "A verified Imperial College email address is required.")); show("panel", false); show("signin", false); show("denied-out", true); return; }
+    if (r.code !== 200) { fail(r); show("noteam", false); show("hasteam", false); show("retry-btn", true); return; }
     say("");
     showTeam(r.body.team);
     if (r.body.team) await loadSubs();
   }
 
-  $("create-form").addEventListener("submit", async (e) => {
+  $("create-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    locked($("create-form"), async () => {
     const r = await api("/team", { method: "POST", body: JSON.stringify({ name: (document.getElementById("team-name") as HTMLInputElement).value.trim() }) });
     if (r.code === 200) { say("Team created."); showTeam(r.body); await loadSubs(); } else fail(r);
+    });
   });
-  $("join-form").addEventListener("submit", async (e) => {
+  $("join-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    locked($("join-form"), async () => {
     const r = await api("/team/join", { method: "POST", body: JSON.stringify({ code: (document.getElementById("join-code") as HTMLInputElement).value.trim().toLowerCase() }) });
     if (r.code === 200) { say("Joined."); showTeam(r.body); await loadSubs(); } else fail(r);
+    });
   });
-  $("leave-btn").addEventListener("click", async () => {
+  $("leave-btn").addEventListener("click", () => {
     if (!window.confirm("Leave this team?")) return;
-    const r = await api("/team/leave", { method: "POST", body: "{}" });
-    if (r.code === 200) { say("You left the team."); showTeam(null); } else fail(r);
+    locked($("hasteam"), async () => {
+      const r = await api("/team/leave", { method: "POST", body: "{}" });
+      if (r.code === 200) { say("You left the team."); showTeam(null); } else fail(r);
+    });
   });
 
   $("upload-form").addEventListener("submit", async (e) => {
@@ -178,8 +195,8 @@ const field = "rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-bran
       Object.entries(p.body.upload.fields as Record<string, string>).forEach(([k, v]) => fd.append(k, v));
       fd.append("file", f);
       let up: Response;
-      try { up = await fetch(p.body.upload.url, { method: "POST", body: fd }); } catch { say("Upload failed. Check your connection and try again."); return; }
-      if (!up.ok) { say(`Upload failed (${up.status}). Try again.`); return; }
+      try { up = await fetch(p.body.upload.url, { method: "POST", body: fd }); } catch { say("Upload failed. Check your connection. You can try again in 5 minutes."); return; }
+      if (!up.ok) { say(`Upload failed (${up.status}). You can try again in 5 minutes.`); return; }
       let c = await api(`/submissions/${p.body.id}/confirm`, { method: "POST", body: "{}" });
       if (c.code === 409) { await new Promise((r) => setTimeout(r, 2000)); c = await api(`/submissions/${p.body.id}/confirm`, { method: "POST", body: "{}" }); }
       if (c.code !== 200) { fail(c); return; }
@@ -195,6 +212,8 @@ const field = "rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-bran
     try { await startSignIn(cfg!, "/pokerbots/enter/"); } catch (e) { say(e instanceof Error ? e.message : "Could not start sign-in."); }
   });
   $("signout-btn").addEventListener("click", () => signOut(cfg!));
+  $("denied-out").addEventListener("click", () => signOut(cfg!));
+  $("retry-btn").addEventListener("click", () => { say("Loading..."); refresh(); });
 
   (async () => {
     cfg = await loadConfig("apiUrl");
