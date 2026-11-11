@@ -92,7 +92,7 @@ const eventsJsonLd = events.map((e) => ({
                 >
                   {eventCategoryLabels[category] || category}
                 </span>
-                <h3 class="mt-2 text-lg font-semibold text-brand-foreground">{e.title}</h3>
+                <h2 class="mt-2 text-lg font-semibold text-brand-foreground">{e.title}</h2>
                 {e.body && (
                   <div class="mt-1 text-sm text-brand-foreground-muted prose prose-sm max-w-none" set:html={toHTML(e.body)} />
                 )}
