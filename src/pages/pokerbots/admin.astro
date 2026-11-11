@@ -22,6 +22,8 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
 
       <p id="notice" class="mt-6 text-brand-foreground" role="status" aria-live="polite">Loading...</p>
 
+      <button id="denied-out" type="button" class="mt-4 hidden underline text-brand-accent">Sign out and use another account</button>
+
       <section id="signin" class="mt-8 hidden">
         <p class="text-brand-foreground">Sign in with the Imperial email on the organiser list.</p>
         <button id="signin-btn" type="button" class={`${btn} mt-4`}>Sign in</button>
@@ -91,10 +93,15 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
   async function api(path: string, init?: RequestInit): Promise<{ code: number; body: any }> {
     const t = idToken();
     if (!t || !cfg) { needSignIn("Your session ended. Sign in again."); return { code: 401, body: {} }; }
-    const r = await fetch(cfg.controlApiUrl + path, {
-      ...init,
-      headers: { authorization: t.token, "content-type": "application/json" },
-    });
+    let r: Response;
+    try {
+      r = await fetch(cfg.controlApiUrl + path, {
+        ...init,
+        headers: { authorization: t.token, "content-type": "application/json" },
+      });
+    } catch {
+      return { code: 0, body: {} };
+    }
     let body: any = {};
     try { body = await r.json(); } catch { /* empty body */ }
     if (r.status === 401) { dropToken(); needSignIn("Your session ended. Sign in again."); }
@@ -106,6 +113,14 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
     show("panel", false);
     show("signin", true);
     say(text);
+  }
+
+  function denied() {
+    if (timer) clearInterval(timer);
+    show("panel", false);
+    show("signin", false);
+    show("denied-out", true);
+    say("This account is not on the organiser list.");
   }
 
   function ago(sec: number) {
@@ -136,8 +151,9 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
 
   async function poll() {
     const r = await api("/runner/status");
-    if (r.code === 403) { if (timer) clearInterval(timer); show("panel", false); show("signin", false); say("This account is not on the organiser list."); return; }
-    if (r.code === 200) { say(""); render(r.body); }
+    if (r.code === 403) { denied(); return; }
+    if (r.code === 0) say("Network error. Retrying.");
+    else if (r.code === 200) { say(""); render(r.body); }
     else if (r.code !== 401) say(`Status check failed (${r.code}). Retrying.`);
   }
 
@@ -147,7 +163,8 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
     const r = await api("/runner/command", { method: "POST", body: JSON.stringify({ action, arg }) });
     if (r.code === 202) say(r.body.instance_started ? "Sent. The machine is starting; this takes a few minutes." : "Sent.");
     else if (r.code === 409) say(String(r.body.error || "Busy. Wait for the current action to finish."));
-    else if (r.code === 403) say("This account is not on the organiser list.");
+    else if (r.code === 403) denied();
+    else if (r.code === 0) { say("Network error. Not sent. Try again."); lock(false); }
     else if (r.code !== 401) say(`Not sent (${r.code}): ${r.body.error || "unknown error"}`);
     await poll();
   }
@@ -169,6 +186,7 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
     try { await startSignIn(cfg!, "/pokerbots/admin/"); } catch (e) { say(e instanceof Error ? e.message : "Could not start sign-in."); }
   });
   $("signout-btn").addEventListener("click", () => signOut(cfg!));
+  $("denied-out").addEventListener("click", () => signOut(cfg!));
 
   (async () => {
     cfg = await loadConfig();
@@ -177,7 +195,7 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
     if (!t) { needSignIn(""); return; }
     $("who").textContent = t.email;
     show("panel", true);
-    await poll();
     timer = window.setInterval(() => { if (!document.hidden) poll(); }, 5000);
+    await poll();
   })();
 </script>

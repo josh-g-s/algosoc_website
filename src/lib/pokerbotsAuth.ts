@@ -72,15 +72,28 @@ export async function finishSignIn(cfg: PokerbotsConfig): Promise<string> {
   const s = store();
   if (!s) throw new Error("Session storage is blocked in this browser.");
   const p = new URLSearchParams(location.search);
-  if (p.get("error")) throw new Error("Sign-in was refused: " + (p.get("error_description") || p.get("error")));
+  const wantState = s.getItem(K_STATE) || "";
+  const verifier = s.getItem(K_VERIFIER) || "";
+  const clear = () => {
+    s.removeItem(K_VERIFIER);
+    s.removeItem(K_STATE);
+  };
+  const err = p.get("error");
+  if (err) {
+    clear();
+    throw new Error("Sign-in was refused" + (/^[a-z_]{1,40}$/.test(err) ? " (" + err + ")." : "."));
+  }
   const code = p.get("code");
-  if (!code || p.get("state") !== s.getItem(K_STATE)) throw new Error("Sign-in response did not match. Start again.");
+  if (!code || !wantState || !verifier || p.get("state") !== wantState) {
+    clear();
+    throw new Error("Sign-in response did not match. Start again.");
+  }
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     client_id: cfg.clientId,
     code,
     redirect_uri: location.origin + CALLBACK_PATH,
-    code_verifier: s.getItem(K_VERIFIER) || "",
+    code_verifier: verifier,
   });
   const r = await fetch(`https://${cfg.hostedUiDomain}/oauth2/token`, {
     method: "POST",
