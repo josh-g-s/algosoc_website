@@ -1,10 +1,13 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://algosoc.com",
   output: "static",
+  // Astro 7 defaults to "jsx", which drops the space between text and inline elements.
+  compressHTML: true,
   integrations: [
     sitemap({
       // Redirect stubs, not real pages.
@@ -20,8 +23,6 @@ export default defineConfig({
     "/programmes/queens-tower-capital": "/programmes/queens-tower-exchange",
   },
   vite: {
-    css: {
-      transformer: "postcss",
-    },
+    plugins: [tailwindcss()],
   },
 });
