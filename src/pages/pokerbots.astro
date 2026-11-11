@@ -5,7 +5,7 @@ import { jsonLd } from "@/lib/content";
 
 // Showcase page for the All In pokerbots competition. The game's own rules, format
 // and starter kit ship with the game (see docs/pokerbots.md), so this page is
-// code-owned rather than Sanity-backed. Facts here must match the rulebook PDF.
+// code-owned rather than Sanity-backed. Facts here must match the confirmed event details.
 const email = await getContactEmail();
 
 const facts = [
@@ -16,14 +16,13 @@ const facts = [
 ];
 
 const stages = [
-  { day: "Day 1", stage: "Group rounds (3)", detail: "Every team plays 200 eight-bot sit-and-gos per group, per round. Later rounds count for more. 16 teams go through." },
-  { day: "Day 2", stage: "Round of 16", detail: "Two tables of eight, 500 sit-and-gos each. Top 4 per table go through." },
-  { day: "Day 2", stage: "Quarter-final", detail: "One table of eight, 500 sit-and-gos. Top 4 go through." },
-  { day: "Day 2", stage: "Semi-finals and final", detail: "Heads-up duplicate matches of 250 deals, each played from both seats so luck of the cards cancels out." },
+  { stage: "Group rounds (3)", detail: "Every team plays 200 eight-bot sit-and-gos per group, per round. Later rounds count for more. 16 teams go through." },
+  { stage: "Round of 16", detail: "Two tables of eight, 500 sit-and-gos each. Top 4 per table go through." },
+  { stage: "Quarter-final", detail: "One table of eight, 500 sit-and-gos. Top 4 go through." },
+  { stage: "Semi-finals and final", detail: "Heads-up duplicate matches of 250 deals, each played from both seats so luck of the cards cancels out." },
 ];
 
 const downloads = [
-  { href: "/docs/All-In-Rulebook.pdf", title: "Rulebook (PDF)", note: "Eligibility, format, betting, scoring, prizes and conduct." },
   { href: "/docs/algosoc-pokerbots-kit.zip", title: "Starter kit (ZIP)", note: "Bot template, example bots, the game engine and a local simulator. Python 3.9 or later, no extra packages." },
 ];
 
@@ -56,7 +55,7 @@ const eventJsonLd = {
       <h1 class="mt-8 text-3xl sm:text-4xl font-bold text-brand-foreground">All In: Pokerbots</h1>
       <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-3xl">
         Write a Python bot that plays No-Limit Texas Hold'em, then watch it face every other
-        team's bot in a two-day tournament. Your bot gets 10 milliseconds per decision, no
+        team's bot in a tournament. Your bot gets 10 milliseconds per decision, no
         network, and no second chances.
       </p>
 
@@ -81,11 +80,11 @@ const eventJsonLd = {
         </li>
         <li class="bg-white/5 border border-white/10 rounded-xl p-5">
           <span class="text-sm font-bold text-brand-accent">3</span>
-          <p class="mt-2 text-brand-foreground">Day 1 opens with a one-hour build phase, then the group rounds. Uploads stay open between every stage.</p>
+          <p class="mt-2 text-brand-foreground">Upload your bot once registration opens. The group rounds come first, then the knockouts.</p>
         </li>
         <li class="bg-white/5 border border-white/10 rounded-xl p-5">
           <span class="text-sm font-bold text-brand-accent">4</span>
-          <p class="mt-2 text-brand-foreground">Each game starts everyone on 2,000 chips with rising blinds. Points go to finishing places, and the best teams reach the knockouts on Day 2.</p>
+          <p class="mt-2 text-brand-foreground">Each game starts everyone on 2,000 chips with rising blinds. Points go to finishing places, and the best teams reach the knockouts.</p>
         </li>
       </ol>
 
@@ -94,7 +93,6 @@ const eventJsonLd = {
         {stages.map((s) => (
           <div class="bg-white/5 border border-white/10 rounded-xl p-5 sm:flex sm:gap-6">
             <div class="sm:w-56 shrink-0">
-              <div class="text-sm font-bold text-brand-accent">{s.day}</div>
               <div class="font-semibold text-brand-foreground">{s.stage}</div>
             </div>
             <p class="mt-2 sm:mt-0 text-sm text-brand-foreground-muted">{s.detail}</p>
@@ -102,8 +100,8 @@ const eventJsonLd = {
         ))}
       </div>
       <p class="mt-4 text-sm text-brand-foreground-muted max-w-3xl">
-        The rulebook is the authority. Organisers may adjust the format between stages and will
-        announce any change beforehand.
+        Full rules are being updated for the Saturday event. The format may change, and
+        organisers will announce any change beforehand.
       </p>
 
       <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-6">Downloads</h2>
