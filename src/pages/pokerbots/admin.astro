@@ -85,7 +85,7 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
   let cfg: PokerbotsConfig | null = null;
   let timer: number | undefined;
   let busy = false;
-  let pollMsg = false;
+  let pollMsg = true;
   let polling = false;
 
   function say(text: string, own = false) { notice.textContent = text; pollMsg = own; }
