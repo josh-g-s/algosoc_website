@@ -113,12 +113,13 @@ const downloads = [
 </BaseLayout>
 
 <script>
-  // The sign-up link shows once the site has its sign-in settings (public/pokerbots-config.json).
+  // The sign-up link shows only when sign-up is switched on (signupOpen) and the sign-in settings are set
+  // (public/pokerbots-config.json). The sign-up and sign-in pages work without it, but stay unlinked.
   (async () => {
     try {
       const r = await fetch("/pokerbots-config.json", { cache: "no-store" });
       const c = r.ok ? await r.json() : {};
-      if (c.hostedUiDomain && c.clientId && c.apiUrl) {
+      if (c.signupOpen === true && c.hostedUiDomain && c.clientId && c.apiUrl) {
         document.getElementById("signup-soon")?.classList.add("hidden");
         document.getElementById("signup-open")?.classList.remove("hidden");
       }
