@@ -1,0 +1,228 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+// Participant page for All In: sign in with an Imperial email, make or join a team of up to two,
+// and upload a bot. All checks are made by the API; this page only presents the forms.
+const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-primary disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent";
+const field = "rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-brand-foreground";
+---
+
+<BaseLayout title="Enter All In" description="Sign in, make a team and upload your bot for the AlgoSoc pokerbots competition." canonical="/pokerbots/enter" noindex>
+  <div class="bg-brand-primary min-h-[60vh]">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl font-bold text-brand-foreground">Enter All In</h1>
+      <p class="mt-3 text-brand-foreground-muted">You need an Imperial College email address (imperial.ac.uk or ic.ac.uk). Teams have one or two people. <a href="/pokerbots/" class="underline text-brand-accent">Back to the competition page</a>.</p>
+
+      <p class="mt-3 text-sm text-brand-foreground-muted">Privacy: your team name and results may be shown publicly. Your email address, name and bot files are seen only by AlgoSoc organisers and are deleted within 90 days of the event.</p>
+
+      <p id="notice" class="mt-6 text-brand-foreground" role="status" aria-live="polite">Loading...</p>
+
+      <button id="denied-out" type="button" class="mt-4 hidden underline text-brand-accent">Sign out and use another account</button>
+      <button id="retry-btn" type="button" class="mt-4 hidden underline text-brand-accent">Try again</button>
+
+      <section id="signin" class="mt-8 hidden">
+        <p class="text-brand-foreground">Sign in or create an account with your Imperial email. We send you a code to confirm it.</p>
+        <button id="signin-btn" type="button" class={`${btn} mt-4`}>Sign in</button>
+      </section>
+
+      <section id="panel" class="mt-8 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-brand-foreground-muted">
+          <span>Signed in as <strong id="who" class="text-brand-foreground"></strong></span>
+          <button id="signout-btn" type="button" class="underline text-brand-accent">Sign out</button>
+        </div>
+
+        <div id="noteam" class="hidden">
+          <h2 class="mt-8 text-xl font-bold text-brand-foreground">Make a team</h2>
+          <form id="create-form" class="mt-3 flex flex-wrap items-end gap-3">
+            <label><span class="block mb-1 text-brand-foreground">Team name (3 to 32 characters)</span>
+              <input id="team-name" type="text" minlength="3" maxlength="32" required class={field} /></label>
+            <button type="submit" class={btn}>Create team</button>
+          </form>
+
+          <h2 class="mt-8 text-xl font-bold text-brand-foreground">Or join your partner's team</h2>
+          <form id="join-form" class="mt-3 flex flex-wrap items-end gap-3">
+            <label><span class="block mb-1 text-brand-foreground">Join code (8 characters)</span>
+              <input id="join-code" type="text" minlength="8" maxlength="8" required autocomplete="off" autocapitalize="none" class={field} /></label>
+            <button type="submit" class={btn}>Join team</button>
+          </form>
+        </div>
+
+        <div id="hasteam" class="hidden">
+          <h2 class="mt-8 text-xl font-bold text-brand-foreground">Your team</h2>
+          <dl class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4"><dt class="text-sm font-bold text-brand-accent">Name</dt><dd id="t-name" class="mt-1 text-brand-foreground break-words"></dd></div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4"><dt class="text-sm font-bold text-brand-accent">Join code</dt><dd id="t-code" class="mt-1 text-brand-foreground font-mono"></dd></div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4"><dt class="text-sm font-bold text-brand-accent">Members</dt><dd id="t-members" class="mt-1 text-brand-foreground"></dd></div>
+          </dl>
+          <p class="mt-2 text-sm text-brand-foreground-muted">Give your partner the join code. Only teams with an uploaded bot take part.</p>
+          <button id="leave-btn" type="button" class="mt-2 underline text-brand-accent text-sm">Leave this team</button>
+
+          <h2 class="mt-10 text-xl font-bold text-brand-foreground">Upload your bot</h2>
+          <p class="mt-2 text-sm text-brand-foreground-muted">A .zip file up to 5 MB with <code>bot.py</code> at the top level (not inside a folder). Test it with the starter kit first. You can upload again, once every 5 minutes; the latest accepted upload is the one that plays.</p>
+          <form id="upload-form" class="mt-3 flex flex-wrap items-end gap-3">
+            <label><span class="block mb-1 text-brand-foreground">Bot archive</span>
+              <input id="bot-file" type="file" accept=".zip,application/zip" required class="text-brand-foreground" /></label>
+            <button id="upload-btn" type="submit" class={btn}>Upload</button>
+          </form>
+
+          <h2 class="mt-10 text-xl font-bold text-brand-foreground">Your uploads</h2>
+          <ul id="subs" class="mt-3 space-y-2 text-brand-foreground"></ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { loadConfig, startSignIn, signOut, idToken, dropToken, type PokerbotsConfig } from "@/lib/pokerbotsAuth";
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const MAX = 5 * 1024 * 1024;
+  let cfg: PokerbotsConfig | null = null;
+
+  function say(text: string) { $("notice").textContent = text; }
+  function show(id: string, on: boolean) { $(id).classList.toggle("hidden", !on); }
+
+  function needSignIn(text: string) {
+    show("panel", false);
+    show("signin", true);
+    say(text);
+  }
+
+  async function api(path: string, init?: RequestInit): Promise<{ code: number; body: any }> {
+    const t = idToken();
+    if (!t || !cfg) { needSignIn("Your session ended. Sign in again."); return { code: 401, body: {} }; }
+    let r: Response;
+    try {
+      r = await fetch(cfg.apiUrl + path, { ...init, headers: { authorization: t.token, "content-type": "application/json" } });
+    } catch {
+      return { code: 0, body: {} };
+    }
+    let body: any = {};
+    try { body = await r.json(); } catch { /* empty body */ }
+    if (r.status === 401) { dropToken(); needSignIn("Your session ended. Sign in again."); }
+    return { code: r.status, body };
+  }
+
+  function fail(r: { code: number; body: any }) {
+    if (r.code === 401) return;
+    if (r.code === 0) say("Network error. Try again.");
+    else say(String(r.body?.error || r.body?.message || `Something went wrong (${r.code}).`));
+  }
+
+  function showTeam(team: any) {
+    show("noteam", !team);
+    show("hasteam", !!team);
+    if (!team) return;
+    $("t-name").textContent = team.name;
+    $("t-code").textContent = team.code;
+    $("t-members").textContent = `${team.members} of 2`;
+  }
+
+  const WORDS: Record<string, string> = {
+    awaiting_upload: "Waiting for the file",
+    pending_check: "Accepted",
+    rejected: "Rejected",
+  };
+
+  async function loadSubs() {
+    const r = await api("/submissions");
+    if (r.code !== 200) return;
+    const ul = $("subs");
+    ul.textContent = "";
+    const list: any[] = r.body.submissions || [];
+    if (!list.length) { const li = document.createElement("li"); li.textContent = "Nothing uploaded yet."; ul.appendChild(li); return; }
+    list.forEach((x) => {
+      const li = document.createElement("li");
+      li.textContent = `${new Date(x.at * 1000).toLocaleString()}: ${WORDS[x.status] || x.status}${x.message ? ". " + x.message : ""}`;
+      ul.appendChild(li);
+    });
+  }
+
+  async function locked(form: HTMLElement, fn: () => Promise<void>) {
+    const btns = Array.from(form.querySelectorAll<HTMLButtonElement>("button"));
+    if (btns.some((b) => b.disabled)) return;
+    btns.forEach((b) => (b.disabled = true));
+    try { await fn(); } finally { btns.forEach((b) => (b.disabled = false)); }
+  }
+
+  async function refresh() {
+    const r = await api("/me");
+    show("retry-btn", false);
+    if (r.code === 403) { say(String(r.body.error || "A verified Imperial College email address is required.")); show("panel", false); show("signin", false); show("denied-out", true); return; }
+    if (r.code === 401) return;
+    if (r.code !== 200) { fail(r); show("noteam", false); show("hasteam", false); show("retry-btn", true); return; }
+    say("");
+    showTeam(r.body.team);
+    if (r.body.team) await loadSubs();
+  }
+
+  $("create-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    locked($("create-form"), async () => {
+    const r = await api("/team", { method: "POST", body: JSON.stringify({ name: (document.getElementById("team-name") as HTMLInputElement).value.trim() }) });
+    if (r.code === 200) { say("Team created."); showTeam(r.body); await loadSubs(); } else fail(r);
+    });
+  });
+  $("join-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    locked($("join-form"), async () => {
+    const r = await api("/team/join", { method: "POST", body: JSON.stringify({ code: (document.getElementById("join-code") as HTMLInputElement).value.trim().toLowerCase() }) });
+    if (r.code === 200) { say("Joined."); showTeam(r.body); await loadSubs(); } else fail(r);
+    });
+  });
+  $("leave-btn").addEventListener("click", () => {
+    if (!window.confirm("Leave this team?")) return;
+    locked($("hasteam"), async () => {
+      const r = await api("/team/leave", { method: "POST", body: "{}" });
+      if (r.code === 200) { say("You left the team."); showTeam(null); } else fail(r);
+    });
+  });
+
+  $("upload-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = document.getElementById("bot-file") as HTMLInputElement;
+    const f = input.files?.[0];
+    const btn = $("upload-btn") as HTMLButtonElement;
+    if (!f) return;
+    if (f.size > MAX) { say("That file is over 5 MB."); return; }
+    if (!/\.zip$/i.test(f.name)) { say("Choose a .zip file."); return; }
+    btn.disabled = true;
+    try {
+      say("Uploading...");
+      const p = await api("/submissions/presign", { method: "POST", body: "{}" });
+      if (p.code !== 200) { fail(p); return; }
+      const fd = new FormData();
+      Object.entries(p.body.upload.fields as Record<string, string>).forEach(([k, v]) => fd.append(k, v));
+      fd.append("file", f);
+      let up: Response;
+      try { up = await fetch(p.body.upload.url, { method: "POST", body: fd }); } catch { say("Upload failed. Check your connection. You can try again in 5 minutes."); return; }
+      if (!up.ok) { say(`Upload failed (${up.status}). You can try again in 5 minutes.`); return; }
+      let c = await api(`/submissions/${p.body.id}/confirm`, { method: "POST", body: "{}" });
+      if (c.code === 409) { await new Promise((r) => setTimeout(r, 2000)); c = await api(`/submissions/${p.body.id}/confirm`, { method: "POST", body: "{}" }); }
+      if (c.code !== 200) { fail(c); return; }
+      say(c.body.status === "rejected" ? `Rejected: ${c.body.message}` : "Accepted. Your bot is queued for the tournament.");
+      input.value = "";
+    } finally {
+      btn.disabled = false;
+      await loadSubs();
+    }
+  });
+
+  $("signin-btn").addEventListener("click", async () => {
+    try { await startSignIn(cfg!, "/pokerbots/enter/"); } catch (e) { say(e instanceof Error ? e.message : "Could not start sign-in."); }
+  });
+  $("signout-btn").addEventListener("click", () => signOut(cfg!));
+  $("denied-out").addEventListener("click", () => signOut(cfg!));
+  $("retry-btn").addEventListener("click", () => { say("Loading..."); refresh(); });
+
+  (async () => {
+    cfg = await loadConfig("apiUrl");
+    if (!cfg) { say("Sign-up opens soon."); return; }
+    const t = idToken();
+    if (!t) { needSignIn(""); return; }
+    $("who").textContent = t.email;
+    show("panel", true);
+    await refresh();
+  })();
+</script>

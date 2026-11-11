@@ -7,6 +7,7 @@ export interface PokerbotsConfig {
   hostedUiDomain: string;
   clientId: string;
   controlApiUrl: string;
+  apiUrl: string;
 }
 
 const CALLBACK_PATH = "/pokerbots/auth/";
@@ -23,12 +24,12 @@ function store(): Storage | null {
   }
 }
 
-export async function loadConfig(): Promise<PokerbotsConfig | null> {
+export async function loadConfig(need: "controlApiUrl" | "apiUrl" = "controlApiUrl"): Promise<PokerbotsConfig | null> {
   try {
     const r = await fetch("/pokerbots-config.json", { cache: "no-store" });
     if (!r.ok) return null;
     const c = (await r.json()) as PokerbotsConfig;
-    return c.hostedUiDomain && c.clientId && c.controlApiUrl ? c : null;
+    return c.hostedUiDomain && c.clientId && c[need] ? c : null;
   } catch {
     return null;
   }
