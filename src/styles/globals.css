@@ -127,3 +127,41 @@ h1, h2 {
   transform: translateY(24px);
 }
 
+
+/* Skip link: visible only when focused */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-brand-accent);
+  color: var(--color-brand-primary);
+  font-weight: 600;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* Keyboard focus indicator for everything interactive */
+:focus-visible:not(input, textarea, select) {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .fade-in-hidden {
+    opacity: 1;
+    transform: none;
+  }
+}
