@@ -14,6 +14,7 @@ export default defineConfig({
       filter: (page) =>
         !page.includes("/pokerbots/admin") &&
         !page.includes("/pokerbots/auth") &&
+        !page.includes("/pokerbots/enter") &&
         !page.includes("/programmes/queens-tower-capital") &&
         !/\/blog\/?$/.test(page) &&
         !/\/(newsletter|fantasy-league|market-recap)\/?$/.test(page),
