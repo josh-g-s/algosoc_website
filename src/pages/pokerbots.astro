@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getContactEmail } from "@/lib/contactEmail";
-import { jsonLd } from "@/lib/content";
 
 // Showcase page for the All In pokerbots competition. The game's own rules, format
 // and starter kit ship with the game (see docs/pokerbots.md), so this page is
@@ -9,10 +8,8 @@ import { jsonLd } from "@/lib/content";
 const email = await getContactEmail();
 
 const facts = [
-  { label: "When", value: "Saturday 14 November 2026, in person. Time to be confirmed" },
-  { label: "Where", value: "Huxley Building, South Kensington" },
+  { label: "Date, time, venue and prizes", value: "To be confirmed by AlgoSoc" },
   { label: "Who", value: "Imperial students, teams of one or two" },
-  { label: "Prizes", value: "To be confirmed" },
 ];
 
 const stages = [
@@ -25,31 +22,15 @@ const stages = [
 const downloads = [
   { href: "/docs/algosoc-pokerbots-kit.zip", title: "Starter kit (ZIP)", note: "Bot template, example bots, the game engine and a local simulator. Python 3.9 or later, no extra packages." },
 ];
-
-const eventJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Event",
-  name: "All In: AlgoSoc Pokerbots",
-  startDate: "2026-11-14",
-  eventStatus: "https://schema.org/EventScheduled",
-  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-  location: {
-    "@type": "Place",
-    name: "Huxley Building, Imperial College London",
-    address: { "@type": "PostalAddress", addressLocality: "London", addressCountry: "GB" },
-  },
-  organizer: { "@type": "Organization", name: "AlgoSoc - Imperial College Algorithmic Trading Society", url: "https://algosoc.com" },
-};
 ---
 
 <BaseLayout
   title="All In: Pokerbots"
-  description="Write a Python poker bot and take on Imperial's best in a No-Limit Hold'em tournament on Saturday 14 November 2026."
+  description="Write a Python poker bot and take on Imperial's best in a No-Limit Hold'em tournament. Details to be confirmed by AlgoSoc."
   canonical="/pokerbots"
 >
   <div class="bg-brand-primary min-h-[60vh]">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      <script type="application/ld+json" set:html={jsonLd(eventJsonLd)} />
       <a href="/events" class="text-sm font-medium text-brand-accent hover:underline">&larr; Events</a>
 
       <h1 class="mt-8 text-3xl sm:text-4xl font-bold text-brand-foreground">All In: Pokerbots</h1>
@@ -80,7 +61,7 @@ const eventJsonLd = {
         </li>
         <li class="bg-white/5 border border-white/10 rounded-xl p-5">
           <span class="text-sm font-bold text-brand-accent">3</span>
-          <p class="mt-2 text-brand-foreground">Upload your bot once registration opens. The group rounds come first, then the knockouts.</p>
+          <p class="mt-2 text-brand-foreground">Upload your bot once sign-up opens. The group rounds come first, then the knockouts.</p>
         </li>
         <li class="bg-white/5 border border-white/10 rounded-xl p-5">
           <span class="text-sm font-bold text-brand-accent">4</span>
@@ -100,8 +81,7 @@ const eventJsonLd = {
         ))}
       </div>
       <p class="mt-4 text-sm text-brand-foreground-muted max-w-3xl">
-        Full rules are being updated for the Saturday event. The format may change, and
-        organisers will announce any change beforehand.
+        The format may change, and AlgoSoc will announce any change beforehand.
       </p>
 
       <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-6">Downloads</h2>
@@ -116,7 +96,7 @@ const eventJsonLd = {
 
       <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-4">Sign-up</h2>
       <p class="text-brand-foreground max-w-3xl">
-        Online registration and bot upload open soon. Until then, questions go to
+        Sign-up and bot upload details will be announced by AlgoSoc. Until then, questions go to
         <a class="text-brand-accent underline" href={`mailto:${email}`}>{email}</a>.
       </p>
     </div>
