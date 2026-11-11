@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from "@/lib/content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { client } from "@/lib/sanity";
 import { toHTML } from "@portabletext/to-html";
@@ -16,6 +17,23 @@ const programme = await client.fetch<{
 }`);
 
 const bodyHtml = programme?.body ? toHTML(programme.body) : "";
+
+const courseJsonLd = programme
+  ? {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      name: programme.title ?? "AlgoCourse",
+      description:
+        programme.description ??
+        "An intensive 8-week course covering the fundamentals needed for a career in financial markets.",
+      url: "https://algosoc.com/programmes/algocourse/",
+      provider: {
+        "@type": "Organization",
+        name: "AlgoSoc - Imperial College Algorithmic Trading Society",
+        url: "https://algosoc.com",
+      },
+    }
+  : null;
 ---
 
 <BaseLayout
@@ -25,6 +43,9 @@ const bodyHtml = programme?.body ? toHTML(programme.body) : "";
 >
   <div class="bg-brand-primary min-h-[60vh]">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      {courseJsonLd && (
+        <script type="application/ld+json" set:html={jsonLd(courseJsonLd)} />
+      )}
       <a
         href="/programmes"
         class="text-sm font-medium text-brand-accent hover:underline"

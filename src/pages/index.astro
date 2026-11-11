@@ -4,7 +4,7 @@ import FadeIn from "@/components/ui/FadeIn.astro";
 import LiveChart from "@/components/ui/LiveChart.astro";
 import SponsorLogo from "@/components/content/SponsorLogo.astro";
 import { client } from "@/lib/sanity";
-import { getStats, isPublished } from "@/lib/content";
+import { getStats, isPublished, jsonLd } from "@/lib/content";
 
 async function fetchChartData() {
   try {
@@ -129,7 +129,7 @@ const organizationJsonLd = {
 
 <BaseLayout canonical="https://algosoc.com/">
   <div class="bg-brand-primary">
-  <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
+  <script type="application/ld+json" set:html={jsonLd(organizationJsonLd)} />
 
   <!-- Hero -->
   <section
