@@ -9,10 +9,10 @@ import { jsonLd } from "@/lib/content";
 const email = await getContactEmail();
 
 const facts = [
-  { label: "When", value: "Wed 25 and Thu 26 November 2026, 18:00 to 21:30 each evening" },
+  { label: "When", value: "Saturday 14 November 2026, in person. Time to be confirmed" },
   { label: "Where", value: "Huxley Building, South Kensington" },
   { label: "Who", value: "Imperial students, teams of one or two" },
-  { label: "Prizes", value: "£1,000, £500 and £250" },
+  { label: "Prizes", value: "To be confirmed" },
 ];
 
 const stages = [
@@ -31,8 +31,7 @@ const eventJsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
   name: "All In: AlgoSoc Pokerbots",
-  startDate: "2026-11-25T18:00:00Z",
-  endDate: "2026-11-26T21:30:00Z",
+  startDate: "2026-11-14",
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   location: {
@@ -46,7 +45,7 @@ const eventJsonLd = {
 
 <BaseLayout
   title="All In: Pokerbots"
-  description="Write a Python poker bot and take on Imperial's best in a two-day No-Limit Hold'em tournament. 25 and 26 November 2026, £1,750 in prizes."
+  description="Write a Python poker bot and take on Imperial's best in a No-Limit Hold'em tournament on Saturday 14 November 2026."
   canonical="/pokerbots"
 >
   <div class="bg-brand-primary min-h-[60vh]">
