@@ -95,10 +95,33 @@ const downloads = [
       </div>
 
       <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-4">Sign-up</h2>
-      <p class="text-brand-foreground max-w-3xl">
-        Sign-up and bot upload details will be announced by AlgoSoc. Until then, questions go to
+      <p id="signup-soon" class="text-brand-foreground max-w-3xl">
+        Sign-up opens soon. Until then, questions go to
         <a class="text-brand-accent underline" href={`mailto:${email}`}>{email}</a>.
+      </p>
+      <p id="signup-open" class="hidden text-brand-foreground max-w-3xl">
+        <a class="text-brand-accent underline" href="/pokerbots/enter/">Sign up, make a team and upload your bot</a>
+        with an Imperial College email address. Questions go to
+        <a class="text-brand-accent underline" href={`mailto:${email}`}>{email}</a>.
+      </p>
+      <p class="mt-4 text-sm text-brand-foreground-muted max-w-3xl">
+        Privacy: if you sign up, we store your Imperial email address, your name, your team
+        and your bot files. Only AlgoSoc organisers can see them. They are deleted after the event.
       </p>
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  // The sign-up link shows once the site has its sign-in settings (public/pokerbots-config.json).
+  (async () => {
+    try {
+      const r = await fetch("/pokerbots-config.json", { cache: "no-store" });
+      const c = r.ok ? await r.json() : {};
+      if (c.hostedUiDomain && c.clientId && c.apiUrl) {
+        document.getElementById("signup-soon")?.classList.add("hidden");
+        document.getElementById("signup-open")?.classList.remove("hidden");
+      }
+    } catch { /* stay on "opens soon" */ }
+  })();
+</script>
