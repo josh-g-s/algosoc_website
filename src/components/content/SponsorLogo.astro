@@ -8,14 +8,14 @@ interface Props {
 
 const { name, logo, description, websiteUrl } = Astro.props;
 const Tag = websiteUrl ? "a" : "div";
-// Logos display at most 140px wide, so ask the Sanity CDN for 2x (280px, no upscaling) in a
+// Logos display at most 140px wide, so ask the Sanity CDN for 2x (280px, fit=max so smaller originals are not upscaled) in a
 // modern format instead of the full-size original. SVGs are served as-is.
 // Asset URLs end in -<width>x<height>.<ext>; the size becomes width/height attributes so the
 // browser reserves the space before the image loads (no layout shift). Omitted if absent.
 const MAX_W = 280;
 const dims = logo?.match(/-(\d+)x(\d+)\.([a-z0-9]+)$/i);
 const isSanityRaster = !!dims && logo.includes("cdn.sanity.io/") && dims[3].toLowerCase() !== "svg";
-const src = isSanityRaster ? `${logo}?w=${MAX_W}&auto=format` : logo;
+const src = isSanityRaster ? `${logo}?w=${MAX_W}&fit=max&auto=format` : logo;
 const w = dims ? Number(dims[1]) : undefined;
 const h = dims ? Number(dims[2]) : undefined;
 const width = w && isSanityRaster ? Math.min(w, MAX_W) : w;
