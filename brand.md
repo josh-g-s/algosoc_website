@@ -50,4 +50,4 @@ Source of truth for colours and typography. CSS custom properties are defined in
 | Body | Albert Sans (300-700) | `--font-sans` | Everything else |
 | Code | System monospace | `--font-mono` | Code snippets, data |
 
-Both are loaded via Google Fonts in `BaseLayout.astro`.
+Both are self-hosted (latin subset, variable woff2, SIL OFL 1.1) in `public/fonts/`, declared with `@font-face` and `font-display: swap` in `globals.css`, and preloaded in `BaseLayout.astro`. Licence texts sit beside the files. The filenames carry the upstream version, so a font update means a new filename (the files are served with the long immutable cache).
