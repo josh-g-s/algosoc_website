@@ -1,0 +1,183 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+// Tournament control for the organisers. Sign-in is checked by the control API (verified email on
+// its admin list); this page only presents the buttons. Nothing here is secret.
+const stages = [
+  { key: "G1", label: "Group round 1" },
+  { key: "G2", label: "Group round 2" },
+  { key: "G3", label: "Group round 3" },
+  { key: "R16", label: "Round of 16" },
+  { key: "QF", label: "Quarter-final" },
+  { key: "SF", label: "Semi-finals" },
+  { key: "F", label: "Final" },
+];
+const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-primary disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent";
+---
+
+<BaseLayout title="Pokerbots admin" description="Tournament control for the AlgoSoc pokerbots organisers." canonical="/pokerbots/admin" noindex>
+  <div class="bg-brand-primary min-h-[60vh]">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl font-bold text-brand-foreground">Pokerbots admin</h1>
+
+      <p id="notice" class="mt-6 text-brand-foreground" role="status" aria-live="polite">Loading...</p>
+
+      <section id="signin" class="mt-8 hidden">
+        <p class="text-brand-foreground">Sign in with the Imperial email on the organiser list.</p>
+        <button id="signin-btn" type="button" class={`${btn} mt-4`}>Sign in</button>
+      </section>
+
+      <section id="panel" class="mt-8 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-brand-foreground-muted">
+          <span>Signed in as <strong id="who" class="text-brand-foreground"></strong></span>
+          <button id="signout-btn" type="button" class="underline text-brand-accent">Sign out</button>
+        </div>
+
+        <h2 class="mt-8 text-xl font-bold text-brand-foreground">Runner</h2>
+        <dl class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-4"><dt class="text-sm font-bold text-brand-accent">Machine</dt><dd id="s-instance" class="mt-1 text-brand-foreground">-</dd></div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-4"><dt class="text-sm font-bold text-brand-accent">Runner</dt><dd id="s-state" class="mt-1 text-brand-foreground">-</dd></div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-4"><dt class="text-sm font-bold text-brand-accent">Last result</dt><dd id="s-last" class="mt-1 text-brand-foreground">-</dd></div>
+        </dl>
+        <p id="s-busy" class="mt-3 text-sm text-brand-foreground-muted"></p>
+
+        <h2 class="mt-10 text-xl font-bold text-brand-foreground">Actions</h2>
+        <p class="mt-2 text-sm text-brand-foreground-muted">In order: load teams, make groups, then run each stage once the one before it is done. If the machine is stopped, the first action starts it and takes a few minutes.</p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <button type="button" data-action="load" data-confirm="Load the latest confirmed bots? This replaces the runner's current tournament." class={`${btn} act`}>Load teams and bots</button>
+          <button type="button" data-action="groups" class={`${btn} act`}>Make groups</button>
+          <button type="button" data-action="results" class={`${btn} act`}>Publish results</button>
+        </div>
+        <div class="mt-4 flex flex-wrap items-end gap-3">
+          <label class="text-sm text-brand-foreground">
+            <span class="block mb-1">Stage</span>
+            <select id="stage" class="rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-brand-foreground">
+              {stages.map((s) => <option value={s.key} class="text-black">{s.label} ({s.key})</option>)}
+            </select>
+          </label>
+          <button type="button" id="run-stage" class={`${btn} act`}>Run stage</button>
+        </div>
+
+        <details class="mt-6 text-sm text-brand-foreground">
+          <summary class="cursor-pointer text-brand-foreground-muted">Advanced: change a setting</summary>
+          <div class="mt-3 flex flex-wrap items-end gap-3">
+            <label><span class="block mb-1">key=value</span><input id="set-arg" type="text" maxlength="64" class="rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-brand-foreground" /></label>
+            <button type="button" id="set-btn" class={`${btn} act`}>Apply</button>
+          </div>
+        </details>
+
+        <h2 class="mt-10 text-xl font-bold text-brand-foreground">Output</h2>
+        <pre id="tail" class="mt-3 max-h-80 overflow-auto rounded-xl bg-black/40 border border-white/10 p-4 text-xs text-brand-foreground whitespace-pre-wrap" aria-live="off"></pre>
+        <p id="updated" class="mt-2 text-xs text-brand-foreground-muted"></p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { loadConfig, startSignIn, signOut, idToken, dropToken, type PokerbotsConfig } from "@/lib/pokerbotsAuth";
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const notice = $("notice");
+  const acts = Array.from(document.querySelectorAll<HTMLButtonElement>(".act"));
+  let cfg: PokerbotsConfig | null = null;
+  let timer: number | undefined;
+  let busy = false;
+
+  function say(text: string) { notice.textContent = text; }
+  function show(id: string, on: boolean) { $(id).classList.toggle("hidden", !on); }
+  function lock(on: boolean) { acts.forEach((b) => (b.disabled = on)); }
+
+  async function api(path: string, init?: RequestInit): Promise<{ code: number; body: any }> {
+    const t = idToken();
+    if (!t || !cfg) { needSignIn("Your session ended. Sign in again."); return { code: 401, body: {} }; }
+    const r = await fetch(cfg.controlApiUrl + path, {
+      ...init,
+      headers: { authorization: t.token, "content-type": "application/json" },
+    });
+    let body: any = {};
+    try { body = await r.json(); } catch { /* empty body */ }
+    if (r.status === 401) { dropToken(); needSignIn("Your session ended. Sign in again."); }
+    return { code: r.status, body };
+  }
+
+  function needSignIn(text: string) {
+    if (timer) clearInterval(timer);
+    show("panel", false);
+    show("signin", true);
+    say(text);
+  }
+
+  function ago(sec: number) {
+    if (sec < 90) return `${Math.max(0, Math.round(sec))} s ago`;
+    return `${Math.round(sec / 60)} min ago`;
+  }
+
+  function render(d: any) {
+    const st = d.status || {};
+    const cmd = d.command || {};
+    $("s-instance").textContent = d.instance || "-";
+    $("s-state").textContent = st.state || "-";
+    const last = st.last;
+    $("s-last").textContent = last ? `${last.action}${last.arg ? " " + last.arg : ""}: ${last.rc === 0 ? "done" : "FAILED (code " + last.rc + ")"}` : "-";
+    const queued = cmd.id && cmd.id !== st.done_id && Date.now() / 1000 - (cmd.at || 0) < 3600;
+    const running = st.state === "running";
+    busy = running || queued || d.instance === "stopping" || d.instance === "shutting-down";
+    let line = "";
+    if (running && st.current) line = `Running: ${st.current.action} ${st.current.arg || ""}`.trim();
+    else if (queued) line = `Queued: ${cmd.action} ${cmd.arg || ""}. Waiting for the runner${d.instance === "running" ? "" : " to start"}.`.trim();
+    else if (d.instance === "stopping" || d.instance === "shutting-down") line = "The machine is stopping. Try again in about 2 minutes.";
+    else if (d.instance === "stopped") line = "The machine is stopped. The first action starts it.";
+    $("s-busy").textContent = line;
+    lock(busy);
+    $("tail").textContent = (st.tail || []).join("\n");
+    $("updated").textContent = st.updated ? `Runner status updated ${ago(Date.now() / 1000 - st.updated)}.` : "";
+  }
+
+  async function poll() {
+    const r = await api("/runner/status");
+    if (r.code === 403) { if (timer) clearInterval(timer); show("panel", false); show("signin", false); say("This account is not on the organiser list."); return; }
+    if (r.code === 200) { say(""); render(r.body); }
+    else if (r.code !== 401) say(`Status check failed (${r.code}). Retrying.`);
+  }
+
+  async function send(action: string, arg = "", confirmText = "") {
+    if (confirmText && !window.confirm(confirmText)) return;
+    lock(true);
+    const r = await api("/runner/command", { method: "POST", body: JSON.stringify({ action, arg }) });
+    if (r.code === 202) say(r.body.instance_started ? "Sent. The machine is starting; this takes a few minutes." : "Sent.");
+    else if (r.code === 409) say(String(r.body.error || "Busy. Wait for the current action to finish."));
+    else if (r.code === 403) say("This account is not on the organiser list.");
+    else if (r.code !== 401) say(`Not sent (${r.code}): ${r.body.error || "unknown error"}`);
+    await poll();
+  }
+
+  acts.forEach((b) => {
+    const a = b.dataset.action;
+    if (a) b.addEventListener("click", () => send(a, "", b.dataset.confirm || ""));
+  });
+  $("run-stage").addEventListener("click", () => {
+    const k = (document.getElementById("stage") as HTMLSelectElement).value;
+    send("stage", k, `Run stage ${k} now? It cannot be undone.`);
+  });
+  $("set-btn").addEventListener("click", () => {
+    const v = (document.getElementById("set-arg") as HTMLInputElement).value.trim();
+    if (!/^[a-z0-9_]{1,32}=[A-Za-z0-9_.,\[\] -]{1,64}$/.test(v)) { say("Setting must look like key=value."); return; }
+    send("set", v, `Apply setting ${v}?`);
+  });
+  $("signin-btn").addEventListener("click", async () => {
+    try { await startSignIn(cfg!, "/pokerbots/admin/"); } catch (e) { say(e instanceof Error ? e.message : "Could not start sign-in."); }
+  });
+  $("signout-btn").addEventListener("click", () => signOut(cfg!));
+
+  (async () => {
+    cfg = await loadConfig();
+    if (!cfg) { say("Sign-in is not set up yet."); return; }
+    const t = idToken();
+    if (!t) { needSignIn(""); return; }
+    $("who").textContent = t.email;
+    show("panel", true);
+    await poll();
+    timer = window.setInterval(() => { if (!document.hidden) poll(); }, 5000);
+  })();
+</script>
