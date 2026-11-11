@@ -38,7 +38,7 @@ const categories = ["Overall", "Events", "Competitions", "Fantasy League"];
             class={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
               cat === "Overall"
                 ? "bg-brand-accent text-brand-primary"
-                : "bg-white/10 text-brand-foreground-muted hover:bg-white/20"
+                : "bg-white/10 text-brand-foreground hover:bg-white/20"
             }`}
           >
             {cat}
@@ -70,7 +70,7 @@ const categories = ["Overall", "Events", "Competitions", "Fantasy League"];
                       entry.rank === 1
                         ? "bg-amber-500/20 text-amber-400"
                         : entry.rank === 2
-                          ? "bg-white/10 text-brand-foreground-muted"
+                          ? "bg-white/10 text-brand-foreground"
                           : entry.rank === 3
                             ? "bg-orange-500/20 text-orange-400"
                             : "text-brand-foreground-muted"
