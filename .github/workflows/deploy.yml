@@ -10,6 +10,12 @@ on:
 permissions:
   contents: read
 
+# One deploy at a time: back-to-back merges queue instead of racing the S3 sync.
+# GitHub keeps only the newest pending run, which builds the newest commit.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
