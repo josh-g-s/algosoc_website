@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://algosoc.com",
@@ -13,8 +14,6 @@ export default defineConfig({
     "/programmes/queens-tower-capital": "/programmes/queens-tower-exchange",
   },
   vite: {
-    css: {
-      transformer: "postcss",
-    },
+    plugins: [tailwindcss()],
   },
 });
