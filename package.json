@@ -23,6 +23,6 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
-    "sanity": "^5.31.2"
+    "sanity": "^6.23.0"
   }
 }
