@@ -1,0 +1,127 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getContactEmail } from "@/lib/contactEmail";
+
+// Showcase page for the All In pokerbots competition. The game's own rules, format
+// and starter kit ship with the game (see docs/pokerbots.md), so this page is
+// code-owned rather than Sanity-backed. Facts here must match the confirmed event details.
+const email = await getContactEmail();
+
+const facts = [
+  { label: "Date, time, venue and prizes", value: "To be confirmed by AlgoSoc" },
+  { label: "Who", value: "Imperial students, teams of one or two" },
+];
+
+const stages = [
+  { stage: "Group rounds (3)", detail: "Every team plays 200 eight-bot sit-and-gos per group, per round. Later rounds count for more. 16 teams go through." },
+  { stage: "Round of 16", detail: "Two tables of eight, 500 sit-and-gos each. Top 4 per table go through." },
+  { stage: "Quarter-final", detail: "One table of eight, 500 sit-and-gos. Top 4 go through." },
+  { stage: "Semi-finals and final", detail: "Heads-up duplicate matches of 250 deals, each played from both seats so luck of the cards cancels out." },
+];
+
+const downloads = [
+  { href: "/docs/algosoc-pokerbots-kit.zip", title: "Starter kit (ZIP)", note: "Bot template, example bots, the game engine and a local simulator. Python 3.9 or later, no extra packages." },
+];
+---
+
+<BaseLayout
+  title="All In: Pokerbots"
+  description="Write a Python poker bot and take on Imperial's best in a No-Limit Hold'em tournament. Details to be confirmed by AlgoSoc."
+  canonical="/pokerbots"
+>
+  <div class="bg-brand-primary min-h-[60vh]">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <a href="/events" class="text-sm font-medium text-brand-accent hover:underline">&larr; Events</a>
+
+      <h1 class="mt-8 text-3xl sm:text-4xl font-bold text-brand-foreground">All In: Pokerbots</h1>
+      <p class="mt-6 text-lg text-brand-foreground leading-relaxed max-w-3xl">
+        Write a Python bot that plays No-Limit Texas Hold'em, then watch it face every other
+        team's bot in a tournament. Your bot gets 10 milliseconds per decision, no
+        network, and no second chances.
+      </p>
+
+      <dl class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {facts.map((f) => (
+          <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+            <dt class="text-sm font-bold text-brand-accent">{f.label}</dt>
+            <dd class="mt-1 text-brand-foreground">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-6">How it works</h2>
+      <ol class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <li class="bg-white/5 border border-white/10 rounded-xl p-5">
+          <span class="text-sm font-bold text-brand-accent">1</span>
+          <p class="mt-2 text-brand-foreground">Download the starter kit and write your bot in <code>bot.py</code>. Implement one method, <code>act(state)</code>, that returns fold, check, call or a raise. AI tools are fine while you build.</p>
+        </li>
+        <li class="bg-white/5 border border-white/10 rounded-xl p-5">
+          <span class="text-sm font-bold text-brand-accent">2</span>
+          <p class="mt-2 text-brand-foreground">Test locally with the included simulator against the example bots, as many times as you like.</p>
+        </li>
+        <li class="bg-white/5 border border-white/10 rounded-xl p-5">
+          <span class="text-sm font-bold text-brand-accent">3</span>
+          <p class="mt-2 text-brand-foreground">Upload your bot once sign-up opens. The group rounds come first, then the knockouts.</p>
+        </li>
+        <li class="bg-white/5 border border-white/10 rounded-xl p-5">
+          <span class="text-sm font-bold text-brand-accent">4</span>
+          <p class="mt-2 text-brand-foreground">Each game starts everyone on 2,000 chips with rising blinds. Points go to finishing places, and the best teams reach the knockouts.</p>
+        </li>
+      </ol>
+
+      <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-6">The format</h2>
+      <div class="space-y-3">
+        {stages.map((s) => (
+          <div class="bg-white/5 border border-white/10 rounded-xl p-5 sm:flex sm:gap-6">
+            <div class="sm:w-56 shrink-0">
+              <div class="font-semibold text-brand-foreground">{s.stage}</div>
+            </div>
+            <p class="mt-2 sm:mt-0 text-sm text-brand-foreground-muted">{s.detail}</p>
+          </div>
+        ))}
+      </div>
+      <p class="mt-4 text-sm text-brand-foreground-muted max-w-3xl">
+        The format may change, and AlgoSoc will announce any change beforehand.
+      </p>
+
+      <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-6">Downloads</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {downloads.map((d) => (
+          <a href={d.href} download class="block bg-white/5 border border-white/10 rounded-xl p-5 hover:border-brand-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-accent">
+            <span class="font-semibold text-brand-foreground">{d.title}</span>
+            <span class="mt-2 block text-sm text-brand-foreground-muted">{d.note}</span>
+          </a>
+        ))}
+      </div>
+
+      <h2 class="text-2xl font-bold text-brand-foreground mt-16 mb-4">Sign-up</h2>
+      <p id="signup-soon" class="text-brand-foreground max-w-3xl">
+        Sign-up opens soon. Until then, questions go to
+        <a class="text-brand-accent underline" href={`mailto:${email}`}>{email}</a>.
+      </p>
+      <p id="signup-open" class="hidden text-brand-foreground max-w-3xl">
+        <a class="text-brand-accent underline" href="/pokerbots/enter/">Sign up, make a team and upload your bot</a>
+        with an Imperial College email address. Questions go to
+        <a class="text-brand-accent underline" href={`mailto:${email}`}>{email}</a>.
+      </p>
+      <p class="mt-4 text-sm text-brand-foreground-muted max-w-3xl">
+        Privacy: your team name and results may be shown publicly. Your email address, name and bot
+        files are seen only by AlgoSoc organisers and are deleted within 90 days of the event.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  // The sign-up link shows once the site has its sign-in settings (public/pokerbots-config.json).
+  (async () => {
+    try {
+      const r = await fetch("/pokerbots-config.json", { cache: "no-store" });
+      const c = r.ok ? await r.json() : {};
+      if (c.hostedUiDomain && c.clientId && c.apiUrl) {
+        document.getElementById("signup-soon")?.classList.add("hidden");
+        document.getElementById("signup-open")?.classList.remove("hidden");
+      }
+    } catch { /* stay on "opens soon" */ }
+  })();
+</script>

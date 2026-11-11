@@ -25,6 +25,7 @@
 - [ ] Wire up newsletter signup form (API route + SES or subscriber table). Still open: the home-page form has no action or handler. Needs a backend, since the site is static
 - [ ] Wire up contact page email form (API route + SES). Still open: the form has no action or handler (a mailto link exists). Needs a backend
 - [ ] Scheduled rebuilds (GitHub Actions cron) for publishDate/expiryDate to take effect. Still open: `deploy.yml` triggers only on push, repository_dispatch and workflow_dispatch. Changing it needs the Head's OK
+- [x] All In pokerbots showcase at /pokerbots (starter kit zip; rulebook PDF held until regenerated for the 14 Nov event), Phase 1 of the hosting plan. Still open: online sign-up and bot upload need the hosted backend (design doc v0.1, waiting on the Head)
 - [ ] Calendar view for events (month grid) - nice to have
 - [ ] Content dashboard at /admin/content showing status of all content (active/scheduled/expired) - nice to have
 

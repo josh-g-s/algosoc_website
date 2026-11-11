@@ -42,6 +42,8 @@ See [brand.md](brand.md) for colours, typography, and usage rules. Never hardcod
 
 All displayable data must come from Sanity. The only non-CMS data is `navItems` in `src/lib/data.ts`. Stats must go through `getStats()` in `lib/content.ts`, never imported directly.
 
+**Exception: `/pokerbots`.** The All In pokerbots showcase page (`src/pages/pokerbots.astro`) is code-owned. Its facts (dates, format, prizes) and download (`public/docs/algosoc-pokerbots-kit.zip`) ship with the game and must match the confirmed event details (the rulebook PDF is held back until regenerated for the Saturday event), so they are not duplicated into Sanity. Agreed with qte-pm 11 Nov 2026; any Sanity event card for the competition is separate.
+
 Editable page copy (headings, intros, CTAs, empty-state messages) lives in per-route singleton documents (see [Page Content Pattern](#page-content-pattern)). The original strings remain in the `.astro` templates only as fallbacks for build resilience, not as the source of truth.
 
 ## Shared Utilities
