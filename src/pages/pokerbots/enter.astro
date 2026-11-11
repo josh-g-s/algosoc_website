@@ -150,6 +150,7 @@ const field = "rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-bran
     const r = await api("/me");
     show("retry-btn", false);
     if (r.code === 403) { say(String(r.body.error || "A verified Imperial College email address is required.")); show("panel", false); show("signin", false); show("denied-out", true); return; }
+    if (r.code === 401) return;
     if (r.code !== 200) { fail(r); show("noteam", false); show("hasteam", false); show("retry-btn", true); return; }
     say("");
     showTeam(r.body.team);
