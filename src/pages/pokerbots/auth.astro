@@ -1,0 +1,29 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Signing in" description="Finishing sign-in for the AlgoSoc pokerbots tournament." canonical="/pokerbots/auth" noindex>
+  <div class="bg-brand-primary min-h-[60vh]">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl font-bold text-brand-foreground">Signing in</h1>
+      <p id="msg" class="mt-6 text-brand-foreground" role="status" aria-live="polite">Finishing sign-in...</p>
+      <p id="back" class="mt-4 hidden"><a class="text-brand-accent underline" href="/pokerbots/admin/">Back to the admin page</a></p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { loadConfig, finishSignIn } from "@/lib/pokerbotsAuth";
+  const msg = document.getElementById("msg")!;
+  const back = document.getElementById("back")!;
+  (async () => {
+    try {
+      const cfg = await loadConfig();
+      if (!cfg) throw new Error("Sign-in is not set up yet.");
+      location.replace(await finishSignIn(cfg));
+    } catch (e) {
+      msg.textContent = e instanceof Error ? e.message : "Sign-in failed.";
+      back.classList.remove("hidden");
+    }
+  })();
+</script>

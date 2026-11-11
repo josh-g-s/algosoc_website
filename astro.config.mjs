@@ -12,6 +12,8 @@ export default defineConfig({
     sitemap({
       // Redirect stubs and placeholder pages (kept live, but not yet worth indexing).
       filter: (page) =>
+        !page.includes("/pokerbots/admin") &&
+        !page.includes("/pokerbots/auth") &&
         !page.includes("/programmes/queens-tower-capital") &&
         !/\/blog\/?$/.test(page) &&
         !/\/(newsletter|fantasy-league|market-recap)\/?$/.test(page),
