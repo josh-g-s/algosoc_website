@@ -85,8 +85,10 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
   let cfg: PokerbotsConfig | null = null;
   let timer: number | undefined;
   let busy = false;
+  let pollMsg = false;
+  let polling = false;
 
-  function say(text: string) { notice.textContent = text; }
+  function say(text: string, own = false) { notice.textContent = text; pollMsg = own; }
   function show(id: string, on: boolean) { $(id).classList.toggle("hidden", !on); }
   function lock(on: boolean) { acts.forEach((b) => (b.disabled = on)); }
 
@@ -150,11 +152,17 @@ const btn = "rounded-lg px-4 py-2 font-semibold bg-brand-accent text-brand-prima
   }
 
   async function poll() {
-    const r = await api("/runner/status");
-    if (r.code === 403) { denied(); return; }
-    if (r.code === 0) say("Network error. Retrying.");
-    else if (r.code === 200) { say(""); render(r.body); }
-    else if (r.code !== 401) say(`Status check failed (${r.code}). Retrying.`);
+    if (polling) return;
+    polling = true;
+    try {
+      const r = await api("/runner/status");
+      if (r.code === 403) { denied(); return; }
+      if (r.code === 0) say("Network error. Retrying.", true);
+      else if (r.code === 200) { if (pollMsg) say(""); render(r.body); }
+      else if (r.code !== 401) say(`Status check failed (${r.code}). Retrying.`, true);
+    } finally {
+      polling = false;
+    }
   }
 
   async function send(action: string, arg = "", confirmText = "") {
