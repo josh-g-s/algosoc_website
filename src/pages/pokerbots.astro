@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getContactEmail } from "@/lib/contactEmail";
+import { jsonLd } from "@/lib/content";
 
 // Showcase page for the All In pokerbots competition. The game's own rules, format
 // and starter kit ship with the game (see docs/pokerbots.md), so this page is
@@ -50,7 +51,7 @@ const eventJsonLd = {
 >
   <div class="bg-brand-primary min-h-[60vh]">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
+      <script type="application/ld+json" set:html={jsonLd(eventJsonLd)} />
       <a href="/events" class="text-sm font-medium text-brand-accent hover:underline">&larr; Events</a>
 
       <h1 class="mt-8 text-3xl sm:text-4xl font-bold text-brand-foreground">All In: Pokerbots</h1>
