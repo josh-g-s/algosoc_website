@@ -21,7 +21,7 @@ const courseJsonLd = programme
   ? {
       "@context": "https://schema.org",
       "@type": "Course",
-      name: programme.title,
+      name: programme.title ?? "AlgoCourse",
       description:
         programme.description ??
         "An intensive 8-week course covering the fundamentals needed for a career in financial markets.",
