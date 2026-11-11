@@ -4,6 +4,7 @@ import FadeIn from "@/components/ui/FadeIn.astro";
 import LiveChart from "@/components/ui/LiveChart.astro";
 import SponsorLogo from "@/components/content/SponsorLogo.astro";
 import { client } from "@/lib/sanity";
+import { getContactEmail } from "@/lib/contactEmail";
 import { getStats, isPublished, jsonLd } from "@/lib/content";
 
 async function fetchChartData() {
@@ -106,6 +107,8 @@ const copy = {
     home?.newsletterIntro ??
     "Get weekly market recaps, event updates, and quant insights straight to your inbox.",
 };
+
+const contactEmail = await getContactEmail();
 
 const organizationJsonLd = {
   "@context": "https://schema.org",
@@ -288,19 +291,14 @@ const organizationJsonLd = {
       <p class="mt-2 text-brand-foreground-muted max-w-md mx-auto">
         {copy.newsletterIntro}
       </p>
-      <form class="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-        <input
-          type="email"
-          placeholder="your.name@imperial.ac.uk"
-          class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-brand-foreground placeholder-brand-foreground-muted focus:outline-none focus:ring-2 focus:ring-brand-accent"
-        />
-        <button
-          type="submit"
-          class="px-6 py-3 bg-brand-accent text-brand-primary font-semibold rounded-lg hover:bg-amber-400 transition-colors"
-        >
-          Subscribe
-        </button>
-      </form>
+      <p class="mt-8 text-brand-foreground">
+        To join the mailing list, email us at
+        <a
+          href={`mailto:${contactEmail}?subject=${encodeURIComponent("Join the AlgoSoc mailing list")}`}
+          class="font-semibold text-brand-accent underline underline-offset-4 hover:text-amber-400"
+        >{contactEmail}</a>
+        and we will add you.
+      </p>
     </div>
   </section>
   </div>

@@ -10,10 +10,11 @@ export default defineConfig({
   compressHTML: true,
   integrations: [
     sitemap({
-      // Redirect stubs, not real pages.
+      // Redirect stubs and placeholder pages (kept live, but not yet worth indexing).
       filter: (page) =>
         !page.includes("/programmes/queens-tower-capital") &&
-        !/\/blog\/?$/.test(page),
+        !/\/blog\/?$/.test(page) &&
+        !/\/(newsletter|fantasy-league|market-recap)\/?$/.test(page),
     }),
   ],
   redirects: {
