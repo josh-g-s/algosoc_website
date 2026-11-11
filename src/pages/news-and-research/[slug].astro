@@ -4,7 +4,7 @@ import AuthorByline from "@/components/content/AuthorByline.astro";
 import { client } from "@/lib/sanity";
 import { toHTML } from "@portabletext/to-html";
 import { blogCategoryColours, blogCategoryLabels } from "@/lib/categories";
-import { isPublished } from "@/lib/content";
+import { isPublished, jsonLd } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 
 export async function getStaticPaths() {
@@ -79,7 +79,7 @@ const articleJsonLd = {
 >
   <div class="bg-brand-primary">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
-      <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+      <script type="application/ld+json" set:html={jsonLd(articleJsonLd)} />
 
       <div class="flex items-center gap-3 mb-4 flex-wrap">
         <span
