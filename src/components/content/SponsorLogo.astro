@@ -8,6 +8,11 @@ interface Props {
 
 const { name, logo, description, websiteUrl } = Astro.props;
 const Tag = websiteUrl ? "a" : "div";
+// Sanity asset URLs end in -<width>x<height>.<ext>. Passing them as attributes lets the
+// browser reserve the space before the image loads (no layout shift). Omitted if absent.
+const dims = logo?.match(/-(\d+)x(\d+)\.[a-z0-9]+(?:\?.*)?$/i);
+const width = dims ? Number(dims[1]) : undefined;
+const height = dims ? Number(dims[2]) : undefined;
 const linkProps = websiteUrl ? { href: websiteUrl, target: "_blank", rel: "noopener noreferrer" } : {};
 ---
 
@@ -17,6 +22,8 @@ const linkProps = websiteUrl ? { href: websiteUrl, target: "_blank", rel: "noope
       <img
         src={logo}
         alt={name}
+        width={width}
+        height={height}
         loading="lazy"
         class="max-h-12 max-w-[140px] w-auto h-auto object-contain"
       />
