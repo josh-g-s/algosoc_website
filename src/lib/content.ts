@@ -67,3 +67,8 @@ export async function getStats(): Promise<Stats> {
     witEvents: witEventCount > 0 ? `${witEventCount}` : "",
   };
 }
+
+/** Serialises JSON for a script tag. Escapes "<" so CMS text cannot close the tag. */
+export function jsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}

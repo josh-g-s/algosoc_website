@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { client } from "@/lib/sanity";
 import { eventCategoryColours, eventCategoryLabels } from "@/lib/categories";
-import { isPublished } from "@/lib/content";
+import { isPublished, jsonLd } from "@/lib/content";
 import { formatDateLong } from "@/lib/format";
 import { toHTML } from "@portabletext/to-html";
 
@@ -40,7 +40,10 @@ const eventsJsonLd = events.map((e) => ({
   name: e.title,
   ...(e.body && { description: toHTML(e.body).replace(/<[^>]+>/g, " ").trim() }),
   startDate: e.date,
+  url: "https://algosoc.com/events/",
+  eventStatus: "https://schema.org/EventScheduled",
   ...(e.location && {
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     location: {
       "@type": "Place",
       name: e.location,
@@ -63,7 +66,7 @@ const eventsJsonLd = events.map((e) => ({
   <div class="bg-brand-primary">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     {eventsJsonLd.length > 0 && (
-      <script type="application/ld+json" set:html={JSON.stringify(eventsJsonLd)} />
+      <script type="application/ld+json" set:html={jsonLd(eventsJsonLd)} />
     )}
 
     <h1 class="text-3xl sm:text-4xl font-bold text-brand-foreground">{heading}</h1>
