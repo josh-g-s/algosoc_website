@@ -6,9 +6,10 @@ const FALLBACK_EMAIL = "algo.trade@imperial.ac.uk";
 const config = await client
   .fetch<{ contactEmail?: string } | null>(`*[_type == "siteConfig"][0]{ contactEmail }`)
   .catch(() => null);
-// Only trust a plain address from the CMS; otherwise use the fallback.
-const configured = config && !Array.isArray(config) ? config.contactEmail?.trim() : undefined;
-const email = configured && /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(configured) ? configured : FALLBACK_EMAIL;
+// Only trust a plain address from the CMS (a pasted "mailto:" prefix is stripped);
+// anything else, such as a query string or stray punctuation, uses the fallback.
+const configured = config && !Array.isArray(config) ? config.contactEmail?.trim().replace(/^mailto:/i, "") : undefined;
+const email = configured && /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/.test(configured) ? configured : FALLBACK_EMAIL;
 ---
 
 <BaseLayout
