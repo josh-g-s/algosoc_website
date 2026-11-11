@@ -10,8 +10,16 @@ on:
 permissions:
   contents: read
 
+# One deploy at a time: back-to-back merges queue instead of racing the S3 sync.
+# GitHub keeps only the newest pending run, which builds the newest commit.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   deploy:
+    # A manual dispatch from another branch must not deploy it to the live site.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
