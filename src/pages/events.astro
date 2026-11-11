@@ -40,6 +40,9 @@ const eventsJsonLd = events.map((e) => ({
   name: e.title,
   ...(e.body && { description: toHTML(e.body).replace(/<[^>]+>/g, " ").trim() }),
   startDate: e.date,
+  url: "https://algosoc.com/events/",
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   ...(e.location && {
     location: {
       "@type": "Place",
