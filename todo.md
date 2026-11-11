@@ -21,7 +21,7 @@
 
 - [ ] Set the "Join via Imperial College Union" URL in Sanity (`joinPage.ctaUrl`; falls back to `#` when unset). Still open: the live /join page has a `#` link (checked 10 Nov 2026). Society-owned content
 - [ ] Favicon: `public/favicon.ico` is served but not linked, and `BaseLayout.astro` links only `favicon.svg`, which is the Astro starter logo. Needs the AlgoSoc icon from Marketing
-- [ ] Web manifest: none in the repo, and /manifest.webmanifest returns 404 live
+- [x] Web manifest: public/manifest.webmanifest, linked from BaseLayout and served live with a short cache (#23)
 - [ ] Wire up newsletter signup form (API route + SES or subscriber table). Still open: the home-page form has no action or handler. Needs a backend, since the site is static
 - [ ] Wire up contact page email form (API route + SES). Still open: the form has no action or handler (a mailto link exists). Needs a backend
 - [ ] Scheduled rebuilds (GitHub Actions cron) for publishDate/expiryDate to take effect. Still open: `deploy.yml` triggers only on push, repository_dispatch and workflow_dispatch. Changing it needs the Head's OK
