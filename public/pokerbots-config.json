@@ -1,6 +1,7 @@
 {
-  "hostedUiDomain": "",
-  "clientId": "",
+  "hostedUiDomain": "algosoc-pokerbots.auth.eu-west-2.amazoncognito.com",
+  "clientId": "21e0oad4tck65nflpqbf9v6e0k",
   "controlApiUrl": "",
-  "apiUrl": ""
+  "apiUrl": "https://kni69v11d3.execute-api.eu-west-2.amazonaws.com",
+  "signupOpen": false
 }
